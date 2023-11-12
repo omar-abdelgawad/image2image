@@ -1,20 +1,22 @@
+"""Main script for training the model. Can train from scratch or resume from a checkpoint."""
 import torch
 import torch.nn as nn
 import torch.optim as optim
-from utils import save_checkpoint, load_checkpoint, save_some_examples
-from dataset import AnimeDataset
-import config
-from generator import Generator
-from discriminator import Discriminator
 from torch.utils.data import DataLoader
 from tqdm import tqdm
+
+from dataset import AnimeDataset
+from utils import save_checkpoint, load_checkpoint, save_some_examples
+import cfg
+from generator import Generator
+from discriminator import Discriminator
 
 
 def train_fn(disc, gen, loader, opt_disc, opt_gen, l1, bce, g_scaler, d_scaler):
     loop = tqdm(loader, leave=True)
 
     for idx, (x, y) in enumerate(loop):
-        x, y = x.to(config.DEVICE), y.to(config.DEVICE)
+        x, y = x.to(cfg.DEVICE), y.to(cfg.DEVICE)
 
         # train discriminator
         with torch.cuda.amp.autocast():
@@ -35,7 +37,7 @@ def train_fn(disc, gen, loader, opt_disc, opt_gen, l1, bce, g_scaler, d_scaler):
         with torch.cuda.amp.autocast():
             D_fake = disc(x, y_fake)
             G_fake_loss = bce(D_fake, torch.ones_like(D_fake))
-            L1 = l1(y_fake, y) * config.L_1_LAMBDA
+            L1 = l1(y_fake, y) * cfg.L_1_LAMBDA
             G_loss = G_fake_loss + L1
 
         opt_gen.zero_grad()
@@ -44,43 +46,46 @@ def train_fn(disc, gen, loader, opt_disc, opt_gen, l1, bce, g_scaler, d_scaler):
         g_scaler.update()
 
 
+# TODO: Create a script for evaluation.
+# TODO: add tensorboard for training stats.
 def main():
-    disc = Discriminator(in_channels=3).to(config.DEVICE)
-    gen = Generator(in_channels=3).to(config.DEVICE)
+    """Entry point for training loop."""
+    disc = Discriminator(in_channels=3).to(cfg.DEVICE)
+    gen = Generator(in_channels=3).to(cfg.DEVICE)
     opt_disc = optim.Adam(
         disc.parameters(),
-        lr=config.LEARNING_RATE,
+        lr=cfg.LEARNING_RATE,
         betas=(0.5, 0.999),
     )
     opt_gen = optim.Adam(
         gen.parameters(),
-        lr=config.LEARNING_RATE,
+        lr=cfg.LEARNING_RATE,
         betas=(0.5, 0.999),
     )
     BCE = nn.BCEWithLogitsLoss()
     L1_LOSS = nn.L1Loss()
 
-    if config.LOAD_MODEL:
+    if cfg.LOAD_MODEL:
         load_checkpoint(
-            config.CHECKPOINT_GEN,
+            cfg.CHECKPOINT_GEN,
             gen,
             opt_gen,
-            config.LEARNING_RATE,
+            cfg.LEARNING_RATE,
         )
         load_checkpoint(
-            config.CHECKPOINT_DISC,
+            cfg.CHECKPOINT_DISC,
             disc,
             opt_disc,
-            config.LEARNING_RATE,
+            cfg.LEARNING_RATE,
         )
     train_dataset = AnimeDataset(
         root_dir="/media/omarabdelgawad/New Volume/Datasets/archive/data/train"
     )
     train_loader = DataLoader(
         train_dataset,
-        batch_size=config.BATCH_SIZE,
+        batch_size=cfg.BATCH_SIZE,
         shuffle=True,
-        num_workers=config.NUM_WORKERS,
+        num_workers=cfg.NUM_WORKERS,
     )
     g_scaler = torch.cuda.amp.GradScaler()
     d_scaler = torch.cuda.amp.GradScaler()
@@ -88,20 +93,18 @@ def main():
     val_dataset = AnimeDataset(
         root_dir="/media/omarabdelgawad/New Volume/Datasets/archive/data/val"
     )
-    val_loader = DataLoader(
-        val_dataset, batch_size=config.VAL_BATCH_SIZE, shuffle=False
-    )
+    val_loader = DataLoader(val_dataset, batch_size=cfg.VAL_BATCH_SIZE, shuffle=False)
 
-    for epoch in range(config.NUM_EPOCHS):
+    for epoch in range(cfg.NUM_EPOCHS):
         print("Epoch:", epoch)
         train_fn(
             disc, gen, train_loader, opt_disc, opt_gen, L1_LOSS, BCE, g_scaler, d_scaler
         )
-        if config.SAVE_MODEL and epoch % 5 == 0:
-            save_checkpoint(gen, opt_gen, filename=config.CHECKPOINT_GEN)
-            save_checkpoint(disc, opt_disc, filename=config.CHECKPOINT_DISC)
+        if cfg.SAVE_MODEL and epoch % 5 == 0:
+            save_checkpoint(gen, opt_gen, filename=cfg.CHECKPOINT_GEN)
+            save_checkpoint(disc, opt_disc, filename=cfg.CHECKPOINT_DISC)
         save_some_examples(gen, val_loader, epoch, folder="evaluation")
 
 
 if __name__ == "__main__":
-    main()
+    raise SystemExit(main())

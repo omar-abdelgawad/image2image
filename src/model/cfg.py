@@ -1,7 +1,10 @@
+"""Configurations for the model's training, loading, saving, evaluation, and Data transforms."""
 import torch
 import albumentations as A
 from albumentations.pytorch import ToTensorV2
 
+# TODO: make these variables such as load_model and save_model into command line arguments.
+# TODO: add logger instead of all the print statements.
 DEVICE = "cuda" if torch.cuda.is_available() else "cpu"
 LEARNING_RATE = 2e-4
 BATCH_SIZE = 16

@@ -1,11 +1,25 @@
+"""Utility functions for the model."""
 import torch
-import config
+from torch import nn
+from torch import optim
+from torch.utils.data import DataLoader
 from torchvision.utils import save_image
+from . import cfg
 
 
-def save_some_examples(gen, val_loader, epoch, folder):
+def save_some_examples(
+    gen: nn.Module, val_loader: DataLoader, epoch: int, folder: str
+) -> None:
+    """Saves a grid of generated images. Also saves ground truth if epoch is 0.
+
+    Args:
+        gen (nn.Module): Generator model.
+        val_loader (DataLoader): Dataloader for train/val set.
+        epoch (int): Current epoch.
+        folder (str): Folder to save the images in.
+    """
     x, y = next(iter(val_loader))
-    x, y = x.to(config.DEVICE), y.to(config.DEVICE)
+    x, y = x.to(cfg.DEVICE), y.to(cfg.DEVICE)
     gen.eval()
     with torch.no_grad():
         y_fake = gen(x)
@@ -20,7 +34,16 @@ def save_some_examples(gen, val_loader, epoch, folder):
     gen.train()
 
 
-def save_checkpoint(model, optimizer, filename="my_checkpoint.pth.tar"):
+def save_checkpoint(
+    model: nn.Module, optimizer: optim.Optimizer, filename: str
+) -> None:
+    """Saves checkpoint for the model and optimizer in the folder filename.
+
+    Args:
+        model (nn.Module): torch Model.
+        optimizer (optim.Optimizer): Optimizer.
+        filename (str): new File name/path.
+    """
     print("=> Saving checkpoint")
     checkpoint = {
         "state_dict": model.state_dict(),
@@ -29,9 +52,19 @@ def save_checkpoint(model, optimizer, filename="my_checkpoint.pth.tar"):
     torch.save(checkpoint, filename)
 
 
-def load_checkpoint(checkpoint_file, model, optimizer, lr):
+def load_checkpoint(
+    checkpoint_file: str, model: nn.Module, optimizer: optim.Optimizer, lr: float
+) -> None:
+    """Loads checkpoint for the model and optimizer from the checkpoint_file. With the new learning rate.
+
+    Args:
+        checkpoint_file (str): Saved model name/path.
+        model (nn.Module): Model object to restore its state.
+        optimizer (optim.Optimizer): Optimizer object to restore its state.
+        lr (float): Learning rate.
+    """
     print("=> Loading checkpoint")
-    checkpoint = torch.load(checkpoint_file, map_location=config.DEVICE)
+    checkpoint = torch.load(checkpoint_file, map_location=cfg.DEVICE)
     model.load_state_dict(checkpoint["state_dict"])
     optimizer.load_state_dict(checkpoint["optimizer"])
 
