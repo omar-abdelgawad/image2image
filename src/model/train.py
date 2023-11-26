@@ -5,11 +5,11 @@ import torch.optim as optim
 from torch.utils.data import DataLoader
 from tqdm import tqdm
 
-from dataset import AnimeDataset
-from utils import save_checkpoint, load_checkpoint, save_some_examples
-import cfg
-from generator import Generator
-from discriminator import Discriminator
+from model.dataset import AnimeDataset
+from model.utils import save_checkpoint, load_checkpoint, save_some_examples
+from model import cfg
+from model.generator import Generator
+from model.discriminator import Discriminator
 
 
 def train_fn(disc, gen, loader, opt_disc, opt_gen, l1, bce, g_scaler, d_scaler):

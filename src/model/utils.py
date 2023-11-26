@@ -5,7 +5,7 @@ from torch import optim
 from torch.utils.data import DataLoader
 from torchvision.utils import save_image
 
-import cfg
+from model import cfg
 
 
 def save_some_examples(

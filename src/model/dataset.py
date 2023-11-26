@@ -5,7 +5,7 @@ import numpy as np
 from PIL import Image
 from torch.utils.data import Dataset
 
-import cfg
+from model import cfg
 
 
 class AnimeDataset(Dataset):
