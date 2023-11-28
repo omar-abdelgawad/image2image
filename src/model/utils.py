@@ -4,12 +4,18 @@ from torch import nn
 from torch import optim
 from torch.utils.data import DataLoader
 from torchvision.utils import save_image
+from torchvision.utils import make_grid
+from torch.utils.tensorboard import SummaryWriter
 
 from model import cfg
 
 
 def save_some_examples(
-    gen: nn.Module, val_loader: DataLoader, epoch: int, folder: str
+    gen: nn.Module,
+    val_loader: DataLoader,
+    epoch: int,
+    folder: str,
+    writer: SummaryWriter,
 ) -> None:
     """Saves a grid of generated images. Also saves ground truth if epoch is 0.
 
@@ -19,6 +25,7 @@ def save_some_examples(
         epoch (int): Current epoch.
         folder (str): Folder to save the images in.
     """
+    # TODO: refactor this function for single responsibility and improving readability
     x, y = next(iter(val_loader))
     x, y = x.to(cfg.DEVICE), y.to(cfg.DEVICE)
     gen.eval()
@@ -28,9 +35,12 @@ def save_some_examples(
         x = x * 0.5 + 0.5
         x_concat = torch.cat([x, y_fake], dim=3)
         save_image(x_concat, folder + f"/sample_{epoch}.png")
+        img_grid = make_grid(x_concat)
+        writer.add_image(f"test_image {epoch=}", img_grid)
         # save_image(y_fake, folder + f"/y_gen_{epoch}.png")
         # save_image(x * 0.5 + 0.5, folder + f"/input_{epoch}.png")
         if epoch == 0:
+            writer.add_graph(gen, x)
             save_image(y * 0.5 + 0.5, folder + f"/label_{epoch}.png")
     gen.train()
 
