@@ -1,11 +1,33 @@
+"""Utility functions for the model."""
 import torch
-import config
+from torch import nn
+from torch import optim
+from torch.utils.data import DataLoader
 from torchvision.utils import save_image
+from torchvision.utils import make_grid
+from torch.utils.tensorboard import SummaryWriter
+
+from model import cfg
 
 
-def save_some_examples(gen, val_loader, epoch, folder):
+def save_some_examples(
+    gen: nn.Module,
+    val_loader: DataLoader,
+    epoch: int,
+    folder: str,
+    writer: SummaryWriter,
+) -> None:
+    """Saves a grid of generated images. Also saves ground truth if epoch is 0.
+
+    Args:
+        gen (nn.Module): Generator model.
+        val_loader (DataLoader): Dataloader for train/val set.
+        epoch (int): Current epoch.
+        folder (str): Folder to save the images in.
+    """
+    # TODO: refactor this function for single responsibility and improving readability
     x, y = next(iter(val_loader))
-    x, y = x.to(config.DEVICE), y.to(config.DEVICE)
+    x, y = x.to(cfg.DEVICE), y.to(cfg.DEVICE)
     gen.eval()
     with torch.no_grad():
         y_fake = gen(x)
@@ -13,14 +35,26 @@ def save_some_examples(gen, val_loader, epoch, folder):
         x = x * 0.5 + 0.5
         x_concat = torch.cat([x, y_fake], dim=3)
         save_image(x_concat, folder + f"/sample_{epoch}.png")
+        img_grid = make_grid(x_concat)
+        writer.add_image(f"test_image {epoch=}", img_grid)
         # save_image(y_fake, folder + f"/y_gen_{epoch}.png")
         # save_image(x * 0.5 + 0.5, folder + f"/input_{epoch}.png")
         if epoch == 0:
+            writer.add_graph(gen, x)
             save_image(y * 0.5 + 0.5, folder + f"/label_{epoch}.png")
     gen.train()
 
 
-def save_checkpoint(model, optimizer, filename="my_checkpoint.pth.tar"):
+def save_checkpoint(
+    model: nn.Module, optimizer: optim.Optimizer, filename: str
+) -> None:
+    """Saves checkpoint for the model and optimizer in the folder filename.
+
+    Args:
+        model (nn.Module): torch Model.
+        optimizer (optim.Optimizer): Optimizer.
+        filename (str): new File name/path.
+    """
     print("=> Saving checkpoint")
     checkpoint = {
         "state_dict": model.state_dict(),
@@ -29,9 +63,19 @@ def save_checkpoint(model, optimizer, filename="my_checkpoint.pth.tar"):
     torch.save(checkpoint, filename)
 
 
-def load_checkpoint(checkpoint_file, model, optimizer, lr):
+def load_checkpoint(
+    checkpoint_file: str, model: nn.Module, optimizer: optim.Optimizer, lr: float
+) -> None:
+    """Loads checkpoint for the model and optimizer from the checkpoint_file. With the new learning rate.
+
+    Args:
+        checkpoint_file (str): Saved model name/path.
+        model (nn.Module): Model object to restore its state.
+        optimizer (optim.Optimizer): Optimizer object to restore its state.
+        lr (float): Learning rate.
+    """
     print("=> Loading checkpoint")
-    checkpoint = torch.load(checkpoint_file, map_location=config.DEVICE)
+    checkpoint = torch.load(checkpoint_file, map_location=cfg.DEVICE)
     model.load_state_dict(checkpoint["state_dict"])
     optimizer.load_state_dict(checkpoint["optimizer"])
 

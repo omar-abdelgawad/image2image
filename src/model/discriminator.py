@@ -1,3 +1,4 @@
+"""Discriminator model for the pix2pix GAN."""
 import torch
 import torch.nn as nn
 
