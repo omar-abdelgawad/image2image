@@ -9,7 +9,6 @@ from albumentations.pytorch import ToTensorV2
 
 # TODO: Make these variables such as load_model and save_model into command line arguments.
 # TODO: Add logger instead of all the print statements.
-# TODO: Change paths to be os agnostic using pathlib.
 # TODO: Change tensorboard summarywriter to be a global entity instead of passing it to functions
 
 
@@ -29,15 +28,15 @@ NUM_WORKERS = 2
 IMAGE_SIZE = 256
 CHANNELS_IMG = 3
 L_1_LAMBDA = 100
-NUM_EPOCHS = 10
+NUM_EPOCHS = 300
 LOAD_MODEL = False
-SAVE_MODEL = False
-CHECKPOINT_DISC = "disc.pth.tar"
-CHECKPOINT_GEN = "gen.pth.tar"
+SAVE_MODEL = True
+CHECKPOINT_DISC = Path("last_trained_weights/disc.pth.tar")
+CHECKPOINT_GEN = Path("last_trained_weights/gen.pth.tar")
 CHOSEN_DATASET = DatasetType.NATURAL_VIEW_DATASET
 TRAIN_DATASET_PATH = CHOSEN_DATASET.value / "train"
 VAL_DATASET_PATH = CHOSEN_DATASET.value / "val"
-EVALUATION_PATH = "./evaluation"
+EVALUATION_PATH = Path("./evaluation")
 NUM_IMAGES_DATASET = 1000
 VAL_BATCH_SIZE = 8
 
