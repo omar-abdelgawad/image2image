@@ -12,6 +12,7 @@ from torch.utils.tensorboard import SummaryWriter
 from model import cfg
 
 
+# TODO: remove Magic numbers from this module
 def save_some_examples(
     gen: nn.Module,
     val_loader: DataLoader,
@@ -44,6 +45,20 @@ def save_some_examples(
         if epoch == 0:
             writer.add_graph(gen, x)
             save_image(y * 0.5 + 0.5, folder / f"label_{epoch}.png")
+    gen.train()
+
+
+@torch.no_grad()
+def evaluate_val_set(gen: nn.Module, val_loader: DataLoader, folder: Path) -> None:
+    gen.eval()
+    for idx, (x, y) in enumerate(val_loader):
+        x, y = x.to(cfg.DEVICE), y.to(cfg.DEVICE)
+        y_fake = gen(x)
+        y_fake = y_fake * 0.5 + 0.5
+        x = x * 0.5 + 0.5
+        y_concat = torch.cat([y, y_fake], dim=3)
+        print(f"Saving {idx} image")
+        save_image(y_concat, folder / f"val_{idx}.png")
     gen.train()
 
 

@@ -49,9 +49,10 @@ class NaturaViewDataset(Dataset):
         img_path = os.path.join(self.root_dir, img_file_name)
 
         image = cv2.imread(img_path)
-        gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
+        image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
+        gray = cv2.cvtColor(image, cv2.COLOR_RGB2GRAY)
         # stitch images together with rgb on the left
-        image = np.concatenate((image, cv2.cvtColor(gray, cv2.COLOR_GRAY2BGR)), axis=1)
+        image = np.concatenate((image, cv2.cvtColor(gray, cv2.COLOR_GRAY2RGB)), axis=1)
         target_image = image[:, : image.shape[1] // 2, :]
         input_image = image[:, image.shape[1] // 2 :, :]
 
