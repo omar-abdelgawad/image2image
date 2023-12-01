@@ -1,8 +1,10 @@
 # custom
-evaluation
+evaluation/
 disc.pth.tar
 gen.pth.tar
-saved_models
+saved_models/
+runs/
+last_trained_weights/
 
 # Byte-compiled / optimized / DLL files
 __pycache__/

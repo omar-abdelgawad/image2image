@@ -1,4 +1,6 @@
 """Utility functions for the model."""
+from pathlib import Path
+
 import torch
 from torch import nn
 from torch import optim
@@ -10,11 +12,12 @@ from torch.utils.tensorboard import SummaryWriter
 from model import cfg
 
 
+# TODO: remove Magic numbers from this module
 def save_some_examples(
     gen: nn.Module,
     val_loader: DataLoader,
     epoch: int,
-    folder: str,
+    folder: Path,
     writer: SummaryWriter,
 ) -> None:
     """Saves a grid of generated images. Also saves ground truth if epoch is 0.
@@ -23,7 +26,7 @@ def save_some_examples(
         gen (nn.Module): Generator model.
         val_loader (DataLoader): Dataloader for train/val set.
         epoch (int): Current epoch.
-        folder (str): Folder to save the images in.
+        folder (Path): Folder to save the images in.
     """
     # TODO: refactor this function for single responsibility and improving readability
     x, y = next(iter(val_loader))
@@ -34,26 +37,40 @@ def save_some_examples(
         y_fake = y_fake * 0.5 + 0.5
         x = x * 0.5 + 0.5
         x_concat = torch.cat([x, y_fake], dim=3)
-        save_image(x_concat, folder + f"/sample_{epoch}.png")
+        save_image(x_concat, folder / f"sample_{epoch}.png")
         img_grid = make_grid(x_concat)
         writer.add_image(f"test_image {epoch=}", img_grid)
         # save_image(y_fake, folder + f"/y_gen_{epoch}.png")
         # save_image(x * 0.5 + 0.5, folder + f"/input_{epoch}.png")
         if epoch == 0:
             writer.add_graph(gen, x)
-            save_image(y * 0.5 + 0.5, folder + f"/label_{epoch}.png")
+            save_image(y * 0.5 + 0.5, folder / f"label_{epoch}.png")
+    gen.train()
+
+
+@torch.no_grad()
+def evaluate_val_set(gen: nn.Module, val_loader: DataLoader, folder: Path) -> None:
+    gen.eval()
+    for idx, (x, y) in enumerate(val_loader):
+        x, y = x.to(cfg.DEVICE), y.to(cfg.DEVICE)
+        y_fake = gen(x)
+        y_fake = y_fake * 0.5 + 0.5
+        x = x * 0.5 + 0.5
+        y_concat = torch.cat([y, y_fake], dim=3)
+        print(f"Saving {idx} image")
+        save_image(y_concat, folder / f"val_{idx}.png")
     gen.train()
 
 
 def save_checkpoint(
-    model: nn.Module, optimizer: optim.Optimizer, filename: str
+    model: nn.Module, optimizer: optim.Optimizer, filename: Path
 ) -> None:
     """Saves checkpoint for the model and optimizer in the folder filename.
 
     Args:
         model (nn.Module): torch Model.
         optimizer (optim.Optimizer): Optimizer.
-        filename (str): new File name/path.
+        filename (Path): new File name/path.
     """
     print("=> Saving checkpoint")
     checkpoint = {
@@ -64,12 +81,12 @@ def save_checkpoint(
 
 
 def load_checkpoint(
-    checkpoint_file: str, model: nn.Module, optimizer: optim.Optimizer, lr: float
+    checkpoint_file: Path, model: nn.Module, optimizer: optim.Optimizer, lr: float
 ) -> None:
     """Loads checkpoint for the model and optimizer from the checkpoint_file. With the new learning rate.
 
     Args:
-        checkpoint_file (str): Saved model name/path.
+        checkpoint_file (Path): Saved model name/path.
         model (nn.Module): Model object to restore its state.
         optimizer (optim.Optimizer): Optimizer object to restore its state.
         lr (float): Learning rate.

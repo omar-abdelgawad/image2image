@@ -6,7 +6,7 @@ from torch.utils.data import DataLoader
 from torch.utils.tensorboard import SummaryWriter
 from tqdm import tqdm
 
-from model.dataset import AnimeDataset
+from model.dataset import create_dataset
 from model.utils import save_checkpoint, load_checkpoint, save_some_examples
 from model import cfg
 from model.generator import Generator
@@ -52,7 +52,6 @@ def train_fn(disc, gen, loader, opt_disc, opt_gen, l1, bce, g_scaler, d_scaler, 
 
 
 # TODO: Create a script for evaluation.
-# TODO: add tensorboard for training stats.
 def main() -> int:
     """Entry point for training loop."""
     disc = Discriminator(in_channels=3).to(cfg.DEVICE)
@@ -83,7 +82,9 @@ def main() -> int:
             opt_disc,
             cfg.LEARNING_RATE,
         )
-    train_dataset = AnimeDataset(root_dir=cfg.TRAIN_DATASET_PATH)
+    train_dataset = create_dataset(
+        root_dir=cfg.TRAIN_DATASET_PATH, dataset_type=cfg.CHOSEN_DATASET
+    )
     train_loader = DataLoader(
         train_dataset,
         batch_size=cfg.BATCH_SIZE,
@@ -93,7 +94,9 @@ def main() -> int:
     g_scaler = torch.cuda.amp.GradScaler()
     d_scaler = torch.cuda.amp.GradScaler()
 
-    val_dataset = AnimeDataset(root_dir=cfg.VAL_DATASET_PATH)
+    val_dataset = create_dataset(
+        root_dir=cfg.VAL_DATASET_PATH, dataset_type=cfg.CHOSEN_DATASET
+    )
     val_loader = DataLoader(val_dataset, batch_size=cfg.VAL_BATCH_SIZE, shuffle=False)
 
     for epoch in range(cfg.NUM_EPOCHS):
