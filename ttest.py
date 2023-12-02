@@ -1,4 +1,4 @@
-from model.cli import custom_arg_parser
+from test import custom_arg_parser
 
 # TODO: use pytest.mark.parametrize instead of multiple tests
 # @pytest.mark.parametrize(
