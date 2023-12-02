@@ -6,6 +6,7 @@ import torch
 import albumentations as A
 from albumentations.pytorch import ToTensorV2
 
+from model.cli import custom_arg_parser
 
 # TODO: Make these variables such as load_model and save_model into command line arguments.
 # TODO: Add logger instead of all the print statements.
@@ -20,25 +21,25 @@ class DatasetType(Enum):
         "/media/omarabdelgawad/New Volume/Datasets/image_coloring/natural_view/"
     )
 
-
+args = custom_arg_parser()
 DEVICE = "cuda" if torch.cuda.is_available() else "cpu"
-LEARNING_RATE = 2e-4
-BATCH_SIZE = 16
-NUM_WORKERS = 2
-IMAGE_SIZE = 256
+LEARNING_RATE = args.rate
+BATCH_SIZE = args.batch_size
+NUM_WORKERS = args.num_workers
+IMAGE_SIZE = args.image_size
 CHANNELS_IMG = 3
 L_1_LAMBDA = 100
-NUM_EPOCHS = 300
-LOAD_MODEL = False
-SAVE_MODEL = True
+NUM_EPOCHS = args.num_epochs
+LOAD_MODEL = args.load_model
+SAVE_MODEL = args.save_model
 CHECKPOINT_DISC = Path("last_trained_weights/disc.pth.tar")
 CHECKPOINT_GEN = Path("last_trained_weights/gen.pth.tar")
 CHOSEN_DATASET = DatasetType.NATURAL_VIEW_DATASET
 TRAIN_DATASET_PATH = CHOSEN_DATASET.value / "train"
 VAL_DATASET_PATH = CHOSEN_DATASET.value / "val"
 EVALUATION_PATH = Path("./evaluation")
-NUM_IMAGES_DATASET = 1000
-VAL_BATCH_SIZE = 8
+NUM_IMAGES_DATASET = args.num_images_dataset
+VAL_BATCH_SIZE = args.val_batch_size
 
 both_transform = A.Compose(
     [A.Resize(width=IMAGE_SIZE, height=IMAGE_SIZE), A.HorizontalFlip(p=0.5)],
