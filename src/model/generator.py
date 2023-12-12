@@ -27,6 +27,8 @@ class Block(nn.Module):
         return self.dropout(x) if self.use_dropout else x
 
 
+# TODO: make it a multi-modal generator by adding a random noise vector z sampled from a normal distribution.
+# TODO: Apply Diversity-Sensitive Conditional Generative Adversarial Networks DSGANs to the generator.
 class Generator(nn.Module):
     def __init__(self, in_channels=3, features=64) -> None:
         super().__init__()

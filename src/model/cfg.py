@@ -21,6 +21,7 @@ class DatasetType(Enum):
         "/media/omarabdelgawad/New Volume/Datasets/image_coloring/natural_view/"
     )
 
+
 args = custom_arg_parser()
 DEVICE = "cuda" if torch.cuda.is_available() else "cpu"
 LEARNING_RATE = args.rate
@@ -49,6 +50,7 @@ both_transform = A.Compose(
 transform_only_input = A.Compose(
     [
         A.ColorJitter(p=0.1),
+        # TODO: calculate mean and std for the dataset instead of using these values.
         A.Normalize(
             mean=[0.5, 0.5, 0.5],
             std=[0.5, 0.5, 0.5],

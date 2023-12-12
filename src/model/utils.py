@@ -48,6 +48,7 @@ def save_some_examples(
     gen.train()
 
 
+# TODO: replace all torch.no_grad() with torch.inference_mode()
 @torch.no_grad()
 def evaluate_val_set(gen: nn.Module, val_loader: DataLoader, folder: Path) -> None:
     gen.eval()

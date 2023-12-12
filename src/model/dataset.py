@@ -65,6 +65,7 @@ class NaturaViewDataset(Dataset):
         return input_image, target_image
 
 
+# TODO: make a factory class instead.
 def create_dataset(root_dir, dataset_type):
     match dataset_type:
         case cfg.DatasetType.ANIME_DATASET:

@@ -15,12 +15,14 @@ from model.discriminator import Discriminator
 writer = SummaryWriter("runs/expirement_1")
 
 
-def train_fn(disc, gen, loader, opt_disc, opt_gen, l1, bce, g_scaler, d_scaler, epoch):
+def train_fn(
+    disc, gen, loader, opt_disc, opt_gen, l1, bce, g_scaler, d_scaler, epoch: int
+):
     loop = tqdm(loader, leave=True)
 
     for idx, (x, y) in enumerate(loop):
         x, y = x.to(cfg.DEVICE), y.to(cfg.DEVICE)
-
+        cur_stage = epoch * len(loader) + idx
         # train discriminator
         with torch.cuda.amp.autocast():
             y_fake = gen(x)
@@ -30,7 +32,7 @@ def train_fn(disc, gen, loader, opt_disc, opt_gen, l1, bce, g_scaler, d_scaler, 
             D_real_loss = bce(D_real, torch.ones_like(D_real))
             D_fake_loss = bce(D_fake, torch.zeros_like(D_fake))
             D_loss = (D_real_loss + D_fake_loss) / 2
-            writer.add_scalar("d_loss", D_loss, epoch * len(loader) + idx)
+            writer.add_scalar("d_loss", D_loss, cur_stage)
 
         disc.zero_grad()
         d_scaler.scale(D_loss).backward()
@@ -43,7 +45,7 @@ def train_fn(disc, gen, loader, opt_disc, opt_gen, l1, bce, g_scaler, d_scaler, 
             G_fake_loss = bce(D_fake, torch.ones_like(D_fake))
             L1 = l1(y_fake, y) * cfg.L_1_LAMBDA
             G_loss = G_fake_loss + L1
-            writer.add_scalar("g_loss", G_loss, epoch * len(loader) + idx)
+            writer.add_scalar("g_loss", G_loss, cur_stage)
 
         opt_gen.zero_grad()
         g_scaler.scale(G_loss).backward()
