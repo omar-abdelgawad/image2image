@@ -27,7 +27,7 @@ def train_fn(
     d_scaler,
     epoch: int,
 ) -> None:
-    """_summary_
+    """Process one epoch of training.
 
     Args:
         disc (Discriminator): Pix2Pix Discriminator.
@@ -76,7 +76,6 @@ def train_fn(
         g_scaler.update()
 
 
-# TODO: Create a script for evaluation.
 def main() -> int:
     """Entry point for training loop."""
     disc = Discriminator(in_channels=3).to(cfg.DEVICE)
