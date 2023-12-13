@@ -1,12 +1,29 @@
-"""Generator model."""
+"""Generator model for Pix2Pix."""
 import torch
-import torch.nn as nn
+from torch import nn
 
 
 class Block(nn.Module):
+    """Block for Pix2Pix Generator model. Consists of Conv2d/ConvTranspose2d, BatchNorm2d,
+    and ReLU/LeakyReLU.
+
+    Args:
+        in_channels (int): Input channels.
+        out_channels (int): Output channels.
+        down (bool, optional): Determines if block is at first or second half of
+        U-net. Defaults to True.
+        act (str, optional): Activation function type. Defaults to "relu".
+        use_dropout (bool, optional): Whether to use dropout or not. Defaults to False.
+    """
+
     def __init__(
-        self, in_channels, out_channels, down=True, act="relu", use_dropout=False
-    ):
+        self,
+        in_channels: int,
+        out_channels: int,
+        down: bool = True,
+        act: str = "relu",
+        use_dropout: bool = False,
+    ) -> None:
         super().__init__()
         self.conv = nn.Sequential(
             nn.Conv2d(
@@ -22,14 +39,23 @@ class Block(nn.Module):
         self.down = down
         self.act = act
 
-    def forward(self, x):
+    def forward(self, x: torch.Tensor) -> torch.Tensor:
+        """Forward pass."""
         x = self.conv(x)
         return self.dropout(x) if self.use_dropout else x
 
 
-# TODO: make it a multi-modal generator by adding a random noise vector z sampled from a normal distribution.
-# TODO: Apply Diversity-Sensitive Conditional Generative Adversarial Networks DSGANs to the generator.
+# TODO: make it a multi-modal generator by adding a random noise
+#  vector z sampled from a normal distribution.
+# TODO: Apply Diversity-Sensitive Conditional GANs DSGANs to the generator.
 class Generator(nn.Module):
+    """Generator Class for Pix2Pix model.
+
+    Args:
+        in_channels (int, optional): _description_. Defaults to 3.
+        features (int, optional): _description_. Defaults to 64.
+    """
+
     def __init__(self, in_channels=3, features=64) -> None:
         super().__init__()
         self.initial_down = nn.Sequential(
@@ -88,7 +114,16 @@ class Generator(nn.Module):
             nn.Tanh(),
         )
 
-    def forward(self, x):
+    def forward(self, x: torch.Tensor) -> torch.Tensor:
+        """Forward pass for Pix2Pix's U-net generator. Downsamples the image then
+        upsamples using convtranspose2d.
+
+        Args:
+            x (torch.Tensor): Batched input Image(s) tensor.
+
+        Returns:
+            torch.Tensor: Batched output Image(s) tensor
+        """
         d1 = self.initial_down(x)
         d2 = self.down1(d1)
         d3 = self.down2(d2)
@@ -107,7 +142,8 @@ class Generator(nn.Module):
         return self.final_up(torch.cat([up7, d1], 1))
 
 
-def test():
+def test() -> None:
+    """test func."""
     x = torch.randn((1, 3, 256, 256))
     model = Generator(in_channels=3, features=64)
     preds = model(x)

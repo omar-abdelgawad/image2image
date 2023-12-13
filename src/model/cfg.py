@@ -8,12 +8,13 @@ from albumentations.pytorch import ToTensorV2
 
 from model.cli import custom_arg_parser
 
-# TODO: Make these variables such as load_model and save_model into command line arguments.
 # TODO: Add logger instead of all the print statements.
 # TODO: Change tensorboard summarywriter to be a global entity instead of passing it to functions
 
 
 class DatasetType(Enum):
+    """Enum for the dataset type."""
+
     ANIME_DATASET = Path(
         "/media/omarabdelgawad/New Volume/Datasets/image_coloring/anime_dataset/"
     )

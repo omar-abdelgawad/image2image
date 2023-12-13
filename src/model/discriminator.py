@@ -1,10 +1,18 @@
 """Discriminator model for the pix2pix GAN."""
 import torch
-import torch.nn as nn
+from torch import nn
 
 
 class CNNBlock(nn.Module):
-    def __init__(self, in_channels, out_channels, stride=2):
+    """Block that consists of a Conv2d layer, BatchNorm2d layer and LeakyReLU activation function.
+
+    Args:
+        in_channels (int): Number of input channels.
+        out_channels (int): Number of output channels.
+        stride (int, optional): Stride for conv kernel. Defaults to 2.
+    """
+
+    def __init__(self, in_channels: int, out_channels: int, stride: int = 2) -> None:
         super().__init__()
         self.conv = nn.Sequential(
             nn.Conv2d(
@@ -20,14 +28,22 @@ class CNNBlock(nn.Module):
             nn.LeakyReLU(0.2),
         )
 
-    def forward(self, x):
+    def forward(self, x: torch.Tensor) -> torch.Tensor:
+        """Forward pass."""
         return self.conv(x)
 
 
 class Discriminator(nn.Module):
+    """Discriminator model for the pix2pix GAN.
+
+    Args:
+        in_channels (int, optional): Number of input channels. Defaults to 3.
+        features (tuple, optional): Sequence of feature channels. Defaults to (64, 128, 256, 512).
+    """
+
     # channels are 3 because they are always going to be rgb
     def __init__(
-        self, in_channels=3, features=(64, 128, 256, 512)
+        self, in_channels: int = 3, features=(64, 128, 256, 512)
     ) -> None:  # 256x256->30*30
         super().__init__()
         self.initial = nn.Sequential(
@@ -63,17 +79,28 @@ class Discriminator(nn.Module):
         )
         self.model = nn.Sequential(*layers)
 
-    def forward(self, x, y):
+    def forward(self, x: torch.Tensor, y: torch.Tensor) -> torch.Tensor:
+        """Forward pass for discriminator of Pix2Pix GAN.
+
+        Args:
+            x (torch.Tensor): Input image in first domain.
+            y (torch.Tensor): Output image in second domain.
+
+        Returns:
+            torch.Tensor: Output tensor for probability for every patch.
+        """
         x = torch.cat([x, y], dim=1)
         x = self.initial(x)
         return self.model(x)
 
 
-def test():
+def test() -> None:
+    """Test function for finding shape of output tensor."""
     x = torch.randn((1, 3, 256, 256))
     y = torch.randn((1, 3, 256, 256))
     model = Discriminator()
     preds = model(x, y)
+    print(preds)
     print(preds.shape)
 
 
