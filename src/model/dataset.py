@@ -1,6 +1,7 @@
 """Dataset Module. Contains Dataset classes that can be constructed using the path.
  Currently Contains AnimeDataset class."""
 import os
+from pathlib import Path
 
 import numpy as np
 from PIL import Image
@@ -11,7 +12,13 @@ from model import cfg
 
 
 class AnimeDataset(Dataset):
-    def __init__(self, root_dir) -> None:
+    """Dataset class for Anime Colorization dataset.
+
+    Args:
+        root_dir (root_dir): Path for dataset dir.
+    """
+
+    def __init__(self, root_dir: Path | str) -> None:
         self.root_dir = root_dir
         self.list_files = os.listdir(self.root_dir)[: cfg.NUM_IMAGES_DATASET]
         print(f"The length of the dataset is: {len(self.list_files)}")
@@ -36,6 +43,12 @@ class AnimeDataset(Dataset):
 
 
 class NaturaViewDataset(Dataset):
+    """Dataset class for Natural View Colorization dataset.
+
+    Args:
+        root_dir (root_dir): Path for dataset dir.
+    """
+
     def __init__(self, root_dir) -> None:
         self.root_dir = root_dir
         self.list_files = os.listdir(self.root_dir)[: cfg.NUM_IMAGES_DATASET]
@@ -65,7 +78,20 @@ class NaturaViewDataset(Dataset):
         return input_image, target_image
 
 
-def create_dataset(root_dir, dataset_type):
+# TODO: make a factory class instead.
+def create_dataset(root_dir: Path | str, dataset_type: cfg.DatasetType) -> Dataset:
+    """Create a Dataset from given root_dir and dataset_type.
+
+    Args:
+        root_dir (Path | str): Path for Dataset dir.
+        dataset_type (cfg.DatasetType): Type for dataset to create.
+
+    Raises:
+        ValueError: If dataset_type is not supported.
+
+    Returns:
+        Dataset: Pytorch Dataset object.
+    """
     match dataset_type:
         case cfg.DatasetType.ANIME_DATASET:
             return AnimeDataset(root_dir)

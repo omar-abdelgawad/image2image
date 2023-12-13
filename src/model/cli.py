@@ -1,3 +1,4 @@
+"""CLI module for the model training and evaluation."""
 import argparse
 from typing import Optional
 from typing import Sequence
@@ -7,13 +8,13 @@ def positive_float(value: str) -> float:
     """A function to check if the value is a positive float
 
     Args:
-        value (str): string to check
+        value (str): String to check
 
     Raises:
-        argparse.ArgumentTypeError: if value is not a positive float
+        argparse.ArgumentTypeError: Whether value is not a positive float.
 
     Returns:
-        float: the value if it is a positive float
+        float: The value if it is a positive float.
     """
     ivalue = float(value)
     if ivalue <= 0:
@@ -25,13 +26,13 @@ def positive_int(value: str) -> int:
     """A function to check if the value is a positive int
 
     Args:
-        value (str): string to check
+        value (str): String to check.
 
     Raises:
-        argparse.ArgumentTypeError: if value is not a positive int
+        argparse.ArgumentTypeError: Whether value is not a positive int.
 
     Returns:
-        int: the value if it is a positive int
+        int: The value if it is a positive int.
     """
     ivalue = int(value)
     if ivalue <= 0:
@@ -43,10 +44,10 @@ def custom_arg_parser(argv: Optional[Sequence[str]] = None) -> argparse.Namespac
     """A custom argument parser for the model
 
     Args:
-        argv (Optional[Sequence[str]], optional): arguments fetched from command line(if any). Defaults to None.
+        argv(Optional[Sequence[str]], optional): Command line arguments to parse. Default to None.
 
     Returns:
-        argparse.Namespace: the parsed arguments
+        argparse.Namespace: The parsed arguments.
     """
     parser = argparse.ArgumentParser(
         description="An unsupervised image-to-image translation model",

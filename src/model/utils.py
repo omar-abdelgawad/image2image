@@ -5,9 +5,9 @@ import torch
 from torch import nn
 from torch import optim
 from torch.utils.data import DataLoader
+from torch.utils.tensorboard import SummaryWriter
 from torchvision.utils import save_image
 from torchvision.utils import make_grid
-from torch.utils.tensorboard import SummaryWriter
 
 from model import cfg
 
@@ -32,7 +32,7 @@ def save_some_examples(
     x, y = next(iter(val_loader))
     x, y = x.to(cfg.DEVICE), y.to(cfg.DEVICE)
     gen.eval()
-    with torch.no_grad():
+    with torch.inference_mode():
         y_fake = gen(x)
         y_fake = y_fake * 0.5 + 0.5
         x = x * 0.5 + 0.5
@@ -48,8 +48,15 @@ def save_some_examples(
     gen.train()
 
 
-@torch.no_grad()
+@torch.inference_mode()
 def evaluate_val_set(gen: nn.Module, val_loader: DataLoader, folder: Path) -> None:
+    """Runs inference on all images in the val_loader and saves them in the folder.
+
+    Args:
+        gen (nn.Module): Generator model.
+        val_loader (DataLoader): Dataloader for val set.
+        folder (Path): Path for saving the images.
+    """
     gen.eval()
     for idx, (x, y) in enumerate(val_loader):
         x, y = x.to(cfg.DEVICE), y.to(cfg.DEVICE)
@@ -83,7 +90,8 @@ def save_checkpoint(
 def load_checkpoint(
     checkpoint_file: Path, model: nn.Module, optimizer: optim.Optimizer, lr: float
 ) -> None:
-    """Loads checkpoint for the model and optimizer from the checkpoint_file. With the new learning rate.
+    """Loads checkpoint for the model and optimizer from the checkpoint_file.
+    With the new learning rate.
 
     Args:
         checkpoint_file (Path): Saved model name/path.
