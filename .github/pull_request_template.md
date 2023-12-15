@@ -1,8 +1,20 @@
-## Describe your changes
+## 📢 Describe your changes
+<!-- List the most impactful changes here. Remove any category that doesn't apply to this PR -->
+- 📌 **changes Summary**
+  - ~
+- ⚠️ **Breaking changes**
+  - ~
+- 🐞 **Bug Fixes**:
+    - ~
+
+## 🧪 How to test this Pull Request
+<!-- If applicable, please describe how to test the changes made in this PR -->
+1. ~
 
 
-## Checklist before requesting a review
+## 🗒️ Notes for future improvements
+<!-- If applicable, please describe any potential improvements not included in this PR which could be worth investigating/implementing down the line -->
+
+## ✅Checklist before requesting a review
 - [ ] I have performed a self-review of my code
 - [ ] If it is a core feature, I have added thorough tests.
-- [ ] Do we need to implement analytics?
-- [ ] Will this be part of a product update? If yes, please write one phrase about this update.
