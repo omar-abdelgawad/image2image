@@ -1,34 +1,42 @@
-# pylint: skip-file
-
+"""Generator model for T-UNIT."""
 import torch
 from torch import nn
-from torch.nn import init
 
-import math
+# from torch.nn import init
 
-from blocks import GenConvBlock
-from blocks import GenResBlock
-from blocks import LinearBlock
+# import math
 
-# import tunit
+from tunit.blocks import GenConvBlock
+from tunit.blocks import GenResBlock
+
+# from tunit.blocks import LinearBlock
 
 
 class Generator(nn.Module):
+    """Generator Class for T-UNIT model.
+
+    Args:
+        in_channels (int, optional): _description_. Defaults to 3.
+        channels_multiplier: (int, optional): _description_. Defaults to 64.
+        out_channels (int, optional): _description_. Defaults to 3.
+        use_sn (bool, optional): _description_. Defaults to False.
+    """
+
     def __init__(
         self,
-        in_channels: int,
-        channels_multiplier: int,
-        out_channels: int,
+        in_channels: int = 3,
+        channels_multiplier: int = 64,
+        out_channels: int = 3,
         use_sn: bool = False,
     ) -> None:
         super().__init__()
 
-        self.nf_mlp = 256
+        # self.nf_mlp = 256
 
-        self.decoder_norm = "adain"
+        # self.decoder_norm = "adain"
 
-        self.adaptive_param_getter = get_num_adain_params
-        self.adaptive_param_assign = assign_adain_params
+        # self.adaptive_param_getter = get_num_adain_params
+        # self.adaptive_param_assign = assign_adain_params
 
         self.enc = Encoder(
             in_channels=in_channels,
@@ -42,25 +50,34 @@ class Generator(nn.Module):
             use_sn=use_sn,
         )
 
-        self.mlp = MLP(
-            channels_multiplier,
-            self.adaptive_param_getter(self.dec),
-            self.nf_mlp,
-            3,
-            "none",
-            "relu",
-        )
+        # self.mlp = MLP(
+        #     channels_multiplier,
+        #     self.adaptive_param_getter(self.dec),
+        #     self.nf_mlp,
+        #     3,
+        #     "none",
+        #     "relu",
+        # )
 
-        self.apply(weights_init("kaiming"))
+        # self.apply(weights_init("kaiming"))
 
-    def forward(self, x_src, s_ref):
+    def forward(self, x_src: torch.Tensor, s_ref: torch.Tensor) -> torch.Tensor:
+        """Forward pass for T-UNIT's generator. Downsamples the image then
+        upsamples using convtranspose2d.
+
+        Args:
+            x_src (torch.Tensor): Batched input Image(s) tensor.
+            s_ref (torch.Tensor): Batched style reference tensor.
+        Returns:
+            torch.Tensor: Batched output Image(s) tensor
+        """
         return self.decode(self.enc(x_src), s_ref)
 
-    def decode(self, cnt, sty):
-        adapt_params = self.mlp(sty)
-        self.adaptive_param_assign(adapt_params, self.dec)
-        out = self.dec(cnt)
-        return out
+    # def decode(self, cnt, sty):
+    #     adapt_params = self.mlp(sty)
+    #     self.adaptive_param_assign(adapt_params, self.dec)
+    #     out = self.dec(cnt)
+    #     return out
 
     def _initialize_weights(self, mode="fan_in"):
         for m in self.modules():
@@ -71,7 +88,22 @@ class Generator(nn.Module):
 
 
 class Encoder(nn.Module):
-    def __init__(self, in_channels, channels_multiplier, out_channels, use_sn=False):
+    """Encoder for T-UNIT's generator.
+
+    Args:
+        in_channels (int, optional): _description_. Defaults to 3.
+        channels_multiplier: (int, optional): _description_. Defaults to 64.
+        out_channels (int, optional): _description_. Defaults to 512.
+        use_sn (bool, optional): _description_. Defaults to False.
+    """
+
+    def __init__(
+        self,
+        in_channels: int = 3,
+        channels_multiplier: int = 64,
+        out_channels: int = 512,
+        use_sn: bool = False,
+    ) -> None:
         super().__init__()
 
         self.layer_1 = nn.Sequential(
@@ -131,12 +163,34 @@ class Encoder(nn.Module):
             use_sn=use_sn,
         )
 
-    def forward(self, x):
+    def forward(self, x: torch.Tensor) -> torch.Tensor:
+        """Forward pass for the encoder.
+
+        Args:
+            x (torch.Tensor): Batched input Image(s) tensor.
+        Returns:
+            torch.Tensor: Batched output Image(s) tensor
+        """
         return self.layer_2(self.layer_1(x))
 
 
 class Decoder(nn.Module):
-    def __init__(self, in_channels, channels_multiplier, out_channels, use_sn=False):
+    """Decoder for T-UNIT's generator.
+
+    Args:
+        in_channels (int, optional): _description_. Defaults to 512.
+        channels_multiplier: (int, optional): _description_. Defaults to 64.
+        out_channels (int, optional): _description_. Defaults to 3.
+        use_sn (bool, optional): _description_. Defaults to False.
+    """
+
+    def __init__(
+        self,
+        in_channels: int = 512,
+        channels_multiplier: int = 64,
+        out_channels: int = 3,
+        use_sn: bool = False,
+    ) -> None:
         super().__init__()
 
         self.padd = nn.ReflectionPad2d(padding=3)
@@ -213,79 +267,80 @@ class Decoder(nn.Module):
 
         self.classifier.add_module("tanh", nn.Tanh())
 
-    def forward(self, x):
+    def forward(self, x: torch.Tensor) -> torch.Tensor:
+        """Forward pass for the decoder.
+
+        Args:
+            x (torch.Tensor): Batched input Image(s) tensor.
+        Returns:
+            torch.Tensor: Batched output Image(s) tensor
+        """
         return self.classifier(self.padd(self.layer_2(self.layer_1(x))))
 
 
-class MLP(nn.Module):
-    def __init__(self, nf_in, nf_out, nf_mlp, num_blocks, norm, act, use_sn=False):
-        super(MLP, self).__init__()
-        self.model = nn.ModuleList()
-        nf = nf_mlp
-        self.model.append(LinearBlock(nf_in, nf, norm=norm, act=act, use_sn=use_sn))
-        for _ in range(num_blocks - 2):
-            self.model.append(LinearBlock(nf, nf, norm=norm, act=act, use_sn=use_sn))
-        self.model.append(
-            LinearBlock(nf, nf_out, norm="none", act="none", use_sn=use_sn)
-        )
-        self.model = nn.Sequential(*self.model)
+# IMPLEMENTATION OF MLP FOR ADIN LOSS (PAPER'S APPROACH)
+# class MLP(nn.Module):
+#     def __init__(self, nf_in, nf_out, nf_mlp, num_blocks, norm, act, use_sn=False):
+#         super(MLP, self).__init__()
+#         self.model = nn.ModuleList()
+#         nf = nf_mlp
+#         self.model.append(LinearBlock(nf_in, nf, norm=norm, act=act, use_sn=use_sn))
+#         for _ in range(num_blocks - 2):
+#             self.model.append(LinearBlock(nf, nf, norm=norm, act=act, use_sn=use_sn))
+#         self.model.append(
+#             LinearBlock(nf, nf_out, norm="none", act="none", use_sn=use_sn)
+#         )
+#         self.model = nn.Sequential(*self.model)
 
-    def forward(self, x):
-        return self.model(x.view(x.size(0), -1))
-
-
-def weights_init(init_type="gaussian"):
-    def init_fun(m):
-        classname = m.__class__.__name__
-        if (classname.find("Conv") == 0 or classname.find("Linear") == 0) and hasattr(
-            m, "weight"
-        ):
-            if init_type == "gaussian":
-                init.normal_(m.weight.data, 0.0, 0.02)
-            elif init_type == "xavier":
-                init.xavier_normal_(m.weight.data, gain=math.sqrt(2))
-            elif init_type == "kaiming":
-                init.kaiming_normal_(m.weight.data, a=0, mode="fan_in")
-            elif init_type == "orthogonal":
-                init.orthogonal_(m.weight.data, gain=math.sqrt(2))
-            elif init_type == "default":
-                pass
-            else:
-                assert 0, "Unsupported initialization: {}".format(init_type)
-            if hasattr(m, "bias") and m.bias is not None:
-                init.constant_(m.bias.data, 0.0)
-
-    return init_fun
+#     def forward(self, x):
+#         return self.model(x.view(x.size(0), -1))
 
 
-def assign_adain_params(adain_params, model):
-    for m in model.modules():
-        if m.__class__.__name__ == "AdaIN2d":
-            mean = adain_params[:, : m.num_features]
-            std = adain_params[:, m.num_features : 2 * m.num_features]
-            m.bias = mean.contiguous().view(-1)
-            m.weight = std.contiguous().view(-1)
-            if adain_params.size(1) > 2 * m.num_features:
-                adain_params = adain_params[:, 2 * m.num_features :]
+# def weights_init(init_type="gaussian"):
+#     def init_fun(m):
+#         classname = m.__class__.__name__
+#         if (classname.find("Conv") == 0 or classname.find("Linear") == 0) and hasattr(
+#             m, "weight"
+#         ):
+#             if init_type == "gaussian":
+#                 init.normal_(m.weight.data, 0.0, 0.02)
+#             elif init_type == "xavier":
+#                 init.xavier_normal_(m.weight.data, gain=math.sqrt(2))
+#             elif init_type == "kaiming":
+#                 init.kaiming_normal_(m.weight.data, a=0, mode="fan_in")
+#             elif init_type == "orthogonal":
+#                 init.orthogonal_(m.weight.data, gain=math.sqrt(2))
+#             elif init_type == "default":
+#                 pass
+#             else:
+#                 assert 0, "Unsupported initialization: {}".format(init_type)
+#             if hasattr(m, "bias") and m.bias is not None:
+#                 init.constant_(m.bias.data, 0.0)
+
+#     return init_fun
 
 
-def get_num_adain_params(model):
-    num_adain_params = 0
-    for m in model.modules():
-        if m.__class__.__name__ == "AdaIN2d":
-            num_adain_params += 2 * m.num_features
-    return num_adain_params
+# def assign_adain_params(adain_params, model):
+#     for m in model.modules():
+#         if m.__class__.__name__ == "AdaIN2d":
+#             mean = adain_params[:, : m.num_features]
+#             std = adain_params[:, m.num_features : 2 * m.num_features]
+#             m.bias = mean.contiguous().view(-1)
+#             m.weight = std.contiguous().view(-1)
+#             if adain_params.size(1) > 2 * m.num_features:
+#                 adain_params = adain_params[:, 2 * m.num_features :]
+
+
+# def get_num_adain_params(model):
+#     num_adain_params = 0
+#     for m in model.modules():
+#         if m.__class__.__name__ == "AdaIN2d":
+#             num_adain_params += 2 * m.num_features
+#     return num_adain_params
 
 
 if __name__ == "__main__":
-    from guiding_network import GuidingNetwork
-
-    C = GuidingNetwork(in_channels=3, channels_multiplier=64, out_channels=9)
     G = Generator(in_channels=3, channels_multiplier=64, out_channels=3)
     x_in = torch.randn(size=(32, 3, 128, 128))
     print("encoder", G.enc(x_in).shape)
     print("decoder", G.dec(G.enc(x_in)).shape)
-    cont = G.enc(x_in)
-    sty = C.moco(x_in)
-    x_out = G.decode(cont, sty)
-    print(x_out.shape)

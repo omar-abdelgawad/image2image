@@ -1,26 +1,41 @@
-# pylint: skip-file
-
+"""Blocks for TUNIT"""
 import torch
 from torch import nn
 from torch.nn import functional as F
-from utils import AdaptiveInstanceNorm2d
-from utils import FRN
+
+from tunit.utils import AdaptiveInstanceNorm2d
+from tunit.utils import FRN
 
 
 class GenConvBlock(nn.Module):
+    """Convolutional block for the generator.
+
+    Args:
+        in_channels (int): Number of input channels.
+        out_channels (int): Number of output channels.
+        kernel_size (int, optional): Kernel size for conv kernel. Defaults to 3.
+        stride (int, optional): Stride for conv kernel. Defaults to 1.
+        padding (int, optional): Padding for conv kernel. Defaults to 0.
+        padd_type (str, optional): Padding type for conv kernel. Defaults to "zero".
+        ins (bool, optional): Whether to use instance norm. Defaults to True.
+        up (bool, optional): Whether to use upsampling. Defaults to False.
+        use_bias (bool, optional): Whether to use bias. Defaults to True.
+        use_sn (bool, optional): Whether to use spectral norm. Defaults to False.
+    """
+
     def __init__(
         self,
-        in_channels,
-        out_channels,
-        kernel_size=3,
-        stride=1,
-        padding=0,
-        padd_type="zero",
-        ins=True,
-        up=False,
-        use_bias=True,
-        use_sn=False,
-    ):
+        in_channels: int,
+        out_channels: int,
+        kernel_size: int = 3,
+        stride: int = 1,
+        padding: int = 0,
+        padd_type: str = "zero",
+        ins: bool = True,
+        up: bool = False,
+        use_bias: bool = True,
+        use_sn: bool = False,
+    ) -> None:
         super().__init__()
 
         self.use_bias = use_bias
@@ -32,7 +47,7 @@ class GenConvBlock(nn.Module):
         elif padd_type == "zero":
             self.padd = nn.ZeroPad2d(padding)
         else:
-            assert 0, "Unsupported padding type: {}".format(padd_type)
+            assert 0, f"Unsupported padding type: {padd_type}"
 
         self.model = nn.Sequential()
         if up:
@@ -61,20 +76,39 @@ class GenConvBlock(nn.Module):
                 AdaptiveInstanceNorm2d(num_features=out_channels),
             )
 
-    def forward(self, x):
+    def forward(self, x: torch.Tensor) -> torch.Tensor:
+        """Forward pass for Genertor's Convolutional Block.
+
+        Args:
+            x (torch.Tensor): _description_
+
+        Returns:
+            torch.Tensor: _description_
+        """
         x = self.padd(x)
         return self.model(x)
 
 
 class GuidingNetworkConvBlock(nn.Module):
+    """Guiding Network's block for the generator.
+
+    Args:
+        in_channels (int): Number of input channels.
+        out_channels (int): Number of output channels.
+        kernel_size (int, optional): Kernel size for conv kernel. Defaults to 3.
+        stride (int, optional): Stride for conv kernel. Defaults to 1.
+        padding (int, optional): Padding for conv kernel. Defaults to 0.
+        pool (bool, optional): Whether to use max pooling. Defaults to True.
+    """
+
     def __init__(
         self,
-        in_channels,
-        out_channels,
-        kernel_size=3,
-        stride=1,
-        padding=1,
-        pool=True,
+        in_channels: int,
+        out_channels: int,
+        kernel_size: int = 3,
+        stride: int = 1,
+        padding: int = 0,
+        pool: bool = True,
     ):
         super().__init__()
 
@@ -95,7 +129,15 @@ class GuidingNetworkConvBlock(nn.Module):
                 nn.MaxPool2d(kernel_size=2, stride=2),
             )
 
-    def forward(self, x):
+    def forward(self, x: torch.Tensor) -> torch.Tensor:
+        """Forward pass for Guiding's Convolutional Block.
+
+        Args:
+            x (torch.Tensor): _description_
+
+        Returns:
+            torch.Tensor: _description_
+        """
         return self.model(x)
 
 
