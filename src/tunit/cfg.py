@@ -6,7 +6,7 @@ import torch
 import albumentations as A
 from albumentations.pytorch import ToTensorV2
 
-from tunit.cli import custom_arg_parser
+from cli import custom_arg_parser
 
 # TODO: Add logger instead of all the print statements.
 # TODO: Change tensorboard summarywriter to be a global entity instead of passing it to functions
@@ -19,6 +19,7 @@ class DatasetType(Enum):
 
 
 args = custom_arg_parser()
+CHANNELS_MULTIPLIER = 64
 DEVICE = "cuda" if torch.cuda.is_available() else "cpu"
 LEARNING_RATE = args.rate
 BATCH_SIZE = args.batch_size

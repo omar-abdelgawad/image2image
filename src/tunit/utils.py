@@ -5,11 +5,12 @@ import torch
 from torch import nn
 from torch import optim
 from torch.utils.data import DataLoader
+import torch.nn.functional as F
 from torch.utils.tensorboard import SummaryWriter
 from torchvision.utils import save_image
 from torchvision.utils import make_grid
 
-from tunit import cfg
+import cfg
 
 
 class AdaptiveInstanceNorm2d(nn.Module):
@@ -33,6 +34,10 @@ class FRN(nn.Module):
 
     def forward(self, x):
         x = x * torch.rsqrt(torch.mean(x**2, dim=[2, 3], keepdim=True) + self.eps)
+        print(x.shape)
+        print(self.gamma.shape)
+        print(self.beta.shape)
+        print(self.tau.shape)
         return torch.max(self.gamma * x + self.beta, self.tau)
 
 
@@ -183,3 +188,45 @@ def calc_contrastive_loss(query, key, queue, temp=0.07):
     loss = torch.nn.CrossEntropyLoss(logit / temp, zeros)
 
     return loss
+
+
+def calc_adv_loss(logit, mode):
+    assert mode in ["d_real", "d_fake", "g"]
+    if mode == "d_real":
+        loss = F.relu(1.0 - logit).mean()
+    elif mode == "d_fake":
+        loss = F.relu(1.0 + logit).mean()
+    else:
+        loss = -logit.mean()
+
+    return loss
+
+
+def queue_data(data, k):
+    return torch.cat([data, k], dim=0)
+
+
+def dequeue_data(data, K=1024):
+    if len(data) > K:
+        return data[-K:]
+    else:
+        return data
+
+
+def compute_grad_gp(d_out, x_in, is_patch=False):
+    batch_size = x_in.size(0)
+    grad_dout = torch.autograd.grad(
+        outputs=d_out.sum() if not is_patch else d_out.mean(),
+        inputs=x_in,
+        create_graph=True,
+        retain_graph=True,
+        only_inputs=True,
+    )[0]
+    grad_dout2 = grad_dout.pow(2)
+    assert grad_dout2.size() == x_in.size()
+    reg = grad_dout2.sum() / batch_size
+    return reg
+
+
+def calc_recon_loss(predict, target):
+    return torch.mean(torch.abs(predict - target))
