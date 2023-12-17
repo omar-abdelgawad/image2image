@@ -29,6 +29,7 @@ def train_fn(
     d_scaler,
     epoch: int,
 ) -> None:
+    # pylint: disable=too-many-arguments, too-many-locals
     """Process one epoch of training.
 
     Args:

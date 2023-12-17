@@ -24,6 +24,7 @@ class Block(nn.Module):
         act: str = "relu",
         use_dropout: bool = False,
     ) -> None:
+        # pylint: disable=too-many-arguments
         super().__init__()
         self.conv = nn.Sequential(
             nn.Conv2d(
@@ -48,6 +49,7 @@ class Block(nn.Module):
 # TODO: make it a multi-modal generator by adding a random noise
 #  vector z sampled from a normal distribution.
 # TODO: Apply Diversity-Sensitive Conditional GANs DSGANs to the generator.
+# pylint: disable=too-many-instance-attributes
 class Generator(nn.Module):
     """Generator Class for Pix2Pix model.
 
@@ -124,7 +126,7 @@ class Generator(nn.Module):
         Returns:
             torch.Tensor: Batched output Image(s) tensor
         """
-        d1 = self.initial_down(x)
+        d1 = self.initial_down(x) # pylint: disable=too-many-locals
         d2 = self.down1(d1)
         d3 = self.down2(d2)
         d4 = self.down3(d3)
