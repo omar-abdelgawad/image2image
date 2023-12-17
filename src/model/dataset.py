@@ -2,6 +2,7 @@
  Currently Contains AnimeDataset class."""
 import os
 from pathlib import Path
+from typing import Tuple, Any
 
 import numpy as np
 from PIL import Image
@@ -11,7 +12,7 @@ import cv2
 from model import cfg
 
 
-class AnimeDataset(Dataset):
+class AnimeDataset(Dataset[Tuple[Any, Any]]):
     """Dataset class for Anime Colorization dataset.
 
     Args:
@@ -42,7 +43,7 @@ class AnimeDataset(Dataset):
         return input_image, target_image
 
 
-class NaturaViewDataset(Dataset):
+class NaturaViewDataset(Dataset[Tuple[Any, Any]]):
     """Dataset class for Natural View Colorization dataset.
 
     Args:
@@ -79,7 +80,7 @@ class NaturaViewDataset(Dataset):
 
 
 # TODO: make a factory class instead.
-def create_dataset(root_dir: Path | str, dataset_type: cfg.DatasetType) -> Dataset:
+def create_dataset(root_dir: Path | str, dataset_type: cfg.DatasetType) -> Dataset[Tuple[Any, Any]]:
     """Create a Dataset from given root_dir and dataset_type.
 
     Args:

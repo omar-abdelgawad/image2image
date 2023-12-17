@@ -1,4 +1,6 @@
 """Discriminator model for the pix2pix GAN."""
+from typing import List
+
 import torch
 from torch import nn
 
@@ -30,7 +32,7 @@ class CNNBlock(nn.Module):
 
     def forward(self, x: torch.Tensor) -> torch.Tensor:
         """Forward pass."""
-        return self.conv(x)
+        return self.conv(x) # type: ignore
 
 
 class Discriminator(nn.Module):
@@ -57,7 +59,7 @@ class Discriminator(nn.Module):
             ),
             nn.LeakyReLU(0.2),
         )
-        layers = []
+        layers: List[CNNBlock|nn.Conv2d] = []
         in_channels = features[0]
         for feature in features[1:]:
             layers.append(
@@ -91,7 +93,7 @@ class Discriminator(nn.Module):
         """
         x = torch.cat([x, y], dim=1)
         x = self.initial(x)
-        return self.model(x)
+        return self.model(x) # type: ignore
 
 
 def test() -> None:

@@ -1,11 +1,12 @@
 """Utility functions for the model."""
 from pathlib import Path
+from typing import Tuple, Any
 
 import torch
 from torch import nn
 from torch import optim
 from torch.utils.data import DataLoader
-from torch.utils.tensorboard import SummaryWriter
+from torch.utils.tensorboard import SummaryWriter # type: ignore
 from torchvision.utils import save_image
 from torchvision.utils import make_grid
 
@@ -15,7 +16,7 @@ from model import cfg
 # TODO: remove Magic numbers from this module
 def save_some_examples(
     gen: nn.Module,
-    val_loader: DataLoader,
+    val_loader: DataLoader[Tuple[Any, Any]],
     epoch: int,
     folder: Path,
     writer: SummaryWriter,
@@ -49,7 +50,7 @@ def save_some_examples(
 
 
 @torch.inference_mode()
-def evaluate_val_set(gen: nn.Module, val_loader: DataLoader, folder: Path) -> None:
+def evaluate_val_set(gen: nn.Module, val_loader: DataLoader[Tuple[Any, Any]], folder: Path) -> None:
     """Runs inference on all images in the val_loader and saves them in the folder.
 
     Args:

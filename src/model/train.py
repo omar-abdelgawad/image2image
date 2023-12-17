@@ -1,9 +1,11 @@
 """Main script for training the model. Can train from scratch or resume from a checkpoint."""
+from typing import Tuple, Any
+
 import torch
 from torch import nn
 from torch import optim
 from torch.utils.data import DataLoader
-from torch.utils.tensorboard import SummaryWriter
+from torch.utils.tensorboard import SummaryWriter # type: ignore
 from tqdm import tqdm
 
 from model.dataset import create_dataset
@@ -18,7 +20,7 @@ _WRITER = SummaryWriter("runs/expirement_1")
 def train_fn(
     disc: Discriminator,
     gen: Generator,
-    loader: DataLoader,
+    loader: DataLoader[Tuple[Any, Any]],
     opt_disc: optim.Optimizer,
     opt_gen: optim.Optimizer,
     l1: nn.L1Loss,
@@ -47,7 +49,7 @@ def train_fn(
         x, y = x.to(cfg.DEVICE), y.to(cfg.DEVICE)
         cur_stage = epoch * len(loader) + idx
         # train discriminator
-        with torch.cuda.amp.autocast():
+        with torch.cuda.amp.autocast(): # type: ignore
             y_fake = gen(x)
             disc_real_out = disc(x, y)
             disc_fake_out = disc(x, y_fake.detach())
@@ -63,7 +65,7 @@ def train_fn(
         d_scaler.update()
 
         # train generator
-        with torch.cuda.amp.autocast():
+        with torch.cuda.amp.autocast(): # type: ignore
             disc_fake_out = disc(x, y_fake)
             gen_fake_loss = bce(disc_fake_out, torch.ones_like(disc_fake_out))
             gen_l1_loss = l1(y_fake, y) * cfg.L_1_LAMBDA
@@ -115,8 +117,8 @@ def main() -> int:
         shuffle=True,
         num_workers=cfg.NUM_WORKERS,
     )
-    g_scaler = torch.cuda.amp.GradScaler()
-    d_scaler = torch.cuda.amp.GradScaler()
+    g_scaler = torch.cuda.amp.GradScaler() # type: ignore
+    d_scaler = torch.cuda.amp.GradScaler() # type: ignore
 
     val_dataset = create_dataset(
         root_dir=cfg.VAL_DATASET_PATH, dataset_type=cfg.CHOSEN_DATASET

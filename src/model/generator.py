@@ -42,7 +42,7 @@ class Block(nn.Module):
     def forward(self, x: torch.Tensor) -> torch.Tensor:
         """Forward pass."""
         x = self.conv(x)
-        return self.dropout(x) if self.use_dropout else x
+        return self.dropout(x) if self.use_dropout else x # type: ignore
 
 
 # TODO: make it a multi-modal generator by adding a random noise
@@ -139,7 +139,7 @@ class Generator(nn.Module):
         up5 = self.up5(torch.cat([up4, d4], 1))
         up6 = self.up6(torch.cat([up5, d3], 1))
         up7 = self.up7(torch.cat([up6, d2], 1))
-        return self.final_up(torch.cat([up7, d1], 1))
+        return self.final_up(torch.cat([up7, d1], 1)) # type: ignore
 
 
 def test() -> None:
