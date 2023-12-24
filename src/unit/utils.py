@@ -4,13 +4,36 @@ from pathlib import Path
 import yaml
 import time
 
+from torch.utils.data import DataLoader
 from torch.nn import init
 from torch.optim import lr_scheduler
+
+from unit import cfg
+from unit.data import create_dataset
 
 # NOTE: The original implementation included vgg16 loss but we are not using it.
 
 
-def prepare_sub_directories(path: str | Path):
+def get_data_loaders():
+    """Returns the data loaders for training and validation."""
+    train_dataset = create_dataset(cfg.TRAIN_DATASET_PATH, cfg.DatasetType.Edges2Shoes)
+    val_dataset = create_dataset(cfg.VAL_DATASET_PATH, cfg.DatasetType.Edges2Shoes)
+    train_loader = DataLoader(
+        train_dataset,
+        batch_size=cfg.BATCH_SIZE,
+        shuffle=True,
+        num_workers=cfg.NUM_WORKERS,
+    )
+    val_loader = DataLoader(
+        val_dataset,
+        batch_size=cfg.VAL_BATCH_SIZE,
+        shuffle=False,
+        num_workers=cfg.NUM_WORKERS,
+    )
+    return train_loader, val_loader
+
+
+def prepare_sub_directories(path: str | Path) -> None:
     """Creates subdirectories for saving images and checkpoints."""
     path = Path(path)
     os.makedirs(path, exist_ok=True)

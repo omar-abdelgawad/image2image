@@ -41,3 +41,53 @@ class Edges2Shoes(Dataset):
         assert input_image.shape == target_image.shape
         assert input_image.shape[0] == 3
         return input_image, target_image
+
+
+def create_dataset(root_dir: Path | str, dataset_type: cfg.DatasetType) -> Dataset:
+    """Create a Dataset from given root_dir and dataset_type.
+
+    Args:
+        root_dir (Path | str): Path for Dataset dir.
+        dataset_type (cfg.DatasetType): Type for dataset to create.
+
+    Raises:
+        ValueError: If dataset_type is not supported.
+
+    Returns:
+        Dataset: Pytorch Dataset object.
+    """
+    match dataset_type:
+        # case cfg.DatasetType.ANIME_DATASET:
+        #     return AnimeDataset(root_dir)
+        # case cfg.DatasetType.NATURAL_VIEW_DATASET:
+        #     return NaturaViewDataset(root_dir)
+        case cfg.DatasetType.Edges2Shoes:
+            return Edges2Shoes(root_dir)
+        case _:
+            raise ValueError("Dataset type not supported")
+
+
+def test():
+    """Test function for dataset module."""
+    # show image using torchvision package
+    # import makegrid
+    from torchvision.utils import make_grid, save_image
+
+    dataset = create_dataset(cfg.TRAIN_DATASET_PATH, cfg.DatasetType.Edges2Shoes)
+    input_image, target_image = dataset[0]
+    input_image = (input_image) * 0.5 + 0.5
+    target_image = (target_image) * 0.5 + 0.5
+    print(input_image.shape)
+    print(target_image.shape)
+    print(type(input_image))
+    print(type(target_image))
+    print(input_image.max())
+    print(input_image.min())
+    print(target_image.max())
+    print(target_image.min())
+    image_to_save = make_grid([input_image, target_image])
+    save_image(image_to_save, "test.png")
+
+
+if __name__ == "__main__":
+    test()
