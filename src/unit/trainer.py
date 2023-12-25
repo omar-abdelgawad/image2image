@@ -2,20 +2,29 @@ import os
 import torch
 from torch import nn
 
+# temporary import
+from unit.networks import VAEGen, MsImageDis
+
+################
 from unit.utils import weights_init, get_model_list, get_scheduler
 
 from unit import cfg
-from unit.generator import VAEGen
-from unit.discriminator import MsImageDis
+
+# from unit.generator import VAEGen
+# from unit.discriminator import MsImageDis
 
 
 class UNIT_Trainer(nn.Module):
     def __init__(self) -> None:
         super().__init__()
-        self.gen_a = VAEGen(cfg.CHANNELS_IMG)  # fill rest of the arguments later gen
-        self.gen_b = VAEGen(cfg.CHANNELS_IMG)  # fill rest of the arguments later gen
-        self.dis_a = MsImageDis(cfg.CHANNELS_IMG)
-        self.dis_b = MsImageDis(cfg.CHANNELS_IMG)
+        self.gen_a = VAEGen(
+            cfg.CHANNELS_IMG, cfg.GEN_HYPERPARAMS
+        )  # fill rest of the arguments later gen
+        self.gen_b = VAEGen(
+            cfg.CHANNELS_IMG, cfg.GEN_HYPERPARAMS
+        )  # fill rest of the arguments later gen
+        self.dis_a = MsImageDis(cfg.CHANNELS_IMG, cfg.DIS_HYPERPARAMS)
+        self.dis_b = MsImageDis(cfg.CHANNELS_IMG, cfg.DIS_HYPERPARAMS)
         self.instancenorm = nn.InstanceNorm2d(512, affine=False)
 
         # setup the optimizers

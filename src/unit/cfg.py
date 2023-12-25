@@ -57,6 +57,23 @@ NUM_IMAGES_DATASET = args.num_images_dataset
 VAL_BATCH_SIZE = args.val_batch_size
 CHOSEN_DATASET = DatasetType.Edges2Shoes
 
+GEN_HYPERPARAMS = {
+    "dim": 64,
+    "activ": "relu",
+    "n_downsample": 2,
+    "n_res": 4,
+    "pad_type": "reflect",
+}
+DIS_HYPERPARAMS = {
+    "dim": 64,
+    "norm": "none",
+    "activ": "lrelu",
+    "n_layer": 4,
+    "gan_type": "lsgan",
+    "num_scales": 3,
+    "pad_type": "reflect",
+}
+
 CHECKPOINT_DIR = Path("./out/last_trained_weights")
 TRAIN_DATASET_PATH = CHOSEN_DATASET.value / "train"
 VAL_DATASET_PATH = CHOSEN_DATASET.value / "val"
