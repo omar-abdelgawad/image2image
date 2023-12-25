@@ -58,7 +58,7 @@ def custom_arg_parser(argv: Optional[Sequence[str]] = None) -> argparse.Namespac
         "-r",
         "--rate",
         type=positive_float,
-        default=2e-4,
+        default=1e-4,
         help="Learning rate",
         dest="rate",
     )

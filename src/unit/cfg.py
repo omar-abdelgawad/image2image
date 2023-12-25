@@ -10,6 +10,9 @@ from unit.cli import custom_arg_parser
 
 # TODO: Add logger instead of all the print statements.
 # TODO: Change tensorboard summarywriter to be a global entity instead of passing it to functions
+# TODO: currently the cfg.py acts as a gloabl variable instead of configuration. We need to modularize by
+# making sure that these cfg vars are always passed in as arguments not used as a global variable.
+# TODO: move all default values to a config.yaml and read from it.
 
 
 class DatasetType(Enum):
@@ -29,6 +32,20 @@ class DatasetType(Enum):
 args = custom_arg_parser()
 DEVICE = "cuda" if torch.cuda.is_available() else "cpu"
 CHANNELS_IMG = 3
+BETA_OPTIM = (0.5, 0.999)
+WEIGHT_DECAY = 0.0001
+LR_POLICY = "step"
+STEP_SIZE = 100000
+GAMMA = 0.5
+INIT = "kaiming"
+
+GAN_WEIGHT = 1
+RECONSTRUCTION_X_WEIGHT = 10
+RECONSTRUCTION_H_WEIGHT = 0
+RECONSTRUCTION_KL_WEIGHT = 0.01
+RECONSTRUCTION_X_CYC_WEIGHT = 10
+RECONSTRUCTION_KL_CYC_WEIGHT = 0.01
+
 LEARNING_RATE = args.rate
 BATCH_SIZE = args.batch_size
 NUM_WORKERS = args.num_workers

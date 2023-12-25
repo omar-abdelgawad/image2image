@@ -70,20 +70,22 @@ def weights_init(init_type: str = "gaussian"):
     return init_fun
 
 
-def get_scheduler(optimizer, hyperparameters, iterations=-1):
+def get_scheduler(optimizer, lr_policy, step_size=None, gamma=None, iterations=-1):
     """Returns a learning rate scheduler."""
-    if "lr_policy" not in hyperparameters or hyperparameters["lr_policy"] == "constant":
-        scheduler = None  # constant scheduler
-    elif hyperparameters["lr_policy"] == "step":
+    if lr_policy is None or lr_policy == "constant":
+        scheduler = None
+    elif lr_policy == "step":
+        if step_size is None or gamma is None:
+            raise ValueError
         scheduler = lr_scheduler.StepLR(
             optimizer,
-            step_size=hyperparameters["step_size"],
-            gamma=hyperparameters["gamma"],
+            step_size=step_size,
+            gamma=gamma,
             last_epoch=iterations,
         )
     else:
-        return NotImplementedError(
-            "learning rate policy [%s] is not implemented", hyperparameters["lr_policy"]
+        raise NotImplementedError(
+            f"learning rate policy [{lr_policy}] is not implemented"
         )
     return scheduler
 
