@@ -57,8 +57,7 @@ NUM_IMAGES_DATASET = args.num_images_dataset
 VAL_BATCH_SIZE = args.val_batch_size
 CHOSEN_DATASET = DatasetType.Edges2Shoes
 
-CHECKPOINT_DISC = Path("./out/last_trained_weights/disc.pth.tar")
-CHECKPOINT_GEN = Path("./out/last_trained_weights/gen.pth.tar")
+CHECKPOINT_DIR = Path("./out/last_trained_weights")
 TRAIN_DATASET_PATH = CHOSEN_DATASET.value / "train"
 VAL_DATASET_PATH = CHOSEN_DATASET.value / "val"
 EVALUATION_PATH = Path("./out/evaluation")

@@ -96,6 +96,7 @@ class UNIT_Trainer(nn.Module):
             else None
         )
         # reconstruction loss
+        # TODO: why are these tensors attributes?
         self.loss_gen_recon_x_a = self.recon_criterion(x_a_recon, x_a)
         self.loss_gen_recon_x_b = self.recon_criterion(x_b_recon, x_b)
         self.loss_gen_recon_kl_a = self.__compute_kl(h_a)
@@ -176,6 +177,7 @@ class UNIT_Trainer(nn.Module):
         if self.gen_scheduler is not None:
             self.gen_scheduler.step()
 
+    # TODO: this method is currently a utility function. make it part of the api for trainers but change name to load.
     def resume(self, checkpoint_dir):
         # Load generators
         last_model_name = get_model_list(checkpoint_dir, "gen")

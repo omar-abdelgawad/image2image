@@ -5,14 +5,55 @@ from pathlib import Path
 # import yaml
 import time
 
+import torch
+from torch import nn
 from torch.utils.data import DataLoader
+from torch.utils.tensorboard import SummaryWriter
 from torch.nn import init
 from torch.optim import lr_scheduler
+from torchvision.utils import save_image
+from torchvision.utils import make_grid
 
 from unit import cfg
 from unit.data import create_dataset
 
 # NOTE: The original implementation included vgg16 loss but we are not using it.
+
+
+# TODO: remove Magic numbers from this module
+# TODO: unsupervised gen should cycle from x to y and vice versa
+def save_some_examples(
+    trainer: nn.Module,
+    val_loader: DataLoader,
+    epoch: int,
+    folder: Path,
+    writer: SummaryWriter,
+) -> None:
+    """Saves a grid of generated images. Also saves ground truth if epoch is 0.
+
+    Args:
+        gen (nn.Module): Generator model.
+        val_loader (DataLoader): Dataloader for train/val set.
+        epoch (int): Current epoch.
+        folder (Path): Folder to save the images in.
+    """
+    # TODO: refactor this function for single responsibility and improving readability
+    x, y = next(iter(val_loader))
+    x, y = x.to(cfg.DEVICE), y.to(cfg.DEVICE)
+    trainer.eval()
+    with torch.inference_mode():
+        image_outputs = trainer.sample(x, y)
+        image_outputs = [
+            image_outputs.expand(-1, 3, -1, -1) for images in image_outputs
+        ]
+        image_tensor = torch.cat(image_outputs, dim=0)
+        image_grid = make_grid(image_tensor, normalize=True)
+        save_image(image_grid, folder / f"sample_{epoch}.png")
+        # writer.add_image(f"test_image {epoch=}", make_grid(x_concat))
+        # if epoch == 0:
+        #     writer.add_graph(trainer, x)
+        #     save_image(y * 0.5 + 0.5, folder / f"label_{epoch}.png")
+    trainer.train()
 
 
 def get_data_loaders():
@@ -35,7 +76,12 @@ def get_data_loaders():
 
 
 def prepare_sub_directories(path: str | Path) -> None:
-    """Creates subdirectories for saving images and checkpoints."""
+    """Creates subdirectories for saving images and checkpoints.
+    Creates the directory given +
+        evaluation subdirectory
+        last_trained_weights subdirectory
+        saved_models subdirectory
+    """
     path = Path(path)
     os.makedirs(path, exist_ok=True)
     os.makedirs(path / "evaluation", exist_ok=True)

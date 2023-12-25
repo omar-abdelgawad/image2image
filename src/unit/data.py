@@ -77,6 +77,7 @@ def test():
     input_image, target_image = dataset[0]
     input_image = (input_image) * 0.5 + 0.5
     target_image = (target_image) * 0.5 + 0.5
+    print(input_image.requires_grad, target_image.requires_grad)
     print(input_image.shape)
     print(target_image.shape)
     print(type(input_image))
