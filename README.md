@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 # image2image
 Seminar project Unsupervised Image-to-Image translation using GANs
 
@@ -20,3 +21,9 @@ Seminar project Unsupervised Image-to-Image translation using GANs
 
 ### UNIT
 ### pix2pix
+=======
+![license](https://img.shields.io/badge/license-MIT-blue)
+![Tests](https://github.com/omar-abdelgawad/image2image/actions/workflows/tests.yml/badge.svg)
+# image2image
+Seminar project Unsupervised Image-to-Image translation using GANs
+>>>>>>> 2402968 (Added license badge)
