@@ -113,3 +113,30 @@ transform_only_mask = A.Compose(
         ToTensorV2(),
     ]
 )
+
+
+class PaddingType(Enum):
+    """Enum for the padding type."""
+
+    REFLECT = "reflect"
+    REPLICATE = "replicate"
+    ZERO = "zero"
+
+
+class NormalizationType(Enum):
+    """Enum for the normalization type."""
+
+    BATCH = "batch"
+    INSTANCE = "instance"
+    LAYER = "layer"
+    NONE = None
+
+
+class ActivationType(Enum):
+    """Enum for the activation type."""
+
+    RELU = "relu"
+    LEAKY_RELU = "leaky_relu"
+    TANH = "tanh"
+    SIGMOID = "sigmoid"
+    NONE = None
