@@ -43,9 +43,7 @@ def save_some_examples(
     trainer.eval()
     with torch.inference_mode():
         image_outputs = trainer.sample(x, y)
-        image_outputs = [
-            image_outputs.expand(-1, 3, -1, -1) for images in image_outputs
-        ]
+        image_outputs = [images.expand(-1, 3, -1, -1) for images in image_outputs]
         image_tensor = torch.cat(image_outputs, dim=0)
         image_grid = make_grid(image_tensor, normalize=True)
         save_image(image_grid, folder / f"sample_{epoch}.png")

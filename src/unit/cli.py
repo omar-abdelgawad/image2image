@@ -66,7 +66,7 @@ def custom_arg_parser(argv: Optional[Sequence[str]] = None) -> argparse.Namespac
         "-b",
         "--batch-size",
         type=positive_int,
-        default=2,
+        default=1,
         help="Batch size",
         dest="batch_size",
     )
@@ -122,7 +122,7 @@ def custom_arg_parser(argv: Optional[Sequence[str]] = None) -> argparse.Namespac
         "-v",
         "--val-batch-size",
         type=positive_int,
-        default=2,
+        default=1,
         help="The number of images in the grid to show in the validation step during training",
         dest="val_batch_size",
     )

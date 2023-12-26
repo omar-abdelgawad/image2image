@@ -3,14 +3,14 @@ import os
 from tqdm import tqdm
 import torch
 from torch.utils.tensorboard import SummaryWriter
-from torch.backends.cudnn import benchmark
+
+# from torch.backends.cudnn import benchmark
 
 from unit import cfg
 from unit.utils import (
     get_data_loaders,
     prepare_sub_directories,
     save_some_examples,
-    Timer,
 )
 from unit.trainer import UNIT_Trainer
 
@@ -23,10 +23,9 @@ def trainfn(trainer, train_loader):
         images_a, images_b = images_a.to(cfg.DEVICE), images_b.to(cfg.DEVICE)
         trainer.update_learning_rate()
 
-        with Timer("Elapsed time in update: %f"):
-            trainer.dis_update(images_a, images_b)
-            trainer.gen_update(images_a, images_b)
-            trainer.update_learning_rate()
+        trainer.dis_update(images_a, images_b)
+        trainer.gen_update(images_a, images_b)
+        trainer.update_learning_rate()
 
 
 def main() -> int:
@@ -42,10 +41,10 @@ def main() -> int:
         trainer.resume(cfg.CHECKPOINT_DIR)
     for epoch in range(cfg.NUM_EPOCHS):
         print(f"Epoch: {epoch}")
-        trainfn(trainer=trainer, train_loader=train_loader)
         save_some_examples(
             trainer, val_loader, epoch, folder=cfg.EVALUATION_PATH, writer=_WRITER
         )
+        trainfn(trainer=trainer, train_loader=train_loader)
         if cfg.SAVE_MODEL and epoch % 5 == 0:
             trainer.save(cfg.CHECKPOINT_DIR, epoch)
     return 0
