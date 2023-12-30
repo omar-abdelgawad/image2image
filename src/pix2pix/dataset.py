@@ -8,7 +8,7 @@ from PIL import Image
 from torch.utils.data import Dataset
 import cv2
 
-from model import cfg
+from pix2pix import cfg
 
 
 class AnimeDataset(Dataset):

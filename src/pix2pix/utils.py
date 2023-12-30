@@ -9,7 +9,7 @@ from torch.utils.tensorboard import SummaryWriter
 from torchvision.utils import save_image
 from torchvision.utils import make_grid
 
-from model import cfg
+from pix2pix import cfg
 
 
 # TODO: remove Magic numbers from this module

@@ -40,6 +40,8 @@ NUM_IMAGES_DATASET = args.num_images_dataset
 VAL_BATCH_SIZE = args.val_batch_size
 K = args.cluster_number
 
+CHANNELS_MULTIPLIER = 64
+
 both_transform = A.Compose(
     [A.Resize(width=IMAGE_SIZE, height=IMAGE_SIZE), A.HorizontalFlip(p=0.5)],
     additional_targets={"image0": "image"},

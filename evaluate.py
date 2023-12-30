@@ -1,10 +1,10 @@
 import torch
 from torch.utils.data import DataLoader
 
-from model import cfg
-from model.generator import Generator
-from model.dataset import create_dataset
-from model.utils import evaluate_val_set
+from pix2pix import cfg
+from pix2pix.generator import Generator
+from pix2pix.dataset import create_dataset
+from pix2pix.utils import evaluate_val_set
 
 
 def main() -> int:

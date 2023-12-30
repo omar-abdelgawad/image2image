@@ -6,7 +6,7 @@ import torch
 import albumentations as A
 from albumentations.pytorch import ToTensorV2
 
-from model.cli import custom_arg_parser
+from pix2pix.cli import custom_arg_parser
 
 # TODO: Add logger instead of all the print statements.
 # TODO: Change tensorboard summarywriter to be a global entity instead of passing it to functions
