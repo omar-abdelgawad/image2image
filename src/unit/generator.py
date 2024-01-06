@@ -97,7 +97,7 @@ class Encoder(nn.Module):
     def __init__(
         self,
         in_channels: int = 3,
-        out_channels: int = 512,
+        out_channels: int = 256,
         layer_multiplier: int = 64,
     ):
         super().__init__()

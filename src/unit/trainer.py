@@ -2,16 +2,11 @@ import os
 import torch
 from torch import nn
 
-# temporary import
-from unit.networks import VAEGen, MsImageDis
 
-################
+from unit.generator import Generator
+from unit.discriminator import Discriminator
 from unit.utils import weights_init, get_model_list, get_scheduler
-
 from unit import cfg
-
-# from unit.generator import VAEGen
-# from unit.discriminator import MsImageDis
 
 
 class UNIT_Trainer(nn.Module):

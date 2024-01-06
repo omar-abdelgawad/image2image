@@ -92,10 +92,9 @@ def create_dataset(root_dir: Path | str, dataset_type: cfg.DatasetType) -> Datas
     Returns:
         Dataset: Pytorch Dataset object.
     """
-    match dataset_type:
-        case cfg.DatasetType.ANIME_DATASET:
-            return AnimeDataset(root_dir)
-        case cfg.DatasetType.NATURAL_VIEW_DATASET:
-            return NaturaViewDataset(root_dir)
-        case _:
-            raise ValueError("Dataset type not supported")
+    if dataset_type == cfg.DatasetType.ANIME_DATASET:
+        return AnimeDataset(root_dir)
+    elif dataset_type == cfg.DatasetType.NATURAL_VIEW_DATASET:
+        return NaturaViewDataset(root_dir)
+    else:
+        raise ValueError("Dataset type not supported")

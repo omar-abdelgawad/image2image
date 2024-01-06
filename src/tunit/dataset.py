@@ -52,8 +52,7 @@ def create_dataset(root_dir: Path | str, dataset_type: cfg.DatasetType) -> Datas
     Returns:
         Dataset: Pytorch Dataset object.
     """
-    match dataset_type:
-        case cfg.DatasetType.AFHQ_CATS_DATASET:
-            return AFHQCatDataset(root_dir)
-        case _:
-            raise ValueError("Dataset type not supported")
+    if dataset_type == cfg.DatasetType.AFHQ_CATS_DATASET:
+        return AFHQCatDataset(root_dir)
+    else:
+        raise ValueError("Dataset type not supported")

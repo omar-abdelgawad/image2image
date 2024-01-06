@@ -79,17 +79,16 @@ class ConvBlock(nn.Module):
         Returns:
             nn.Module: Padding layer.
         """
-        match padding_type:
-            case PaddingType.REFLECT:
-                return nn.ReflectionPad2d(self.padding)
-            case PaddingType.REPLICATE:
-                return nn.ReplicationPad2d(self.padding)
-            case PaddingType.ZERO:
-                return nn.ZeroPad2d(self.padding)
-            case _:
-                raise NotImplementedError(
-                    f"Padding type {padding_type} is not implemented."
-                )
+        if padding_type == PaddingType.REFLECT:
+            return nn.ReflectionPad2d(self.padding)
+        elif padding_type == PaddingType.REPLICATE:
+            return nn.ReplicationPad2d(self.padding)
+        elif padding_type == PaddingType.ZERO:
+            return nn.ZeroPad2d(self.padding)
+        else:
+            raise NotImplementedError(
+                f"Padding type {padding_type} is not implemented."
+            )
 
     def _normalization_selector(
         self, normalization_type: NormalizationType
@@ -106,19 +105,18 @@ class ConvBlock(nn.Module):
         Returns:
             nn.Module: Normalization layer.
         """
-        match normalization_type:
-            case NormalizationType.BATCH:
-                return nn.BatchNorm2d(self.norm_dim)
-            case NormalizationType.INSTANCE:
-                return nn.InstanceNorm2d(self.norm_dim)
-            case NormalizationType.LAYER:
-                return nn.LayerNorm(self.norm_dim)
-            case NormalizationType.NONE:
-                return None
-            case _:
-                raise NotImplementedError(
-                    f"Normalization type {normalization_type} is not implemented."
-                )
+        if normalization_type == NormalizationType.BATCH:
+            return nn.BatchNorm2d(self.norm_dim)
+        elif normalization_type == NormalizationType.INSTANCE:
+            return nn.InstanceNorm2d(self.norm_dim)
+        elif normalization_type == NormalizationType.LAYER:
+            return nn.LayerNorm(self.norm_dim)
+        elif normalization_type == NormalizationType.NONE:
+            return None
+        else:
+            raise NotImplementedError(
+                f"Normalization type {normalization_type} is not implemented."
+            )
 
     def _activation_layer_selector(self, activation_type: ActivationType) -> nn.Module:
         """Selects the activation type.
@@ -132,19 +130,18 @@ class ConvBlock(nn.Module):
         Returns:
             nn.Module: Activation layer.
         """
-        match activation_type:
-            case ActivationType.RELU:
-                return nn.ReLU()
-            case ActivationType.LEAKY_RELU:
-                return nn.LeakyReLU(0.2)
-            case ActivationType.TANH:
-                return nn.Tanh()
-            case ActivationType.SIGMOID:
-                return nn.Sigmoid()
-            case _:
-                raise NotImplementedError(
-                    f"Activation type {activation_type} is not implemented."
-                )
+        if activation_type == ActivationType.RELU:
+            return nn.ReLU()
+        elif activation_type == ActivationType.LEAKY_RELU:
+            return nn.LeakyReLU(0.2)
+        elif activation_type == ActivationType.TANH:
+            return nn.Tanh()
+        elif activation_type == ActivationType.SIGMOID:
+            return nn.Sigmoid()
+        else:
+            raise NotImplementedError(
+                f"Activation type {activation_type} is not implemented."
+            )
 
 
 class ConvBlocks(nn.Module):
