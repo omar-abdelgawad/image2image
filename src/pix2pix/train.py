@@ -18,7 +18,7 @@ _WRITER = SummaryWriter("runs/expirement_1")
 def train_fn(
     disc: Discriminator,
     gen: Generator,
-    loader: DataLoader,
+    loader: DataLoader[tuple[torch.Tensor, torch.Tensor]],
     opt_disc: optim.Optimizer,
     opt_gen: optim.Optimizer,
     l1: nn.L1Loss,

@@ -138,14 +138,14 @@ def get_scheduler(optimizer, lr_policy, step_size=None, gamma=None, iterations=-
 def get_model_list(dirname, key):
     """Returns the latest model from a directory."""
     if os.path.exists(dirname) is False:
-        return None
+        raise ValueError(f"{dirname} does not exist")
     gen_models = [
         os.path.join(dirname, f)
         for f in os.listdir(dirname)
         if os.path.isfile(os.path.join(dirname, f)) and key in f and ".pt" in f
     ]
     if not gen_models:
-        return None
+        raise ValueError(f"No correct model extension '.pt' found in {dirname}")
     gen_models.sort()
     last_model_name = gen_models[-1]
     return last_model_name
@@ -156,18 +156,3 @@ def get_model_list(dirname, key):
 #     config = Path(config)
 #     with config.open(encoding="utf-8") as stream:
 #         return yaml.safe_load(stream)
-
-
-class Timer:
-    """A simple timer."""
-
-    def __init__(self, msg):
-        self.msg = msg
-        self.start_time = None
-
-    def __enter__(self):
-        self.start_time = time.perf_counter()
-
-    def __exit__(self, exc_type, exc_value, exc_tb):
-        if self.start_time is not None:
-            print(self.msg % (time.perf_counter() - self.start_time))

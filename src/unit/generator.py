@@ -5,6 +5,7 @@ import torch
 from torch import nn
 
 from unit.blocks import ResBlocks, ConvBlock
+from unit.cfg import PaddingType, ActivationType, NormalizationType
 
 
 class Generator(nn.Module):
@@ -19,21 +20,33 @@ class Generator(nn.Module):
     def __init__(
         self,
         in_channels: int = 3,
-        out_channels: int = 3,
-        layer_multiplier: int = 64,
+        dim: int = 64,
+        n_downsample: int = 2,
+        n_res: int = 4,
+        activ: ActivationType = ActivationType.RELU,
+        pad_type: PaddingType = PaddingType.REFLECT,
+        norm: NormalizationType = NormalizationType.INSTANCE,
     ):
         super().__init__()
 
         self.enc = Encoder(
             in_channels=in_channels,
-            out_channels=256,
-            layer_multiplier=layer_multiplier,
+            dim=dim,
+            n_downsample=n_downsample,
+            n_res=n_res,
+            norm=norm,
+            activ=activ,
+            pad_type=pad_type,
         )
 
         self.dec = Decoder(
             in_channels=256,
-            out_channels=out_channels,
-            repeat_num=4,
+            out_channels=in_channels,
+            n_upsample=n_downsample,
+            n_res=n_res,
+            res_norm=norm,
+            activ=activ,
+            pad_type=pad_type,
         )
 
     def forward(self, images: torch.Tensor) -> Tuple[torch.Tensor, torch.Tensor]:
@@ -86,7 +99,7 @@ class Generator(nn.Module):
 
 
 class Encoder(nn.Module):
-    """Encoder for the GAN.
+    """Encoder for the GAN. out_channels is 256.
 
     Args:
         in_channels (int, optional): Number of input channels. Defaults to 3.
@@ -97,43 +110,57 @@ class Encoder(nn.Module):
     def __init__(
         self,
         in_channels: int = 3,
-        out_channels: int = 256,
-        layer_multiplier: int = 64,
+        dim: int = 64,
+        n_downsample: int = 2,
+        n_res: int = 4,
+        norm: NormalizationType = NormalizationType.INSTANCE,
+        activ: ActivationType = ActivationType.RELU,
+        pad_type: PaddingType = PaddingType.REFLECT,
     ):
         super().__init__()
 
         self.layers: list[nn.Module] = []
 
         self.layers.append(
-            nn.Conv2d(
+            ConvBlock(
                 in_channels=in_channels,
-                out_channels=layer_multiplier,
+                out_channels=dim,
                 kernel_size=7,
                 stride=1,
                 padding=3,
+                normalization_type=norm,
+                padding_type=pad_type,
+                activation_type=activ,
             )
         )
 
-        n = layer_multiplier
-
-        for _ in range(2):
+        for _ in range(n_downsample):
             self.layers.append(
                 ConvBlock(
-                    in_channels=n,
-                    out_channels=n * 2,
+                    in_channels=dim,
+                    out_channels=dim * 2,
                     kernel_size=4,
                     stride=2,
                     padding=1,
+                    normalization_type=norm,
+                    padding_type=pad_type,
+                    activation_type=activ,
                 )
             )
-            n *= 2
+            dim *= 2
 
         self.layers.append(
-            ResBlocks(channels=n, repeat_num=4),
+            ResBlocks(
+                channels=dim,
+                num_blocks=n_res,
+                normalization_type=norm,
+                padding_type=pad_type,
+                activation_type=activ,
+            )
         )
 
         self.model = nn.Sequential(*self.layers)
-        self.output_dim = n
+        self.output_dim = dim
 
     def forward(self, x: torch.Tensor) -> torch.Tensor:
         """Forward pass of the encoder.
@@ -159,36 +186,56 @@ class Decoder(nn.Module):
 
     def __init__(
         self,
-        in_channels: int = 512,
+        in_channels: int = 256,
         out_channels: int = 3,
-        repeat_num: int = 4,
+        n_upsample: int = 2,
+        n_res: int = 4,
+        res_norm: NormalizationType = NormalizationType.INSTANCE,
+        activ: ActivationType = ActivationType.RELU,
+        pad_type: PaddingType = PaddingType.REFLECT,
     ):
         super().__init__()
 
         self.layers: list[nn.Module] = []
 
-        self.layers.append(ResBlocks(channels=in_channels, repeat_num=repeat_num))
+        self.layers.append(
+            ResBlocks(
+                channels=in_channels,
+                num_blocks=n_res,
+                normalization_type=res_norm,
+                padding_type=pad_type,
+                activation_type=activ,
+            )
+        )
 
-        n = in_channels
-
-        for _ in range(2):
+        for _ in range(n_upsample):
             self.layers += [
                 nn.Upsample(scale_factor=2),
-                ConvBlock(n, n // 2, 5, 1, 2),
+                ConvBlock(
+                    in_channels=in_channels,
+                    out_channels=in_channels // 2,
+                    kernel_size=5,
+                    stride=1,
+                    padding=2,
+                    normalization_type=NormalizationType.LAYER,
+                    padding_type=pad_type,
+                    activation_type=activ,
+                ),
             ]
+            in_channels //= 2
 
-            n //= 2
-
-        self.layers += [
+        self.layers.append(
             ConvBlock(
-                in_channels=n,
+                in_channels=in_channels,
                 out_channels=out_channels,
                 kernel_size=7,
                 stride=1,
                 padding=3,
+                normalization_type=NormalizationType.NONE,
+                padding_type=pad_type,
+                activation_type=ActivationType.TANH,
             ),
-            nn.Tanh(),
-        ]
+        )
 
         self.model = nn.Sequential(*self.layers)
 
@@ -205,10 +252,11 @@ class Decoder(nn.Module):
         return x
 
 
+# TODO: generate a test for checking output shapes of this module
 if __name__ == "__main__":
     x_test = torch.randn(size=(1, 3, 256, 256)).to("cuda")
     y_test = torch.randn(size=(32, 512, 256, 256))
     # D = Decoder(512, 3, 4).to("cuda")
-    G = Generator(3, 3, 64).to("cuda")
-
-    print(G(x_test)[0].shape, G(x_test)[1].shape)
+    gen = Generator(3, 3, 64).to("cuda")
+    res = gen(x_test)
+    print(res[0].shape, res[1].shape)

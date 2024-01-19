@@ -42,7 +42,10 @@ def main() -> int:
     for epoch in range(cfg.NUM_EPOCHS):
         print(f"Epoch: {epoch}")
         save_some_examples(
-            trainer, val_loader, epoch, folder=cfg.EVALUATION_PATH, writer=_WRITER
+            trainer,
+            val_loader,
+            epoch,
+            folder=cfg.EVALUATION_PATH,
         )
         trainfn(trainer=trainer, train_loader=train_loader)
         if cfg.SAVE_MODEL and epoch % 5 == 0:
