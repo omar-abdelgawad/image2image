@@ -24,10 +24,10 @@ from unit.data import create_dataset
 # TODO: unsupervised gen should cycle from x to y and vice versa
 def save_some_examples(
     trainer: nn.Module,
-    val_loader: DataLoader,
+    val_loader: DataLoader[tuple[torch.Tensor, torch.Tensor]],
     epoch: int,
     folder: Path,
-    writer: SummaryWriter,
+    # writer: SummaryWriter,
 ) -> None:
     """Saves a grid of generated images. Also saves ground truth if epoch is 0.
 
@@ -144,7 +144,7 @@ def get_model_list(dirname, key):
         for f in os.listdir(dirname)
         if os.path.isfile(os.path.join(dirname, f)) and key in f and ".pt" in f
     ]
-    if gen_models is None:
+    if not gen_models:
         return None
     gen_models.sort()
     last_model_name = gen_models[-1]

@@ -42,7 +42,9 @@ class Block(nn.Module):
     def forward(self, x: torch.Tensor) -> torch.Tensor:
         """Forward pass."""
         x = self.conv(x)
-        return self.dropout(x) if self.use_dropout else x
+        if self.use_dropout:
+            x = self.dropout(x)
+        return x
 
 
 # TODO: make it a multi-modal generator by adding a random noise
@@ -124,7 +126,7 @@ class Generator(nn.Module):
         Returns:
             torch.Tensor: Batched output Image(s) tensor
         """
-        d1 = self.initial_down(x)
+        d1: torch.Tensor = self.initial_down(x)
         d2 = self.down1(d1)
         d3 = self.down2(d2)
         d4 = self.down3(d3)
@@ -139,7 +141,8 @@ class Generator(nn.Module):
         up5 = self.up5(torch.cat([up4, d4], 1))
         up6 = self.up6(torch.cat([up5, d3], 1))
         up7 = self.up7(torch.cat([up6, d2], 1))
-        return self.final_up(torch.cat([up7, d1], 1))
+        d1 = self.final_up(torch.cat([up7, d1], 1))
+        return d1
 
 
 def test() -> None:

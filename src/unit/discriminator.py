@@ -70,7 +70,8 @@ class Discriminator(nn.Module):
         Returns:
             torch.Tensor: forward pass output.
         """
-        return self.model(x)
+        x = self.model(x)
+        return x
 
     # def calc_dis_loss(self, input_fake, input_real):
     #     # calculate the loss to train D

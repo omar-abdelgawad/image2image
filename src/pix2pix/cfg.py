@@ -5,6 +5,7 @@ from pathlib import Path
 import torch
 import albumentations as A
 from albumentations.pytorch import ToTensorV2
+from typing import Callable
 
 from pix2pix.cli import custom_arg_parser
 

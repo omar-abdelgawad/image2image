@@ -65,7 +65,8 @@ class ConvBlock(nn.Module):
         Returns:
             torch.Tensor: Output tensor.
         """
-        return self.model(x)
+        x = self.model(x)
+        return x
 
     def _padding_type_selector(self, padding_type: PaddingType) -> nn.Module:
         """Selects the padding type.
@@ -112,7 +113,7 @@ class ConvBlock(nn.Module):
         elif normalization_type == NormalizationType.LAYER:
             return nn.LayerNorm(self.norm_dim)
         elif normalization_type == NormalizationType.NONE:
-            return None
+            return nn.Identity()
         else:
             raise NotImplementedError(
                 f"Normalization type {normalization_type} is not implemented."
@@ -199,7 +200,8 @@ class ConvBlocks(nn.Module):
         Returns:
             torch.Tensor: Output tensor.
         """
-        return self.model(x)
+        x = self.model(x)
+        return x
 
 
 class ResBlock(nn.Module):
@@ -258,7 +260,8 @@ class ResBlock(nn.Module):
         Returns:
             torch.Tensor: Output tensor.
         """
-        return self.model(x) + x
+        x = self.model(x) + x
+        return x
 
 
 class ResBlocks(nn.Module):
@@ -296,7 +299,8 @@ class ResBlocks(nn.Module):
         Returns:
             torch.Tensor: Output tensor.
         """
-        return self.model(x)
+        x = self.model(x)
+        return x
 
 
 if __name__ == "__main__":

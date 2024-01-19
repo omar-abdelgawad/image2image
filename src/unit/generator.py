@@ -81,7 +81,7 @@ class Generator(nn.Module):
         Returns:
             torch.Tensor: Decoded images.
         """
-        images = self.dec(encoded_images)
+        images: torch.Tensor = self.dec(encoded_images)
         return images
 
 
@@ -102,7 +102,7 @@ class Encoder(nn.Module):
     ):
         super().__init__()
 
-        self.layers = []
+        self.layers: list[nn.Module] = []
 
         self.layers.append(
             nn.Conv2d(
@@ -144,7 +144,8 @@ class Encoder(nn.Module):
         Returns:
             torch.Tensor: Encoded images.
         """
-        return self.model(x)
+        x = self.model(x)
+        return x
 
 
 class Decoder(nn.Module):
@@ -164,7 +165,7 @@ class Decoder(nn.Module):
     ):
         super().__init__()
 
-        self.layers = []
+        self.layers: list[nn.Module] = []
 
         self.layers.append(ResBlocks(channels=in_channels, repeat_num=repeat_num))
 
@@ -200,7 +201,8 @@ class Decoder(nn.Module):
         Returns:
             torch.Tensor: Decoded images.
         """
-        return self.model(x)
+        x = self.model(x)
+        return x
 
 
 if __name__ == "__main__":
