@@ -22,7 +22,7 @@ Seminar project Unsupervised Image-to-Image translation using GANs
  $ cd image2image/
  $ virtualenv venv
  $ source venv/bin/activate
- $ pip install -e .['testing']
+ $ pip install -e ".[dev]"
 ``` 
 ## Implementations
 
