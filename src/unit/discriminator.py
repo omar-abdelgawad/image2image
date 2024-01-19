@@ -6,6 +6,9 @@ from unit.blocks import ConvBlock, ConvBlocks
 from unit.cfg import NormalizationType, PaddingType, ActivationType
 
 
+# TODO: I believe this implementation is not exactly like the paper
+# The paper includes downsampling (nn.AvgPool2d) and also for some reason has
+# more than one net
 class Discriminator(nn.Module):
     """Discriminator model for the unit GAN.
 
@@ -25,12 +28,14 @@ class Discriminator(nn.Module):
         out_channels: int = 1,
         layer_multiplier: int = 64,
         max_layer_multiplier: int = 1024,
+        gan_type: str = "lsgan",
         normalization_type: NormalizationType = NormalizationType.NONE,
         padding_type: PaddingType = PaddingType.REFLECT,
         activation_type: ActivationType = ActivationType.LEAKY_RELU,
     ) -> None:
         super().__init__()
 
+        self.gan_type = gan_type
         self.model = nn.Sequential(
             ConvBlock(
                 in_channels=in_channels,
@@ -70,8 +75,10 @@ class Discriminator(nn.Module):
         Returns:
             torch.Tensor: forward pass output.
         """
-        return self.model(x)
+        x = self.model(x)
+        return x
 
+    # TODO: make sure these copied methods are OK
     # def calc_dis_loss(self, input_fake, input_real):
     #     # calculate the loss to train D
     #     outs0 = self.forward(input_fake)

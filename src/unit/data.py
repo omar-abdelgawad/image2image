@@ -4,13 +4,15 @@ import os
 from pathlib import Path
 
 import numpy as np
+import torch
 from PIL import Image
 from torch.utils.data import Dataset
+from typing import Any
 
 from unit import cfg
 
 
-class Edges2Shoes(Dataset):
+class Edges2Shoes(Dataset[tuple[torch.Tensor, torch.Tensor]]):
     """Dataset class for edges2shoes dataset.
 
     Args:
@@ -22,10 +24,10 @@ class Edges2Shoes(Dataset):
         self.list_files = os.listdir(self.root_dir)[: cfg.NUM_IMAGES_DATASET]
         print(f"The length of the dataset is: {len(self.list_files)}")
 
-    def __len__(self):
+    def __len__(self) -> int:
         return len(self.list_files)
 
-    def __getitem__(self, index):
+    def __getitem__(self, index: int):
         img_file_name = self.list_files[index]
         img_path = os.path.join(self.root_dir, img_file_name)
         image = np.array(Image.open(img_path).convert("RGB"))
@@ -43,7 +45,7 @@ class Edges2Shoes(Dataset):
         return input_image, target_image
 
 
-def create_dataset(root_dir: Path | str, dataset_type: cfg.DatasetType) -> Dataset:
+def create_dataset(root_dir: Path | str, dataset_type: cfg.DatasetType) -> Dataset[Any]:
     """Create a Dataset from given root_dir and dataset_type.
 
     Args:
@@ -56,15 +58,15 @@ def create_dataset(root_dir: Path | str, dataset_type: cfg.DatasetType) -> Datas
     Returns:
         Dataset: Pytorch Dataset object.
     """
-    match dataset_type:
-        # case cfg.DatasetType.ANIME_DATASET:
-        #     return AnimeDataset(root_dir)
-        # case cfg.DatasetType.NATURAL_VIEW_DATASET:
-        #     return NaturaViewDataset(root_dir)
-        case cfg.DatasetType.Edges2Shoes:
-            return Edges2Shoes(root_dir)
-        case _:
-            raise ValueError("Dataset type not supported")
+    return Edges2Shoes(root_dir)
+    # if dataset_type == cfg.DatasetType.ANIME_DATASET:
+    #     return AnimeDataset(root_dir)
+    # elif dataset_type == cfg.DatasetType.NATURAL_VIEW_DATASET:
+    #     return NaturaViewDataset(root_dir)
+    # elif dataset_type == cfg.DatasetType.Edges2Shoes:
+    #     return Edges2Shoes(root_dir)
+    # else:
+    #     raise ValueError("Dataset type not supported")
 
 
 def test():

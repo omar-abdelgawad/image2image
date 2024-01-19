@@ -15,7 +15,7 @@ from pix2pix import cfg
 # TODO: remove Magic numbers from this module
 def save_some_examples(
     gen: nn.Module,
-    val_loader: DataLoader,
+    val_loader: DataLoader[tuple[torch.Tensor, torch.Tensor]],
     epoch: int,
     folder: Path,
     writer: SummaryWriter,
@@ -49,7 +49,11 @@ def save_some_examples(
 
 
 @torch.inference_mode()
-def evaluate_val_set(gen: nn.Module, val_loader: DataLoader, folder: Path) -> None:
+def evaluate_val_set(
+    gen: nn.Module,
+    val_loader: DataLoader[tuple[torch.Tensor, torch.Tensor]],
+    folder: Path,
+) -> None:
     """Runs inference on all images in the val_loader and saves them in the folder.
 
     Args:

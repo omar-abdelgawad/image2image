@@ -30,7 +30,8 @@ class CNNBlock(nn.Module):
 
     def forward(self, x: torch.Tensor) -> torch.Tensor:
         """Forward pass."""
-        return self.conv(x)
+        out: torch.Tensor = self.conv(x)
+        return out
 
 
 class Discriminator(nn.Module):
@@ -57,7 +58,7 @@ class Discriminator(nn.Module):
             ),
             nn.LeakyReLU(0.2),
         )
-        layers = []
+        layers: list[nn.Module] = []
         in_channels = features[0]
         for feature in features[1:]:
             layers.append(
@@ -91,7 +92,8 @@ class Discriminator(nn.Module):
         """
         x = torch.cat([x, y], dim=1)
         x = self.initial(x)
-        return self.model(x)
+        x = self.model(x)
+        return x
 
 
 def test() -> None:

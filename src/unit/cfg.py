@@ -29,6 +29,33 @@ class DatasetType(Enum):
     )
 
 
+class PaddingType(Enum):
+    """Enum for the padding type."""
+
+    REFLECT = "reflect"
+    REPLICATE = "replicate"
+    ZERO = "zero"
+
+
+class NormalizationType(Enum):
+    """Enum for the normalization type."""
+
+    BATCH = "batch"
+    INSTANCE = "instance"
+    LAYER = "layer"
+    NONE = None
+
+
+class ActivationType(Enum):
+    """Enum for the activation type."""
+
+    RELU = "relu"
+    LEAKY_RELU = "leaky_relu"
+    TANH = "tanh"
+    SIGMOID = "sigmoid"
+    NONE = None
+
+
 args = custom_arg_parser()
 DEVICE = "cuda" if torch.cuda.is_available() else "cpu"
 CHANNELS_IMG = 3
@@ -57,22 +84,29 @@ NUM_IMAGES_DATASET = args.num_images_dataset
 VAL_BATCH_SIZE = args.val_batch_size
 CHOSEN_DATASET = DatasetType.Edges2Shoes
 
-GEN_HYPERPARAMS = {
-    "dim": 64,
-    "activ": "relu",
-    "n_downsample": 2,
-    "n_res": 4,
-    "pad_type": "reflect",
-}
-DIS_HYPERPARAMS = {
-    "dim": 64,
-    "norm": "none",
-    "activ": "lrelu",
-    "n_layer": 4,
-    "gan_type": "lsgan",
-    "num_scales": 3,
-    "pad_type": "reflect",
-}
+
+class GEN_HYPERPARAMS:
+    """Hyperparameters for the generator."""
+
+    DIM = 64
+    NORM = NormalizationType.INSTANCE
+    ACTIV = ActivationType.RELU
+    N_DOWNSAMPLE = 2
+    N_RES = 4
+    PAD_TYPE = PaddingType.REFLECT
+
+
+class DIS_HYPERPARAMS:
+    """Hyperparameters for the discriminator."""
+
+    DIM = 64
+    NORM = NormalizationType.NONE
+    ACTIV = ActivationType.LEAKY_RELU
+    N_LAYER = 4
+    GAN_TYPE = "lsgan"
+    NUM_SCALES = 3
+    PAD_TYPE = PaddingType.REFLECT
+
 
 CHECKPOINT_DIR = Path("./out/last_trained_weights")
 TRAIN_DATASET_PATH = CHOSEN_DATASET.value / "train"
@@ -113,30 +147,3 @@ transform_only_mask = A.Compose(
         ToTensorV2(),
     ]
 )
-
-
-class PaddingType(Enum):
-    """Enum for the padding type."""
-
-    REFLECT = "reflect"
-    REPLICATE = "replicate"
-    ZERO = "zero"
-
-
-class NormalizationType(Enum):
-    """Enum for the normalization type."""
-
-    BATCH = "batch"
-    INSTANCE = "instance"
-    LAYER = "layer"
-    NONE = None
-
-
-class ActivationType(Enum):
-    """Enum for the activation type."""
-
-    RELU = "relu"
-    LEAKY_RELU = "leaky_relu"
-    TANH = "tanh"
-    SIGMOID = "sigmoid"
-    NONE = None

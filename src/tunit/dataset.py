@@ -2,13 +2,15 @@ import os
 from pathlib import Path
 
 import numpy as np
+import torch
 from PIL import Image
 from torch.utils.data import Dataset
+from typing import Any
 
 from tunit import cfg
 
 
-class AFHQCatDataset(Dataset):
+class AFHQCatDataset(Dataset[tuple[torch.Tensor, torch.Tensor]]):
     """Dataset class for AFHQ Cat Colorization dataset.
 
     Args:
@@ -39,7 +41,7 @@ class AFHQCatDataset(Dataset):
         return input_image, target_image
 
 
-def create_dataset(root_dir: Path | str, dataset_type: cfg.DatasetType) -> Dataset:
+def create_dataset(root_dir: Path | str, dataset_type: cfg.DatasetType) -> Dataset[Any]:
     """Create a Dataset from given root_dir and dataset_type.
 
     Args:
@@ -52,8 +54,7 @@ def create_dataset(root_dir: Path | str, dataset_type: cfg.DatasetType) -> Datas
     Returns:
         Dataset: Pytorch Dataset object.
     """
-    match dataset_type:
-        case cfg.DatasetType.AFHQ_CATS_DATASET:
-            return AFHQCatDataset(root_dir)
-        case _:
-            raise ValueError("Dataset type not supported")
+    if dataset_type == cfg.DatasetType.AFHQ_CATS_DATASET:
+        return AFHQCatDataset(root_dir)
+    else:
+        raise ValueError("Dataset type not supported")

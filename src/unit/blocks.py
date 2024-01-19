@@ -25,10 +25,10 @@ class ConvBlock(nn.Module):
         out_channels: int,
         kernel_size: int,
         stride: int,
-        padding: int = 0,
-        normalization_type: NormalizationType = NormalizationType.NONE,
-        padding_type: PaddingType = PaddingType.ZERO,
-        activation_type: ActivationType = ActivationType.RELU,
+        padding: int,
+        normalization_type: NormalizationType,
+        padding_type: PaddingType,
+        activation_type: ActivationType,
     ) -> None:
         super().__init__()
 
@@ -47,6 +47,7 @@ class ConvBlock(nn.Module):
                 kernel_size=kernel_size,
                 stride=stride,
                 padding=padding,
+                bias=True,
             ),
             self.normalization_layer
             if self.normalization_layer is not None
@@ -65,7 +66,8 @@ class ConvBlock(nn.Module):
         Returns:
             torch.Tensor: Output tensor.
         """
-        return self.model(x)
+        x = self.model(x)
+        return x
 
     def _padding_type_selector(self, padding_type: PaddingType) -> nn.Module:
         """Selects the padding type.
@@ -79,17 +81,16 @@ class ConvBlock(nn.Module):
         Returns:
             nn.Module: Padding layer.
         """
-        match padding_type:
-            case PaddingType.REFLECT:
-                return nn.ReflectionPad2d(self.padding)
-            case PaddingType.REPLICATE:
-                return nn.ReplicationPad2d(self.padding)
-            case PaddingType.ZERO:
-                return nn.ZeroPad2d(self.padding)
-            case _:
-                raise NotImplementedError(
-                    f"Padding type {padding_type} is not implemented."
-                )
+        if padding_type == PaddingType.REFLECT:
+            return nn.ReflectionPad2d(self.padding)
+        elif padding_type == PaddingType.REPLICATE:
+            return nn.ReplicationPad2d(self.padding)
+        elif padding_type == PaddingType.ZERO:
+            return nn.ZeroPad2d(self.padding)
+        else:
+            raise NotImplementedError(
+                f"Padding type {padding_type} is not implemented."
+            )
 
     def _normalization_selector(
         self, normalization_type: NormalizationType
@@ -106,19 +107,18 @@ class ConvBlock(nn.Module):
         Returns:
             nn.Module: Normalization layer.
         """
-        match normalization_type:
-            case NormalizationType.BATCH:
-                return nn.BatchNorm2d(self.norm_dim)
-            case NormalizationType.INSTANCE:
-                return nn.InstanceNorm2d(self.norm_dim)
-            case NormalizationType.LAYER:
-                return nn.LayerNorm(self.norm_dim)
-            case NormalizationType.NONE:
-                return None
-            case _:
-                raise NotImplementedError(
-                    f"Normalization type {normalization_type} is not implemented."
-                )
+        if normalization_type == NormalizationType.BATCH:
+            return nn.BatchNorm2d(self.norm_dim)
+        elif normalization_type == NormalizationType.INSTANCE:
+            return nn.InstanceNorm2d(self.norm_dim)
+        elif normalization_type == NormalizationType.LAYER:
+            return nn.LayerNorm(self.norm_dim)
+        elif normalization_type == NormalizationType.NONE:
+            return nn.Identity()
+        else:
+            raise NotImplementedError(
+                f"Normalization type {normalization_type} is not implemented."
+            )
 
     def _activation_layer_selector(self, activation_type: ActivationType) -> nn.Module:
         """Selects the activation type.
@@ -132,19 +132,18 @@ class ConvBlock(nn.Module):
         Returns:
             nn.Module: Activation layer.
         """
-        match activation_type:
-            case ActivationType.RELU:
-                return nn.ReLU()
-            case ActivationType.LEAKY_RELU:
-                return nn.LeakyReLU(0.2)
-            case ActivationType.TANH:
-                return nn.Tanh()
-            case ActivationType.SIGMOID:
-                return nn.Sigmoid()
-            case _:
-                raise NotImplementedError(
-                    f"Activation type {activation_type} is not implemented."
-                )
+        if activation_type == ActivationType.RELU:
+            return nn.ReLU()
+        elif activation_type == ActivationType.LEAKY_RELU:
+            return nn.LeakyReLU(0.2)
+        elif activation_type == ActivationType.TANH:
+            return nn.Tanh()
+        elif activation_type == ActivationType.SIGMOID:
+            return nn.Sigmoid()
+        else:
+            raise NotImplementedError(
+                f"Activation type {activation_type} is not implemented."
+            )
 
 
 class ConvBlocks(nn.Module):
@@ -202,7 +201,8 @@ class ConvBlocks(nn.Module):
         Returns:
             torch.Tensor: Output tensor.
         """
-        return self.model(x)
+        x = self.model(x)
+        return x
 
 
 class ResBlock(nn.Module):
@@ -223,7 +223,7 @@ class ResBlock(nn.Module):
         kernel_size=3,
         stride=1,
         padding=1,
-        normalization_type=NormalizationType.NONE,
+        normalization_type=NormalizationType.INSTANCE,
         padding_type=PaddingType.ZERO,
         activation_type=ActivationType.RELU,
     ) -> None:
@@ -261,7 +261,8 @@ class ResBlock(nn.Module):
         Returns:
             torch.Tensor: Output tensor.
         """
-        return self.model(x) + x
+        x = self.model(x) + x
+        return x
 
 
 class ResBlocks(nn.Module):
@@ -275,16 +276,22 @@ class ResBlocks(nn.Module):
     def __init__(
         self,
         channels: int = 256,
-        repeat_num: int = 4,
+        num_blocks: int = 4,
+        normalization_type: NormalizationType = NormalizationType.INSTANCE,
+        padding_type: PaddingType = PaddingType.ZERO,
+        activation_type: ActivationType = ActivationType.RELU,
     ) -> None:
         super().__init__()
 
         self.layers = []
 
-        for _ in range(repeat_num):
+        for _ in range(num_blocks):
             self.layers.append(
                 ResBlock(
                     channels=channels,
+                    normalization_type=normalization_type,
+                    padding_type=padding_type,
+                    activation_type=activation_type,
                 )
             )
 
@@ -299,19 +306,21 @@ class ResBlocks(nn.Module):
         Returns:
             torch.Tensor: Output tensor.
         """
-        return self.model(x)
+        x = self.model(x)
+        return x
 
 
-if __name__ == "__main__":
-    print("\n\n")
-    print("ConvBlock ============================", end="\n\n")
-    print(ConvBlock(3, 64, 4, 2), (3, 256, 256))
-    print("\n\n")
-    print("ConvBlocks ===========================", end="\n\n")
-    print(ConvBlocks(), (3, 256, 256))
-    print("\n\n")
-    print("ResBlock =============================", end="\n\n")
-    print(ResBlock(), (256, 256, 256))
-    print("\n\n")
-    print("ResBlocks ============================", end="\n\n")
-    print(ResBlocks(), (256, 256, 256))
+# if __name__ == "__main__":
+# TODO: Add tests for checking the shapes of the block outputs.
+# print("\n\n")
+# print("ConvBlock ============================", end="\n\n")
+# print(ConvBlock(3, 64, 4, 2,0,NormalizationType.NONE), (3, 256, 256))
+# print("\n\n")
+# print("ConvBlocks ===========================", end="\n\n")
+# print(ConvBlocks(), (3, 256, 256))
+# print("\n\n")
+# print("ResBlock =============================", end="\n\n")
+# print(ResBlock(), (256, 256, 256))
+# print("\n\n")
+# print("ResBlocks ============================", end="\n\n")
+# print(ResBlocks(), (256, 256, 256))

@@ -2,30 +2,55 @@ import os
 import torch
 from torch import nn
 
-# temporary import
-from unit.networks import VAEGen, MsImageDis
 
-################
+from unit.generator import Generator
+from unit.discriminator import Discriminator
 from unit.utils import weights_init, get_model_list, get_scheduler
-
 from unit import cfg
-
-# from unit.generator import VAEGen
-# from unit.discriminator import MsImageDis
 
 
 class UNIT_Trainer(nn.Module):
     def __init__(self) -> None:
         super().__init__()
-        self.gen_a = VAEGen(
-            cfg.CHANNELS_IMG, cfg.GEN_HYPERPARAMS
-        )  # fill rest of the arguments later gen
-        self.gen_b = VAEGen(
-            cfg.CHANNELS_IMG, cfg.GEN_HYPERPARAMS
-        )  # fill rest of the arguments later gen
-        self.dis_a = MsImageDis(cfg.CHANNELS_IMG, cfg.DIS_HYPERPARAMS)
-        self.dis_b = MsImageDis(cfg.CHANNELS_IMG, cfg.DIS_HYPERPARAMS)
-        self.instancenorm = nn.InstanceNorm2d(512, affine=False)
+        self.gen_a = Generator(
+            in_channels=cfg.CHANNELS_IMG,
+            dim=cfg.GEN_HYPERPARAMS.DIM,
+            n_downsample=cfg.GEN_HYPERPARAMS.N_DOWNSAMPLE,
+            n_res=cfg.GEN_HYPERPARAMS.N_RES,
+            activ=cfg.GEN_HYPERPARAMS.ACTIV,
+            pad_type=cfg.GEN_HYPERPARAMS.PAD_TYPE,
+            norm=cfg.GEN_HYPERPARAMS.NORM,
+        )
+        self.gen_b = Generator(
+            in_channels=cfg.CHANNELS_IMG,
+            dim=cfg.GEN_HYPERPARAMS.DIM,
+            n_downsample=cfg.GEN_HYPERPARAMS.N_DOWNSAMPLE,
+            n_res=cfg.GEN_HYPERPARAMS.N_RES,
+            activ=cfg.GEN_HYPERPARAMS.ACTIV,
+            pad_type=cfg.GEN_HYPERPARAMS.PAD_TYPE,
+            norm=cfg.GEN_HYPERPARAMS.NORM,
+        )
+        self.dis_a = Discriminator(
+            in_channels=cfg.CHANNELS_IMG,
+            out_channels=1,
+            layer_multiplier=cfg.DIS_HYPERPARAMS.DIM,
+            max_layer_multiplier=1024,
+            gan_type=cfg.DIS_HYPERPARAMS.GAN_TYPE,
+            normalization_type=cfg.DIS_HYPERPARAMS.NORM,
+            padding_type=cfg.DIS_HYPERPARAMS.PAD_TYPE,
+            activation_type=cfg.DIS_HYPERPARAMS.ACTIV,
+        )
+        self.dis_b = Discriminator(
+            in_channels=cfg.CHANNELS_IMG,
+            out_channels=1,
+            layer_multiplier=cfg.DIS_HYPERPARAMS.DIM,
+            max_layer_multiplier=1024,
+            gan_type=cfg.DIS_HYPERPARAMS.GAN_TYPE,
+            normalization_type=cfg.DIS_HYPERPARAMS.NORM,
+            padding_type=cfg.DIS_HYPERPARAMS.PAD_TYPE,
+            activation_type=cfg.DIS_HYPERPARAMS.ACTIV,
+        )
+        # self.instancenorm = nn.InstanceNorm2d(512, affine=False)
 
         # setup the optimizers
         dis_params = list(self.dis_a.parameters()) + list(self.dis_b.parameters())
@@ -54,7 +79,19 @@ class UNIT_Trainer(nn.Module):
         self.dis_a.apply(weights_init("gaussian"))
         self.dis_b.apply(weights_init("gaussian"))
 
-    def forward(self, x_a, x_b):
+    def forward(
+        self, x_a: torch.Tensor, x_b: torch.Tensor
+    ) -> tuple[torch.Tensor, torch.Tensor]:
+        """Forward pass
+
+        Args:
+            x_a (torch.Tensor): image from domain A.
+            x_b (torch.Tensor): image from domain B.
+
+        Returns:
+            tuple[torch.Tensor, torch.Tensor]: tuple of translated images
+            from domain B and A.
+        """
         self.eval()
         h_a, _ = self.gen_a.encode(x_a)
         h_b, _ = self.gen_b.encode(x_b)
@@ -146,7 +183,16 @@ class UNIT_Trainer(nn.Module):
         self.loss_gen_total.backward()
         self.gen_opt.step()
 
-    def sample(self, x_a, x_b):
+    def sample(
+        self, x_a: torch.Tensor, x_b: torch.Tensor
+    ) -> tuple[
+        torch.Tensor,
+        torch.Tensor,
+        torch.Tensor,
+        torch.Tensor,
+        torch.Tensor,
+        torch.Tensor,
+    ]:
         self.eval()
         x_a_recon, x_b_recon, x_ba, x_ab = [], [], [], []
         for i in range(x_a.size(0)):
@@ -156,11 +202,12 @@ class UNIT_Trainer(nn.Module):
             x_b_recon.append(self.gen_b.decode(h_b))
             x_ba.append(self.gen_a.decode(h_b))
             x_ab.append(self.gen_b.decode(h_a))
-        x_a_recon, x_b_recon = torch.cat(x_a_recon), torch.cat(x_b_recon)
-        x_ba = torch.cat(x_ba)
-        x_ab = torch.cat(x_ab)
+        out_x_a_recon = torch.cat(x_a_recon)
+        out_x_b_recon = torch.cat(x_b_recon)
+        out_x_ba = torch.cat(x_ba)
+        out_x_ab = torch.cat(x_ab)
         self.train()
-        return x_a, x_a_recon, x_ab, x_b, x_b_recon, x_ba
+        return x_a, out_x_a_recon, out_x_ab, x_b, out_x_b_recon, out_x_ba
 
     # TODO: remove the extra calculation of x_ba and x_ab if they are going to get detached anyway.
     def dis_update(self, x_a, x_b):
