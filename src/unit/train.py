@@ -1,7 +1,4 @@
-import os
-
 from tqdm import tqdm
-import torch
 from torch.utils.tensorboard import SummaryWriter
 
 # from torch.backends.cudnn import benchmark
@@ -14,7 +11,7 @@ from unit.utils import (
 )
 from unit.trainer import UNIT_Trainer
 
-_WRITER = SummaryWriter("runs/expirement_1")
+# _WRITER = SummaryWriter("runs/expirement_1")
 
 
 def trainfn(trainer, train_loader):
