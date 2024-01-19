@@ -38,8 +38,12 @@ class AnimeDataset(Dataset[tuple[torch.Tensor, torch.Tensor]]):
         augmentations = cfg.both_transform(image=input_image, image0=target_image)
         input_image, target_image = augmentations["image"], augmentations["image0"]
 
-        out_input_image = cfg.transform_only_input(image=input_image)["image"]
-        out_target_image = cfg.transform_only_mask(image=target_image)["image"]
+        out_input_image: torch.Tensor = cfg.transform_only_input(image=input_image)[
+            "image"
+        ]
+        out_target_image: torch.Tensor = cfg.transform_only_mask(image=target_image)[
+            "image"
+        ]
 
         return out_input_image, out_target_image
 
@@ -74,10 +78,14 @@ class NaturaViewDataset(Dataset[tuple[torch.Tensor, torch.Tensor]]):
         augmentations = cfg.both_transform(image=input_image, image0=target_image)
         input_image, target_image = augmentations["image"], augmentations["image0"]
 
-        input_image = cfg.transform_only_input(image=input_image)["image"]
-        target_image = cfg.transform_only_mask(image=target_image)["image"]
+        out_input_image: torch.Tensor = cfg.transform_only_input(image=input_image)[
+            "image"
+        ]
+        out_target_image: torch.Tensor = cfg.transform_only_mask(image=target_image)[
+            "image"
+        ]
 
-        return input_image, target_image
+        return out_input_image, out_target_image
 
 
 # TODO: make a factory class instead.
