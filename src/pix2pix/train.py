@@ -6,9 +6,9 @@ from torch.utils.data import DataLoader
 from torch.utils.tensorboard import SummaryWriter
 from tqdm import tqdm
 
-from pix2pix.dataset import create_dataset
+import cfg
+from data import create_dataset
 from pix2pix.utils import save_checkpoint, load_checkpoint, save_some_examples
-from pix2pix import cfg
 from pix2pix.generator import Generator
 from pix2pix.discriminator import Discriminator
 

@@ -5,7 +5,7 @@ import torch
 from torch import nn
 
 from unit.blocks import ResBlocks, ConvBlock
-from unit.cfg import PaddingType, ActivationType, NormalizationType
+from cfg import PaddingType, ActivationType, NormalizationType
 
 
 class Generator(nn.Module):

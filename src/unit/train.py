@@ -3,7 +3,7 @@ from torch.utils.tensorboard import SummaryWriter
 
 # from torch.backends.cudnn import benchmark
 
-from unit import cfg
+import cfg
 from unit.utils import (
     get_data_loaders,
     prepare_sub_directories,

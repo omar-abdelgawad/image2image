@@ -3,7 +3,7 @@ import torch
 from torch import nn
 
 from unit.blocks import ConvBlock, ConvBlocks
-from unit.cfg import NormalizationType, PaddingType, ActivationType
+from cfg import NormalizationType, PaddingType, ActivationType
 
 
 # TODO: I believe this implementation is not exactly like the paper

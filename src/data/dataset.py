@@ -87,28 +87,6 @@ class NaturaViewDataset(Dataset[tuple[torch.Tensor, torch.Tensor]]):
         return out_input_image, out_target_image
 
 
-# TODO: make a factory class instead.
-def create_dataset(root_dir: Path | str, dataset_type: cfg.DatasetType) -> Dataset[Any]:
-    """Create a Dataset from given root_dir and dataset_type.
-
-    Args:
-        root_dir (Path | str): Path for Dataset dir.
-        dataset_type (cfg.DatasetType): Type for dataset to create.
-
-    Raises:
-        ValueError: If dataset_type is not supported.
-
-    Returns:
-        Dataset: Pytorch Dataset object.
-    """
-    if dataset_type == cfg.DatasetType.ANIME_DATASET:
-        return AnimeDataset(root_dir)
-    elif dataset_type == cfg.DatasetType.NATURAL_VIEW_DATASET:
-        return NaturaViewDataset(root_dir)
-    else:
-        raise ValueError("Dataset type not supported")
-
-
 class Edges2Shoes(Dataset[tuple[torch.Tensor, torch.Tensor]]):
     """Dataset class for edges2shoes dataset.
 
@@ -173,6 +151,32 @@ class AFHQCatDataset(Dataset[tuple[torch.Tensor, torch.Tensor]]):
         return input_image, target_image
 
 
+# TODO: make a factory class instead.
+def create_dataset(root_dir: Path | str, dataset_type: cfg.DatasetType) -> Dataset[Any]:
+    """Create a Dataset from given root_dir and dataset_type.
+
+    Args:
+        root_dir (Path | str): Path for Dataset dir.
+        dataset_type (cfg.DatasetType): Type for dataset to create.
+
+    Raises:
+        ValueError: If dataset_type is not supported.
+
+    Returns:
+        Dataset: Pytorch Dataset object.
+    """
+    if dataset_type == cfg.DatasetType.ANIME_DATASET:
+        return AnimeDataset(root_dir)
+    elif dataset_type == cfg.DatasetType.NATURAL_VIEW_DATASET:
+        return NaturaViewDataset(root_dir)
+    elif dataset_type == cfg.DatasetType.EDGES2SHOES:
+        return Edges2Shoes(root_dir)
+    elif dataset_type == cfg.DatasetType.AFHQ_CATS_DATASET:
+        return AFHQCatDataset(root_dir)
+    else:
+        raise ValueError("Dataset type not supported")
+
+
 def test():
     # TODO: add these tests to pytest and remove this function.
     """Test function for dataset module."""
@@ -180,7 +184,7 @@ def test():
     # import makegrid
     from torchvision.utils import make_grid, save_image
 
-    dataset = create_dataset(cfg.TRAIN_DATASET_PATH, cfg.DatasetType.Edges2Shoes)
+    dataset = create_dataset(cfg.TRAIN_DATASET_PATH, cfg.DatasetType.EDGES2SHOES)
     input_image, target_image = dataset[0]
     input_image = (input_image) * 0.5 + 0.5
     target_image = (target_image) * 0.5 + 0.5

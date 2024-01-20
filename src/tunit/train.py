@@ -10,9 +10,9 @@ from tqdm import tqdm
 from tqdm import trange
 from typing import Dict
 
-from tunit.dataset2 import create_dataset
+import cfg
+from data import create_dataset
 from tunit.utils import save_checkpoint, load_checkpoint, save_some_examples
-from tunit import cfg
 from tunit.generator import Generator
 from tunit.discriminator import Discriminator
 from tunit.guiding_network import GuidingNetwork
