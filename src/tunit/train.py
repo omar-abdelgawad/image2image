@@ -10,7 +10,7 @@ from tqdm import tqdm
 from tqdm import trange
 from typing import Dict
 
-from tunit.dataset import create_dataset
+from tunit.dataset2 import create_dataset
 from tunit.utils import save_checkpoint, load_checkpoint, save_some_examples
 from tunit import cfg
 from tunit.generator import Generator
@@ -46,58 +46,94 @@ class AverageMeter(object):
         self.avg = self.sum / self.count
 
 
-
 def get_loader(args, dataset):
-    train_dataset = dataset['train']
-    val_dataset = dataset['val']
-    if 'afhq' in args.dataset:
-        val_dataset = dataset['val']['VAL']
+    train_dataset = dataset["train"]
+    val_dataset = dataset["val"]
+    if "afhq" in args.dataset:
+        val_dataset = dataset["val"]["VAL"]
 
     print(len(val_dataset))
 
     # GAN_IIC_SEMI
     if 0.0 < args.p_semi < 1.0:
-        assert 'SEMI' in args.train_mode
-        train_sup_dataset = train_dataset['SUP']
-        train_unsup_dataset = train_dataset['UNSUP']
+        assert "SEMI" in args.train_mode
+        train_sup_dataset = train_dataset["SUP"]
+        train_unsup_dataset = train_dataset["UNSUP"]
 
         if args.distributed:
-            train_sup_sampler = torch.utils.data.distributed.DistributedSampler(train_sup_dataset)
-            train_unsup_sampler = torch.utils.data.distributed.DistributedSampler(train_unsup_dataset)
+            train_sup_sampler = torch.utils.data.distributed.DistributedSampler(
+                train_sup_dataset
+            )
+            train_unsup_sampler = torch.utils.data.distributed.DistributedSampler(
+                train_unsup_dataset
+            )
         else:
             train_sup_sampler = None
             train_unsup_sampler = None
 
         # If there are not cpus enough, set workers to 0
-        train_sup_loader = torch.utils.data.DataLoader(train_sup_dataset, batch_size=args.batch_size,
-                                                      shuffle=(train_sup_sampler is None), num_workers=0,
-                                                      pin_memory=True, sampler=train_sup_sampler, drop_last=False)
-        train_unsup_loader = torch.utils.data.DataLoader(train_unsup_dataset, batch_size=args.batch_size,
-                                                      shuffle=(train_unsup_sampler is None), num_workers=0,
-                                                      pin_memory=True, sampler=train_unsup_sampler, drop_last=False)
+        train_sup_loader = torch.utils.data.DataLoader(
+            train_sup_dataset,
+            batch_size=args.batch_size,
+            shuffle=(train_sup_sampler is None),
+            num_workers=0,
+            pin_memory=True,
+            sampler=train_sup_sampler,
+            drop_last=False,
+        )
+        train_unsup_loader = torch.utils.data.DataLoader(
+            train_unsup_dataset,
+            batch_size=args.batch_size,
+            shuffle=(train_unsup_sampler is None),
+            num_workers=0,
+            pin_memory=True,
+            sampler=train_unsup_sampler,
+            drop_last=False,
+        )
 
-        train_loader = {'SUP': train_sup_loader, 'UNSUP': train_unsup_loader}
-        train_sampler = {'SUP': train_sup_sampler, 'UNSUP': train_unsup_sampler}
+        train_loader = {"SUP": train_sup_loader, "UNSUP": train_unsup_loader}
+        train_sampler = {"SUP": train_sup_sampler, "UNSUP": train_unsup_sampler}
 
     # GAN_SUP / GAN_IIC_UN
     else:
-        train_dataset_ = train_dataset['TRAIN']
+        train_dataset_ = train_dataset["TRAIN"]
         if args.distributed:
-            train_sampler = torch.utils.data.distributed.DistributedSampler(train_dataset_)
+            train_sampler = torch.utils.data.distributed.DistributedSampler(
+                train_dataset_
+            )
         else:
             train_sampler = None
-        train_loader = torch.utils.data.DataLoader(train_dataset_, batch_size=args.batch_size,
-                                                   shuffle=(train_sampler is None), num_workers=args.workers,
-                                                   pin_memory=True, sampler=train_sampler, drop_last=False)
+        train_loader = torch.utils.data.DataLoader(
+            train_dataset_,
+            batch_size=args.batch_size,
+            shuffle=(train_sampler is None),
+            num_workers=args.workers,
+            pin_memory=True,
+            sampler=train_sampler,
+            drop_last=False,
+        )
 
-    val_loader = torch.utils.data.DataLoader(val_dataset, batch_size=args.val_batch, shuffle=True,
-                                             num_workers=0, pin_memory=True, drop_last=False)
+    val_loader = torch.utils.data.DataLoader(
+        val_dataset,
+        batch_size=args.val_batch,
+        shuffle=True,
+        num_workers=0,
+        pin_memory=True,
+        drop_last=False,
+    )
 
-    val_loader = {'VAL': val_loader, 'VALSET': val_dataset if not args.dataset in ['afhq_cat', 'afhq_dog', 'afhq_wild'] else dataset['val']['FULL'], 'TRAINSET': train_dataset['FULL']}
-    if 'afhq' in args.dataset:
-        val_loader['IDX'] = train_dataset['IDX']
+    val_loader = {
+        "VAL": val_loader,
+        "VALSET": val_dataset
+        if not args.dataset in ["afhq_cat", "afhq_dog", "afhq_wild"]
+        else dataset["val"]["FULL"],
+        "TRAINSET": train_dataset["FULL"],
+    }
+    if "afhq" in args.dataset:
+        val_loader["IDX"] = train_dataset["IDX"]
 
     return train_loader, val_loader, train_sampler
+
 
 def trainGAN_UNSUP(
     disc: Discriminator,
@@ -173,8 +209,10 @@ def trainGAN_UNSUP(
     C_EMA().train()
     G_EMA().train()
 
-    train_loader, val_loader, train_sampler = get_loader(args, {'train': train_dataset, 'val': val_dataset})
-    queue_loader = train_loader['UNSUP'] if 0.0 < args.p_semi < 1.0 else train_loader
+    train_loader, val_loader, train_sampler = get_loader(
+        args, {"train": train_dataset, "val": val_dataset}
+    )
+    queue_loader = train_loader["UNSUP"] if 0.0 < args.p_semi < 1.0 else train_loader
     queue = initialize_queue(C_EMA, 0, queue_loader, feat_size=args.sty_dim)
 
     # summary writer

@@ -3,41 +3,7 @@ import argparse
 from typing import Optional
 from typing import Sequence
 
-
-def positive_float(value: str) -> float:
-    """A function to check if the value is a positive float
-
-    Args:
-        value (str): String to check
-
-    Raises:
-        argparse.ArgumentTypeError: Whether value is not a positive float.
-
-    Returns:
-        float: The value if it is a positive float.
-    """
-    ivalue = float(value)
-    if ivalue <= 0:
-        raise argparse.ArgumentTypeError(f"{value} is an invalid positive float value")
-    return ivalue
-
-
-def positive_int(value: str) -> int:
-    """A function to check if the value is a positive int
-
-    Args:
-        value (str): String to check.
-
-    Raises:
-        argparse.ArgumentTypeError: Whether value is not a positive int.
-
-    Returns:
-        int: The value if it is a positive int.
-    """
-    ivalue = int(value)
-    if ivalue <= 0:
-        raise argparse.ArgumentTypeError(f"{value} is an invalid positive int value")
-    return ivalue
+from cli.utils import is_positive_float, is_positive_int
 
 
 def custom_arg_parser(argv: Optional[Sequence[str]] = None) -> argparse.Namespace:
@@ -57,7 +23,7 @@ def custom_arg_parser(argv: Optional[Sequence[str]] = None) -> argparse.Namespac
     parser.add_argument(
         "-r",
         "--rate",
-        type=positive_float,
+        type=is_positive_float,
         default=2e-4,
         help="Learning rate",
         dest="rate",
@@ -65,7 +31,7 @@ def custom_arg_parser(argv: Optional[Sequence[str]] = None) -> argparse.Namespac
     parser.add_argument(
         "-b",
         "--batch-size",
-        type=positive_int,
+        type=is_positive_int,
         default=16,
         help="Batch size",
         dest="batch_size",
@@ -91,7 +57,7 @@ def custom_arg_parser(argv: Optional[Sequence[str]] = None) -> argparse.Namespac
     parser.add_argument(
         "-e",
         "--num-epochs",
-        type=positive_int,
+        type=is_positive_int,
         default=100,
         help="Number of epochs",
         dest="num_epochs",
@@ -113,7 +79,7 @@ def custom_arg_parser(argv: Optional[Sequence[str]] = None) -> argparse.Namespac
     parser.add_argument(
         "-d",
         "--num-images-dataset",
-        type=positive_int,
+        type=is_positive_int,
         default=1000,
         help="Number of images to use from the dataset",
         dest="num_images_dataset",
@@ -121,10 +87,19 @@ def custom_arg_parser(argv: Optional[Sequence[str]] = None) -> argparse.Namespac
     parser.add_argument(
         "-v",
         "--val-batch-size",
-        type=positive_int,
+        type=is_positive_int,
         default=8,
         help="The number of images in the grid to show in the validation step during training",
         dest="val_batch_size",
+    )
+
+    parser.add_argument(
+        "-k",
+        "--cluster-number",
+        type=is_positive_int,
+        default=9,
+        help="The number of clusters to use in the clustering step",
+        dest="cluster_number",
     )
 
     args = parser.parse_args(argv)

@@ -56,8 +56,8 @@ def save_some_examples(
 
 def get_data_loaders():
     """Returns the data loaders for training and validation."""
-    train_dataset = create_dataset(cfg.TRAIN_DATASET_PATH, cfg.DatasetType.Edges2Shoes)
-    val_dataset = create_dataset(cfg.VAL_DATASET_PATH, cfg.DatasetType.Edges2Shoes)
+    train_dataset = create_dataset(cfg.TRAIN_DATASET_PATH, cfg.DatasetType.EDGES2SHOES)
+    val_dataset = create_dataset(cfg.VAL_DATASET_PATH, cfg.DatasetType.EDGES2SHOES)
     train_loader = DataLoader(
         train_dataset,
         batch_size=cfg.BATCH_SIZE,
