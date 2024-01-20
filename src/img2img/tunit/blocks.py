@@ -3,8 +3,8 @@ import torch
 from torch import nn
 from torch.nn import functional as F
 
-from tunit.utils import AdaptiveInstanceNorm2d
-from tunit.utils import FRN
+from img2img.tunit.utils import AdaptiveInstanceNorm2d
+from img2img.tunit.utils import FRN
 
 
 class GenConvBlock(nn.Module):

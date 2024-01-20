@@ -4,8 +4,8 @@ from typing import Tuple
 import torch
 from torch import nn
 
-from unit.blocks import ResBlocks, ConvBlock
-from cfg import PaddingType, ActivationType, NormalizationType
+from img2img.unit.blocks import ResBlocks, ConvBlock
+from img2img.cfg import PaddingType, ActivationType, NormalizationType
 
 
 class Generator(nn.Module):

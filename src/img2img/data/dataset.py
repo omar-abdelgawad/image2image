@@ -9,7 +9,7 @@ import cv2
 from PIL import Image
 from torch.utils.data import Dataset
 
-import cfg
+from img2img import cfg
 
 
 class AnimeDataset(Dataset[tuple[torch.Tensor, torch.Tensor]]):

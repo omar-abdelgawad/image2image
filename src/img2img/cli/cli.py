@@ -3,7 +3,7 @@ import argparse
 from typing import Optional
 from typing import Sequence
 
-from cli.utils import is_positive_float, is_positive_int
+from .utils import is_positive_float, is_positive_int
 
 
 def custom_arg_parser(argv: Optional[Sequence[str]] = None) -> argparse.Namespace:

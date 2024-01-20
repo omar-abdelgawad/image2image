@@ -3,13 +3,13 @@ from torch.utils.tensorboard import SummaryWriter
 
 # from torch.backends.cudnn import benchmark
 
-import cfg
-from unit.utils import (
+from img2img import cfg
+from img2img.unit.utils import (
     get_data_loaders,
     prepare_sub_directories,
     save_some_examples,
 )
-from unit.trainer import UNIT_Trainer
+from img2img.unit.trainer import UNIT_Trainer
 
 # _WRITER = SummaryWriter("runs/expirement_1")
 

@@ -1,7 +1,7 @@
 """Test module for making sure model package is working"""
-import pix2pix
-import tunit
-import unit
+from img2img import pix2pix
+from img2img import tunit
+from img2img import unit
 
 
 def test_build():

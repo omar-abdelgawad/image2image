@@ -1,5 +1,5 @@
 """Test module for custom_arg_parser function"""
-from cli import custom_arg_parser
+from img2img.cli import custom_arg_parser
 
 
 # TODO: use pytest.mark.parametrize instead of multiple tests

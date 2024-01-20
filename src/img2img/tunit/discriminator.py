@@ -6,7 +6,7 @@ from torch import nn
 
 # import math
 
-from tunit.blocks import DiscResBlock
+from img2img.tunit.blocks import DiscResBlock
 
 
 class Discriminator(nn.Module):

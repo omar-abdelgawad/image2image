@@ -6,11 +6,11 @@ from torch.utils.data import DataLoader
 from torch.utils.tensorboard import SummaryWriter
 from tqdm import tqdm
 
-import cfg
-from data import create_dataset
-from pix2pix.utils import save_checkpoint, load_checkpoint, save_some_examples
-from pix2pix.generator import Generator
-from pix2pix.discriminator import Discriminator
+from img2img import cfg
+from img2img.data import create_dataset
+from img2img.pix2pix.utils import save_checkpoint, load_checkpoint, save_some_examples
+from img2img.pix2pix.generator import Generator
+from img2img.pix2pix.discriminator import Discriminator
 
 _WRITER = SummaryWriter("runs/expirement_1")
 

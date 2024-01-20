@@ -2,7 +2,7 @@
 import torch
 from torch import nn
 
-from cfg import NormalizationType, PaddingType, ActivationType
+from img2img.cfg import NormalizationType, PaddingType, ActivationType
 
 
 class ConvBlock(nn.Module):

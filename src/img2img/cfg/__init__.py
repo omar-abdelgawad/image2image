@@ -5,7 +5,7 @@ from torch import cuda
 import albumentations as A
 from albumentations.pytorch import ToTensorV2
 
-from cli import custom_arg_parser
+from img2img.cli import custom_arg_parser
 from .enums import DatasetType, PaddingType, NormalizationType, ActivationType
 
 # TODO: Add logger instead of all the print statements.

@@ -14,8 +14,8 @@ from torch.optim import lr_scheduler
 from torchvision.utils import save_image
 from torchvision.utils import make_grid
 
-import cfg
-from data import create_dataset
+from img2img import cfg
+from img2img.data import create_dataset
 
 # NOTE: The original implementation included vgg16 loss but we are not using it.
 

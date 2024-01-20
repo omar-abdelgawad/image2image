@@ -6,8 +6,8 @@ from torch import nn
 
 # import math
 
-from tunit.blocks import GenConvBlock
-from tunit.blocks import GenResBlock
+from img2img.tunit.blocks import GenConvBlock
+from img2img.tunit.blocks import GenResBlock
 
 # from tunit.blocks import LinearBlock
 

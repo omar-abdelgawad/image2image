@@ -5,7 +5,7 @@ from torch import nn
 
 # import torch.nn.functional as F
 
-from tunit.blocks import GuidingNetworkConvBlock
+from img2img.tunit.blocks import GuidingNetworkConvBlock
 
 
 class GuidingNetwork(nn.Module):
@@ -115,7 +115,9 @@ class GuidingNetwork(nn.Module):
 
         # self._initialize_weights()
 
-    def forward(self, x: torch.Tensor, style: bool = False) -> torch.Tensor:
+    def forward(
+        self, x: torch.Tensor, style: bool = False
+    ) -> tuple[torch.Tensor, torch.Tensor]:
         """Forward pass for T-UNIT's Guiding Network.
 
         Args:

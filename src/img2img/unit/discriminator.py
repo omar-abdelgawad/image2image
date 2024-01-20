@@ -2,8 +2,8 @@
 import torch
 from torch import nn
 
-from unit.blocks import ConvBlock, ConvBlocks
-from cfg import NormalizationType, PaddingType, ActivationType
+from img2img.unit.blocks import ConvBlock, ConvBlocks
+from img2img.cfg import NormalizationType, PaddingType, ActivationType
 
 
 # TODO: I believe this implementation is not exactly like the paper

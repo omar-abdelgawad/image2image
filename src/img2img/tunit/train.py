@@ -10,13 +10,13 @@ from tqdm import tqdm
 from tqdm import trange
 from typing import Dict
 
-import cfg
-from data import create_dataset
-from tunit.utils import save_checkpoint, load_checkpoint, save_some_examples
-from tunit.generator import Generator
-from tunit.discriminator import Discriminator
-from tunit.guiding_network import GuidingNetwork
-from tunit.utils import (
+from img2img import cfg
+from img2img.data import create_dataset
+from img2img.tunit.utils import save_checkpoint, load_checkpoint, save_some_examples
+from img2img.tunit.generator import Generator
+from img2img.tunit.discriminator import Discriminator
+from img2img.tunit.guiding_network import GuidingNetwork
+from img2img.tunit.utils import (
     calc_contrastive_loss,
     calc_iic_loss,
     calc_adv_loss,
