@@ -29,25 +29,24 @@ class ConvBlock(nn.Module):
         normalization_type: NormalizationType,
         padding_type: PaddingType,
         activation_type: ActivationType,
+        bias=True,
     ) -> None:
         super().__init__()
 
-        self.padding = padding
         self.norm_dim = out_channels
 
-        self.padding_layer = self._padding_type_selector(padding_type)
         self.normalization_layer = self._normalization_selector(normalization_type)
         self._activation_layer = self._activation_layer_selector(activation_type)
 
         self.model = nn.Sequential(
-            self.padding_layer if self.padding_layer is not None else nn.Identity(),
             nn.Conv2d(
                 in_channels=in_channels,
                 out_channels=out_channels,
                 kernel_size=kernel_size,
                 stride=stride,
                 padding=padding,
-                bias=True,
+                padding_mode=padding_type.value,
+                bias=bias,
             ),
             self.normalization_layer
             if self.normalization_layer is not None
@@ -68,29 +67,6 @@ class ConvBlock(nn.Module):
         """
         x = self.model(x)
         return x
-
-    def _padding_type_selector(self, padding_type: PaddingType) -> nn.Module:
-        """Selects the padding type.
-
-        Args:
-            padding_type (PaddingType): Padding type.
-
-        Raises:
-            NotImplementedError: If the padding type is not implemented.
-
-        Returns:
-            nn.Module: Padding layer.
-        """
-        if padding_type == PaddingType.REFLECT:
-            return nn.ReflectionPad2d(self.padding)
-        elif padding_type == PaddingType.REPLICATE:
-            return nn.ReplicationPad2d(self.padding)
-        elif padding_type == PaddingType.ZERO:
-            return nn.ZeroPad2d(self.padding)
-        else:
-            raise NotImplementedError(
-                f"Padding type {padding_type} is not implemented."
-            )
 
     def _normalization_selector(
         self, normalization_type: NormalizationType
