@@ -48,12 +48,8 @@ class ConvBlock(nn.Module):
                 padding_mode=padding_type.value,
                 bias=bias,
             ),
-            self.normalization_layer
-            if self.normalization_layer is not None
-            else nn.Identity(),
-            self._activation_layer
-            if self._activation_layer is not None
-            else nn.Identity(),
+            self.normalization_layer,
+            self._activation_layer,
         )
 
     def forward(self, x: torch.Tensor) -> torch.Tensor:
@@ -116,6 +112,8 @@ class ConvBlock(nn.Module):
             return nn.Tanh()
         elif activation_type == ActivationType.SIGMOID:
             return nn.Sigmoid()
+        elif activation_type == ActivationType.NONE:
+            return nn.Identity()
         else:
             raise NotImplementedError(
                 f"Activation type {activation_type} is not implemented."

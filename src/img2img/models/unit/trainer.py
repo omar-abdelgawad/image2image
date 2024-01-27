@@ -4,9 +4,10 @@ from torch import nn
 
 
 from img2img import cfg
+from img2img.utils import weights_init, get_model_list
 from img2img.models.unit.generator import Generator
 from img2img.models.unit.discriminator import Discriminator
-from img2img.models.unit.utils import weights_init, get_model_list, get_scheduler
+from img2img.models.unit.utils import get_scheduler
 
 
 class UNIT_Trainer(nn.Module):

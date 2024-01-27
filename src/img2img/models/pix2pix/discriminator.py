@@ -2,36 +2,8 @@
 import torch
 from torch import nn
 
-
-class CNNBlock(nn.Module):
-    """Block that consists of a Conv2d layer, BatchNorm2d layer and LeakyReLU activation function.
-
-    Args:
-        in_channels (int): Number of input channels.
-        out_channels (int): Number of output channels.
-        stride (int, optional): Stride for conv kernel. Defaults to 2.
-    """
-
-    def __init__(self, in_channels: int, out_channels: int, stride: int = 2) -> None:
-        super().__init__()
-        self.conv = nn.Sequential(
-            nn.Conv2d(
-                in_channels,
-                out_channels,
-                kernel_size=4,
-                stride=stride,
-                padding=1,
-                bias=False,
-                padding_mode="reflect",
-            ),
-            nn.BatchNorm2d(out_channels),
-            nn.LeakyReLU(0.2),
-        )
-
-    def forward(self, x: torch.Tensor) -> torch.Tensor:
-        """Forward pass."""
-        out: torch.Tensor = self.conv(x)
-        return out
+from img2img.nn.blocks import ConvBlock
+from img2img.cfg import ActivationType, NormalizationType, PaddingType
 
 
 class Discriminator(nn.Module):
@@ -47,24 +19,33 @@ class Discriminator(nn.Module):
         self, in_channels: int = 3, features=(64, 128, 256, 512)
     ) -> None:  # 256x256->30*30
         super().__init__()
-        self.initial = nn.Sequential(
-            nn.Conv2d(
-                in_channels * 2,
-                features[0],
-                kernel_size=4,
-                stride=2,
-                padding=1,
-                padding_mode="reflect",
-            ),
-            nn.LeakyReLU(0.2),
+
+        self.initial = ConvBlock(
+            in_channels=in_channels * 2,
+            out_channels=features[0],
+            kernel_size=4,
+            stride=2,
+            padding=1,
+            normalization_type=NormalizationType.NONE,
+            padding_type=PaddingType.REFLECT,
+            activation_type=ActivationType.LEAKY_RELU,
+            bias=True,
         )
         layers: list[nn.Module] = []
         in_channels = features[0]
         for feature in features[1:]:
             layers.append(
-                CNNBlock(
-                    in_channels, feature, stride=1 if feature == features[-1] else 2
-                )
+                ConvBlock(
+                    in_channels=in_channels,
+                    out_channels=feature,
+                    kernel_size=4,
+                    stride=1 if feature == features[-1] else 2,
+                    padding=1,
+                    normalization_type=NormalizationType.BATCH,
+                    padding_type=PaddingType.REFLECT,
+                    activation_type=ActivationType.LEAKY_RELU,
+                    bias=False,
+                ),
             )
             in_channels = feature
 

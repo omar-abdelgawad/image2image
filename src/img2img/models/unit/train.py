@@ -1,12 +1,11 @@
 from tqdm import tqdm
-from torch.utils.tensorboard import SummaryWriter
 
-# from torch.backends.cudnn import benchmark
+# from torch.utils.tensorboard import SummaryWriter
 
 from img2img import cfg
+from img2img.utils import prepare_sub_directories
 from img2img.models.unit.utils import (
     get_data_loaders,
-    prepare_sub_directories,
     save_some_examples,
 )
 from img2img.models.unit.trainer import UNIT_Trainer

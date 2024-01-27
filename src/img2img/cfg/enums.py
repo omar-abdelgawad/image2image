@@ -23,7 +23,7 @@ class PaddingType(Enum):
 
     REFLECT = "reflect"
     REPLICATE = "replicate"
-    ZERO = "zero"
+    ZERO = "zeros"
 
 
 class NormalizationType(Enum):

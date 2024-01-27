@@ -1,5 +1,3 @@
-import os
-import math
 from pathlib import Path
 
 # import yaml
@@ -9,7 +7,6 @@ from torch import nn
 from torch.utils.data import DataLoader
 
 # from torch.utils.tensorboard import SummaryWriter
-from torch.nn import init
 from torch.optim import lr_scheduler
 from torchvision.utils import save_image
 from torchvision.utils import make_grid
@@ -73,47 +70,6 @@ def get_data_loaders():
     return train_loader, val_loader
 
 
-def prepare_sub_directories(path: str | Path) -> None:
-    """Creates subdirectories for saving images and checkpoints.
-    Creates the directory given +
-        evaluation subdirectory
-        last_trained_weights subdirectory
-        saved_models subdirectory
-    """
-    path = Path(path)
-    os.makedirs(path, exist_ok=True)
-    os.makedirs(path / "evaluation", exist_ok=True)
-    os.makedirs(path / "last_trained_weights", exist_ok=True)
-    os.makedirs(path / "saved_models", exist_ok=True)
-
-
-def weights_init(init_type: str = "gaussian"):
-    """Initializes weights for the model."""
-
-    def init_fun(m):
-        classname = m.__class__.__name__
-        if (classname.find("Conv") == 0 or classname.find("Linear") == 0) and hasattr(
-            m, "weight"
-        ):
-            # print m.__class__.__name__
-            if init_type == "gaussian":
-                init.normal_(m.weight.data, 0.0, 0.02)
-            elif init_type == "xavier":
-                init.xavier_normal_(m.weight.data, gain=math.sqrt(2))
-            elif init_type == "kaiming":
-                init.kaiming_normal_(m.weight.data, a=0, mode="fan_in")
-            elif init_type == "orthogonal":
-                init.orthogonal_(m.weight.data, gain=math.sqrt(2))  # type: ignore
-            elif init_type == "default":
-                pass
-            else:
-                assert 0, f"Unsupported initialization: {init_type}"
-            if hasattr(m, "bias") and m.bias is not None:
-                init.constant_(m.bias.data, 0.0)
-
-    return init_fun
-
-
 def get_scheduler(optimizer, lr_policy, step_size=None, gamma=None, iterations=-1):
     """Returns a learning rate scheduler."""
     if lr_policy is None or lr_policy == "constant":
@@ -132,23 +88,6 @@ def get_scheduler(optimizer, lr_policy, step_size=None, gamma=None, iterations=-
             f"learning rate policy [{lr_policy}] is not implemented"
         )
     return scheduler
-
-
-# Get model list for resume
-def get_model_list(dirname, key):
-    """Returns the latest model from a directory."""
-    if os.path.exists(dirname) is False:
-        raise ValueError(f"{dirname} does not exist")
-    gen_models = [
-        os.path.join(dirname, f)
-        for f in os.listdir(dirname)
-        if os.path.isfile(os.path.join(dirname, f)) and key in f and ".pt" in f
-    ]
-    if not gen_models:
-        raise ValueError(f"No correct model extension '.pt' found in {dirname}")
-    gen_models.sort()
-    last_model_name = gen_models[-1]
-    return last_model_name
 
 
 # def get_config(config: str | Path):
