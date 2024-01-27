@@ -2,8 +2,6 @@
 from pathlib import Path
 
 from torch import cuda
-import albumentations as A
-from albumentations.pytorch import ToTensorV2
 
 from img2img.cli import custom_arg_parser
 from .enums import DatasetType, PaddingType, NormalizationType, ActivationType
@@ -73,6 +71,9 @@ class DIS_HYPERPARAMS:
     NUM_SCALES = 3
     PAD_TYPE = PaddingType.REFLECT
 
+
+import albumentations as A
+from albumentations.pytorch import ToTensorV2
 
 both_transform = A.Compose(
     [A.Resize(width=IMAGE_SIZE, height=IMAGE_SIZE), A.HorizontalFlip(p=0.5)],

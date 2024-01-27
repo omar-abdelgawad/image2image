@@ -61,12 +61,17 @@ def evaluate_val_set(
         val_loader (DataLoader): Dataloader for val set.
         folder (Path): Path for saving the images.
     """
+
+    def remove_normalization(x: torch.Tensor) -> torch.Tensor:
+        """Removes normalization from the image."""
+        return x * 0.5 + 0.5
+
     gen.eval()
     for idx, (x, y) in enumerate(val_loader):
         x, y = x.to(cfg.DEVICE), y.to(cfg.DEVICE)
         y_fake = gen(x)
-        y_fake = y_fake * 0.5 + 0.5
-        x = x * 0.5 + 0.5
+        y_fake = remove_normalization(y_fake)
+        x = remove_normalization(x)
         y_concat = torch.cat([y, y_fake], dim=3)
         print(f"Saving {idx} image")
         save_image(y_concat, folder / f"val_{idx}.png")
