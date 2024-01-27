@@ -4,7 +4,7 @@ from typing import Tuple
 import torch
 from torch import nn
 
-from img2img.unit.blocks import ResBlocks, ConvBlock
+from img2img.nn import ResBlocks, ConvBlock
 from img2img.cfg import PaddingType, ActivationType, NormalizationType
 
 

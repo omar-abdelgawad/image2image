@@ -2,7 +2,7 @@
 import torch
 from torch import nn
 
-from img2img.unit.blocks import ConvBlock, ConvBlocks
+from img2img.nn import ConvBlock, ConvBlocks
 from img2img.cfg import NormalizationType, PaddingType, ActivationType
 
 

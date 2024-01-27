@@ -1,4 +1,4 @@
-"""Blocks for the generator and discriminator."""
+"""Building Blocks for the generator and discriminator."""
 import torch
 from torch import nn
 
