@@ -4,12 +4,14 @@ from torch import nn
 
 
 from img2img import cfg
-from img2img.unit.generator import Generator
-from img2img.unit.discriminator import Discriminator
-from img2img.unit.utils import weights_init, get_model_list, get_scheduler
+from img2img.models.unit.generator import Generator
+from img2img.models.unit.discriminator import Discriminator
+from img2img.models.unit.utils import weights_init, get_model_list, get_scheduler
 
 
 class UNIT_Trainer(nn.Module):
+    """Trainer for UNIT model."""
+
     def __init__(self) -> None:
         super().__init__()
         self.gen_a = Generator(
@@ -142,7 +144,7 @@ class UNIT_Trainer(nn.Module):
             else None
         )
         # reconstruction loss
-        # TODO: why are these tensors attributes?
+        # TODO: why are these tensors attributes? -> he was storing them for debugging purposes
         self.loss_gen_recon_x_a = self.recon_criterion(x_a_recon, x_a)
         self.loss_gen_recon_x_b = self.recon_criterion(x_b_recon, x_b)
         self.loss_gen_recon_kl_a = self.__compute_kl(h_a)
@@ -266,8 +268,8 @@ class UNIT_Trainer(nn.Module):
 
     def save(self, snapshot_dir, iterations):
         # Save generators, discriminators, and optimizers
-        gen_name = os.path.join(snapshot_dir, "gen_%08d.pt" % (iterations + 1))
-        dis_name = os.path.join(snapshot_dir, "dis_%08d.pt" % (iterations + 1))
+        gen_name = os.path.join(snapshot_dir, f"gen_{iterations + 1:08d}.pt")
+        dis_name = os.path.join(snapshot_dir, f"dis_{iterations + 1:08d}.pt")
         opt_name = os.path.join(snapshot_dir, "optimizer.pt")
         torch.save(
             {"a": self.gen_a.state_dict(), "b": self.gen_b.state_dict()}, gen_name

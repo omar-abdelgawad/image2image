@@ -5,7 +5,7 @@ from torch import nn
 
 # import torch.nn.functional as F
 
-from img2img.tunit.blocks import GuidingNetworkConvBlock
+from img2img.models.tunit.blocks import GuidingNetworkConvBlock
 
 
 class GuidingNetwork(nn.Module):
