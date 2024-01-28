@@ -1,27 +1,44 @@
+""" Utility functions for the project. """
 import os
 import math
 from pathlib import Path
-from typing import Callable
+from typing import Callable, Literal
 
 from torch import nn
 from torch.nn import init
 
+from img2img import cfg
 
-def prepare_sub_directories(path: str | Path) -> None:
-    """Creates subdirectories for saving images and checkpoints.
-    Creates the directory given +
-        evaluation subdirectory
-        last_trained_weights subdirectory
-        saved_models subdirectory
+
+def prepare_sub_directories(path: str | Path) -> tuple[Path, Path]:
+    """Creates subdirectories for the model training.
+
+    Args:
+        path (str | Path): usually ./out/model_dataset_name
+
+    Returns:
+        tuple[Path, Path]: weights_dir, eval_dir
     """
+    # out
+    # ├── model_dataset
+    # │   ├── evaluation
+    # │   └── last_trained_weights
+    # └── model_dataset_2
+    #     ├── evaluation
+    #     └── last_trained_weights
     path = Path(path)
+    path = cfg.OUT_PATH / path
+    eval_path = path / "evaluation"
+    weights_path = path / "last_trained_weights"
     os.makedirs(path, exist_ok=True)
-    os.makedirs(path / "evaluation", exist_ok=True)
-    os.makedirs(path / "last_trained_weights", exist_ok=True)
-    os.makedirs(path / "saved_models", exist_ok=True)
+    os.makedirs(eval_path, exist_ok=True)
+    os.makedirs(weights_path, exist_ok=True)
+    return weights_path, eval_path
 
 
-def weights_init(init_type: str = "gaussian") -> Callable[[nn.Module], None]:
+def weights_init(
+    init_type: Literal["gaussian", "xavier", "kaiming", "orthogonal", "default"]
+) -> Callable[[nn.Module], None]:
     """Returns a function that Initializes weights for the model."""
 
     def init_fun(m: nn.Module) -> None:
@@ -29,21 +46,20 @@ def weights_init(init_type: str = "gaussian") -> Callable[[nn.Module], None]:
         if (classname.find("Conv") == 0 or classname.find("Linear") == 0) and hasattr(
             m, "weight"
         ):
-            # print m.__class__.__name__
             if init_type == "gaussian":
-                init.normal_(m.weight.data, 0.0, 0.02)
+                init.normal_(m.weight, 0.0, 0.02)
             elif init_type == "xavier":
-                init.xavier_normal_(m.weight.data, gain=math.sqrt(2))
+                init.xavier_normal_(m.weight, gain=math.sqrt(2))
             elif init_type == "kaiming":
-                init.kaiming_normal_(m.weight.data, a=0, mode="fan_in")
+                init.kaiming_normal_(m.weight, a=0, mode="fan_in")
             elif init_type == "orthogonal":
-                init.orthogonal_(m.weight.data, gain=math.sqrt(2))  # type: ignore
+                init.orthogonal_(m.weight, gain=math.sqrt(2))  # type: ignore
             elif init_type == "default":
                 pass
             else:
                 assert 0, f"Unsupported initialization: {init_type}"
             if hasattr(m, "bias") and m.bias is not None:
-                init.constant_(m.bias.data, 0.0)
+                init.constant_(m.bias, 0.0)
 
     return init_fun
 
@@ -59,7 +75,7 @@ def get_model_list(dirname, key):
         if os.path.isfile(os.path.join(dirname, f)) and key in f and ".pt" in f
     ]
     if not gen_models:
-        raise ValueError(f"No correct model extension '.pt' found in {dirname}")
+        assert 0, f"No correct model extension '.pt' found in {dirname}"
     gen_models.sort()
     last_model_name = gen_models[-1]
     return last_model_name

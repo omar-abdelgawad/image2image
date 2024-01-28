@@ -41,42 +41,6 @@ class FRN(nn.Module):
         return torch.max(self.gamma * x + self.beta, self.tau)
 
 
-# TODO: remove Magic numbers from this module
-def save_some_examples(
-    gen: nn.Module,
-    val_loader: DataLoader[tuple[torch.Tensor, torch.Tensor]],
-    epoch: int,
-    folder: Path,
-    writer: SummaryWriter,
-) -> None:
-    """Saves a grid of generated images. Also saves ground truth if epoch is 0.
-
-    Args:
-        gen (nn.Module): Generator model.
-        val_loader (DataLoader): Dataloader for train/val set.
-        epoch (int): Current epoch.
-        folder (Path): Folder to save the images in.
-    """
-    # TODO: refactor this function for single responsibility and improving readability
-    x, y = next(iter(val_loader))
-    x, y = x.to(cfg.DEVICE), y.to(cfg.DEVICE)
-    gen.eval()
-    with torch.inference_mode():
-        y_fake = gen(x)
-        y_fake = y_fake * 0.5 + 0.5
-        x = x * 0.5 + 0.5
-        x_concat = torch.cat([x, y_fake], dim=3)
-        save_image(x_concat, folder / f"sample_{epoch}.png")
-        img_grid = make_grid(x_concat)
-        writer.add_image(f"test_image {epoch=}", img_grid)
-        # save_image(y_fake, folder + f"/y_gen_{epoch}.png")
-        # save_image(x * 0.5 + 0.5, folder + f"/input_{epoch}.png")
-        if epoch == 0:
-            writer.add_graph(gen, x)
-            save_image(y * 0.5 + 0.5, folder / f"label_{epoch}.png")
-    gen.train()
-
-
 @torch.inference_mode()
 def evaluate_val_set(
     gen: nn.Module,

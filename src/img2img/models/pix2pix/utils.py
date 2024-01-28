@@ -12,7 +12,13 @@ from torchvision.utils import make_grid
 from img2img import cfg
 
 
+def remove_normalization(x: torch.Tensor) -> torch.Tensor:
+    """Removes normalization from the image."""
+    return x * cfg.NORM_STD + cfg.NORM_MEAN
+
+
 # TODO: remove Magic numbers from this module
+@torch.inference_mode()
 def save_some_examples(
     gen: nn.Module,
     val_loader: DataLoader[tuple[torch.Tensor, torch.Tensor]],
@@ -27,24 +33,26 @@ def save_some_examples(
         val_loader (DataLoader): Dataloader for train/val set.
         epoch (int): Current epoch.
         folder (Path): Folder to save the images in.
+        writer (SummaryWriter): Tensorboard writer.
     """
     # TODO: refactor this function for single responsibility and improving readability
+    gen.eval()
+
     x, y = next(iter(val_loader))
     x, y = x.to(cfg.DEVICE), y.to(cfg.DEVICE)
-    gen.eval()
-    with torch.inference_mode():
-        y_fake = gen(x)
-        y_fake = y_fake * 0.5 + 0.5
-        x = x * 0.5 + 0.5
-        x_concat = torch.cat([x, y_fake], dim=3)
-        save_image(x_concat, folder / f"sample_{epoch}.png")
-        img_grid = make_grid(x_concat)
-        writer.add_image(f"test_image {epoch=}", img_grid)
-        # save_image(y_fake, folder + f"/y_gen_{epoch}.png")
-        # save_image(x * 0.5 + 0.5, folder + f"/input_{epoch}.png")
-        if epoch == 0:
-            writer.add_graph(gen, x)
-            save_image(y * 0.5 + 0.5, folder / f"label_{epoch}.png")
+    if epoch == 0:
+        writer.add_graph(gen, x)
+        save_image(
+            remove_normalization(y), folder / f"label_{epoch}.png", nrow=4, padding=0
+        )
+
+    y_fake = gen(x)
+    y_fake = remove_normalization(y_fake)
+    x = remove_normalization(x)
+    x_concat = torch.cat([x, y_fake], dim=3)  # stack images side by side
+    save_image(x_concat, folder / f"sample_{epoch}.png", nrow=4, padding=0)
+    img_grid = make_grid(x_concat, nrow=4, padding=0)
+    writer.add_image(f"test_image {epoch=}", img_grid)
     gen.train()
 
 
@@ -61,10 +69,6 @@ def evaluate_val_set(
         val_loader (DataLoader): Dataloader for val set.
         folder (Path): Path for saving the images.
     """
-
-    def remove_normalization(x: torch.Tensor) -> torch.Tensor:
-        """Removes normalization from the image."""
-        return x * 0.5 + 0.5
 
     gen.eval()
     for idx, (x, y) in enumerate(val_loader):

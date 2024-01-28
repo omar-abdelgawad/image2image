@@ -29,7 +29,7 @@ def main() -> int:
     trainer = UNIT_Trainer()
     trainer.to(cfg.DEVICE)
     train_loader, val_loader = get_data_loaders()
-    model_name_from_dataset = "UNIT_" + cfg.CHOSEN_DATASET.value.stem
+    model_name_with_dataset = "unit_" + cfg.CHOSEN_DATASET.value.stem
     prepare_sub_directories("./out")
     # TODO: copy the config yaml file to the out directory
     # shutil.copy(opts.config, os.path.join(output_directory, 'config.yaml')) # copy config file to output folder
