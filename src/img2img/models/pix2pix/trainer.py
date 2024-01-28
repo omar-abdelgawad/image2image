@@ -41,6 +41,8 @@ class Pix2PixTrainer:
         self.checkpoint_gen = weights_path / "gen.pth.tar"
         self.checkpoint_disc = weights_path / "disc.pth.tar"
         self._WRITER = SummaryWriter("runs/expirement_1")
+        self.g_scaler = torch.cuda.amp.GradScaler()
+        self.d_scaler = torch.cuda.amp.GradScaler()
         self.disc = Discriminator(in_channels=3).to(self.device)
         self.gen = Generator(in_channels=3).to(self.device)
         self.opt_disc = optim.Adam(
@@ -77,8 +79,6 @@ class Pix2PixTrainer:
             shuffle=True,
             num_workers=num_workers,
         )
-        self.g_scaler = torch.cuda.amp.GradScaler()
-        self.d_scaler = torch.cuda.amp.GradScaler()
 
         val_dataset = create_dataset(
             root_dir=val_dataset_path, dataset_type=chosen_dataset
@@ -90,7 +90,7 @@ class Pix2PixTrainer:
     def train(self, num_epochs: int, save_model: bool, checkpoint_period: int) -> None:
         for epoch in range(num_epochs):
             print("Epoch:", epoch)
-            self.train_fn(epoch)
+            self.train_one_epoch(epoch)
             if save_model and epoch % checkpoint_period == 0:
                 save_checkpoint(self.gen, self.opt_gen, filename=self.checkpoint_gen)
                 save_checkpoint(self.disc, self.opt_disc, filename=self.checkpoint_disc)
@@ -103,7 +103,7 @@ class Pix2PixTrainer:
             )
         self._WRITER.close()
 
-    def train_fn(
+    def train_one_epoch(
         self,
         epoch: int,
     ) -> None:
@@ -129,7 +129,7 @@ class Pix2PixTrainer:
                 self._WRITER.add_scalar("d_loss", total_disc_loss, cur_stage)
 
             self.disc.zero_grad(set_to_none=True)
-            self.d_scaler.scale(total_disc_loss).backward()
+            self.d_scaler.scale(total_disc_loss).backward()  # type: ignore
             self.d_scaler.step(self.opt_disc)
             self.d_scaler.update()
 
@@ -144,6 +144,6 @@ class Pix2PixTrainer:
                 self._WRITER.add_scalar("g_loss", total_gen_loss, cur_stage)
 
             self.gen.zero_grad(set_to_none=True)
-            self.g_scaler.scale(total_gen_loss).backward()
+            self.g_scaler.scale(total_gen_loss).backward()  # type: ignore
             self.g_scaler.step(self.opt_gen)
             self.g_scaler.update()

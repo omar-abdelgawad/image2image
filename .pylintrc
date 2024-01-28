@@ -1,2 +1,2 @@
 [MESSAGES CONTROL]
-disable = fixme,no-member
+disable = fixme,no-member,not-callable
