@@ -1,6 +1,4 @@
-"""Generator for the GAN."""
-from typing import Tuple
-
+"""Generator for the UNIT architecture."""
 import torch
 from torch import nn
 
@@ -49,14 +47,14 @@ class Generator(nn.Module):
             pad_type=pad_type,
         )
 
-    def forward(self, images: torch.Tensor) -> Tuple[torch.Tensor, torch.Tensor]:
+    def forward(self, images: torch.Tensor) -> tuple[torch.Tensor, torch.Tensor]:
         """Forward pass of the generator.
 
         Args:
             images (torch.Tensor): Input images.
 
         Returns:
-            Tuple[torch.Tensor, torch.Tensor]: Generated images and encoded images.
+            tuple[torch.Tensor, torch.Tensor]: Generated images and encoded images.
         """
         encoded_images = self.enc(images)
 
@@ -70,14 +68,14 @@ class Generator(nn.Module):
 
         return gen_images, encoded_images
 
-    def encode(self, images: torch.Tensor) -> Tuple[torch.Tensor, torch.Tensor]:
+    def encode(self, images: torch.Tensor) -> tuple[torch.Tensor, torch.Tensor]:
         """Encode the input images.
 
         Args:
             images (torch.Tensor): Input images.
 
         Returns:
-            Tuple[torch.Tensor, torch.Tensor]: Encoded images and noise.
+            tuple[torch.Tensor, torch.Tensor]: Encoded images and noise.
         """
         encoded_images = self.enc(images)
         noise = torch.randn(encoded_images.size()).cuda(
@@ -207,7 +205,7 @@ class Decoder(nn.Module):
                 activation_type=activ,
             )
         )
-
+        # FIXME: replace the upsampling with a convtranspose layer
         for _ in range(n_upsample):
             self.layers += [
                 nn.Upsample(scale_factor=2),
@@ -253,10 +251,14 @@ class Decoder(nn.Module):
 
 
 # TODO: generate a test for checking output shapes of this module
-if __name__ == "__main__":
-    x_test = torch.randn(size=(1, 3, 256, 256)).to("cuda")
+def test():
+    x_test = torch.randn(size=(1, 3, 256, 256))
     y_test = torch.randn(size=(32, 512, 256, 256))
     # D = Decoder(512, 3, 4).to("cuda")
-    gen = Generator(3, 3, 64).to("cuda")
+    gen = Generator(3, 3, 64)
     res = gen(x_test)
     print(res[0].shape, res[1].shape)
+
+
+if __name__ == "__main__":
+    test()

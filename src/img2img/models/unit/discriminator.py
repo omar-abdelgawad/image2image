@@ -123,5 +123,6 @@ if __name__ == "__main__":
         activation_type=ActivationType.LEAKY_RELU,
         padding_type=PaddingType.REFLECT,
     )
-
-    print(D(x_test).shape)
+    out_shape = D(x_test).shape
+    assert out_shape == (32, 1, 8, 8)
+    print(out_shape)

@@ -6,13 +6,12 @@ import torch
 from torch import nn
 from torch.utils.data import DataLoader
 
-# from torch.utils.tensorboard import SummaryWriter
 from torch.optim import lr_scheduler
 from torchvision.utils import save_image
 from torchvision.utils import make_grid
 
 from img2img import cfg
-from img2img.data import create_dataset
+from img2img.models.unit.trainer import UNIT_Trainer
 
 # NOTE: The original implementation included vgg16 loss but we are not using it.
 
@@ -20,11 +19,10 @@ from img2img.data import create_dataset
 # TODO: remove Magic numbers from this module
 # TODO: unsupervised gen should cycle from x to y and vice versa
 def save_some_examples(
-    trainer: nn.Module,
+    trainer: UNIT_Trainer,
     val_loader: DataLoader[tuple[torch.Tensor, torch.Tensor]],
     epoch: int,
     folder: Path,
-    # writer: SummaryWriter,
 ) -> None:
     """Saves a grid of generated images. Also saves ground truth if epoch is 0.
 
@@ -49,25 +47,6 @@ def save_some_examples(
         #     writer.add_graph(trainer, x)
         #     save_image(y * 0.5 + 0.5, folder / f"label_{epoch}.png")
     trainer.train()
-
-
-def get_data_loaders():
-    """Returns the data loaders for training and validation."""
-    train_dataset = create_dataset(cfg.TRAIN_DATASET_PATH, cfg.DatasetType.EDGES2SHOES)
-    val_dataset = create_dataset(cfg.VAL_DATASET_PATH, cfg.DatasetType.EDGES2SHOES)
-    train_loader = DataLoader(
-        train_dataset,
-        batch_size=cfg.BATCH_SIZE,
-        shuffle=True,
-        num_workers=cfg.NUM_WORKERS,
-    )
-    val_loader = DataLoader(
-        val_dataset,
-        batch_size=cfg.VAL_BATCH_SIZE,
-        shuffle=False,
-        num_workers=cfg.NUM_WORKERS,
-    )
-    return train_loader, val_loader
 
 
 def get_scheduler(optimizer, lr_policy, step_size=None, gamma=None, iterations=-1):

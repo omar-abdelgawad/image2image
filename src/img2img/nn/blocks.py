@@ -105,9 +105,9 @@ class ConvBlock(nn.Module):
             nn.Module: Activation layer.
         """
         if activation_type == ActivationType.RELU:
-            return nn.ReLU()
+            return nn.ReLU(inplace=True)
         elif activation_type == ActivationType.LEAKY_RELU:
-            return nn.LeakyReLU(0.2)
+            return nn.LeakyReLU(0.2, inplace=True)
         elif activation_type == ActivationType.TANH:
             return nn.Tanh()
         elif activation_type == ActivationType.SIGMOID:
@@ -222,7 +222,7 @@ class ResBlock(nn.Module):
                 padding=padding,
                 normalization_type=normalization_type,
                 padding_type=padding_type,
-                activation_type=activation_type,
+                activation_type=ActivationType.NONE,
             ),
         )
 

@@ -1,16 +1,13 @@
+"""Train script for UNIT model."""
 from tqdm import tqdm
 
-# from torch.utils.tensorboard import SummaryWriter
 
 from img2img import cfg
+from img2img.data import get_loader
 from img2img.utils import prepare_sub_directories
-from img2img.models.unit.utils import (
-    get_data_loaders,
-    save_some_examples,
-)
-from img2img.models.unit.trainer import UNIT_Trainer
+from img2img.models.unit.utils import save_some_examples
 
-# _WRITER = SummaryWriter("runs/expirement_1")
+from img2img.models.unit.trainer import UNIT_Trainer
 
 
 def trainfn(trainer, train_loader):
@@ -28,9 +25,22 @@ def main() -> int:
     """Entry point."""
     trainer = UNIT_Trainer()
     trainer.to(cfg.DEVICE)
-    train_loader, val_loader = get_data_loaders()
-    model_name_with_dataset = "unit_" + cfg.CHOSEN_DATASET.value.stem
-    prepare_sub_directories("./out")
+    train_loader = get_loader(
+        root_dir=cfg.TRAIN_DATASET_PATH,
+        dataset_type=cfg.CHOSEN_DATASET,
+        batch_size=cfg.BATCH_SIZE,
+        shuffle=True,
+        num_workers=cfg.NUM_WORKERS,
+    )
+    val_loader = get_loader(
+        root_dir=cfg.VAL_DATASET_PATH,
+        dataset_type=cfg.CHOSEN_DATASET,
+        batch_size=cfg.VAL_BATCH_SIZE,
+        shuffle=False,
+        num_workers=cfg.NUM_WORKERS,
+    )
+    path = cfg.OUT_PATH / f"unit_{cfg.CHOSEN_DATASET.value.stem}"
+    prepare_sub_directories(path)
     # TODO: copy the config yaml file to the out directory
     # shutil.copy(opts.config, os.path.join(output_directory, 'config.yaml')) # copy config file to output folder
     # TODO: apply mixed precision (torch.cuda.amp.autocast)

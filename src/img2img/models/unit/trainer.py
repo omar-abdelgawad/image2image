@@ -9,6 +9,8 @@ from img2img.models.unit.generator import Generator
 from img2img.models.unit.discriminator import Discriminator
 from img2img.models.unit.utils import get_scheduler
 
+# FIXME: Turns out the paper's repo doesn't have weight sharing XD. Make sure to look at pytorch Gan's implementation.
+
 
 class UNIT_Trainer(nn.Module):
     """Trainer for UNIT model."""
@@ -33,6 +35,7 @@ class UNIT_Trainer(nn.Module):
             pad_type=cfg.GEN_HYPERPARAMS.PAD_TYPE,
             norm=cfg.GEN_HYPERPARAMS.NORM,
         )
+        # pytorch gan's implementation uses instance norm instead none.
         self.dis_a = Discriminator(
             in_channels=cfg.CHANNELS_IMG,
             out_channels=1,
@@ -74,7 +77,7 @@ class UNIT_Trainer(nn.Module):
             self.dis_opt, cfg.LR_POLICY, cfg.STEP_SIZE, cfg.GAMMA
         )
         self.gen_scheduler = get_scheduler(
-            self.dis_opt, cfg.LR_POLICY, cfg.STEP_SIZE, cfg.GAMMA
+            self.gen_opt, cfg.LR_POLICY, cfg.STEP_SIZE, cfg.GAMMA
         )
 
         # Network initialization
@@ -146,17 +149,17 @@ class UNIT_Trainer(nn.Module):
         )
         # reconstruction loss
         # TODO: why are these tensors attributes? -> he was storing them for debugging purposes
-        self.loss_gen_recon_x_a = self.recon_criterion(x_a_recon, x_a)
-        self.loss_gen_recon_x_b = self.recon_criterion(x_b_recon, x_b)
-        self.loss_gen_recon_kl_a = self.__compute_kl(h_a)
-        self.loss_gen_recon_kl_b = self.__compute_kl(h_b)
-        self.loss_gen_cyc_x_a = self.recon_criterion(x_aba, x_a)
-        self.loss_gen_cyc_x_b = self.recon_criterion(x_bab, x_b)
-        self.loss_gen_recon_kl_cyc_aba = self.__compute_kl(h_a_recon)
-        self.loss_gen_recon_kl_cyc_bab = self.__compute_kl(h_b_recon)
+        loss_gen_recon_x_a = self.recon_criterion(x_a_recon, x_a)
+        loss_gen_recon_x_b = self.recon_criterion(x_b_recon, x_b)
+        loss_gen_recon_kl_a = self.__compute_kl(h_a)
+        loss_gen_recon_kl_b = self.__compute_kl(h_b)
+        loss_gen_cyc_x_a = self.recon_criterion(x_aba, x_a)
+        loss_gen_cyc_x_b = self.recon_criterion(x_bab, x_b)
+        loss_gen_recon_kl_cyc_aba = self.__compute_kl(h_a_recon)
+        loss_gen_recon_kl_cyc_bab = self.__compute_kl(h_b_recon)
         # GAN loss
-        self.loss_gen_adv_a = self.dis_a.calc_gen_loss(x_ba)
-        self.loss_gen_adv_b = self.dis_b.calc_gen_loss(x_ab)
+        loss_gen_adv_a = self.dis_a.calc_gen_loss(x_ba)
+        loss_gen_adv_b = self.dis_b.calc_gen_loss(x_ab)
         # # domain-invariant perceptual loss
         # self.loss_gen_vgg_a = (
         #     self.compute_vgg_loss(self.vgg, x_ba, x_b)
@@ -169,21 +172,21 @@ class UNIT_Trainer(nn.Module):
         #     else 0
         # )
         # total loss
-        self.loss_gen_total = (
-            cfg.GAN_WEIGHT * self.loss_gen_adv_a
-            + cfg.GAN_WEIGHT * self.loss_gen_adv_b
-            + cfg.RECONSTRUCTION_X_WEIGHT * self.loss_gen_recon_x_a
-            + cfg.RECONSTRUCTION_KL_WEIGHT * self.loss_gen_recon_kl_a
-            + cfg.RECONSTRUCTION_X_WEIGHT * self.loss_gen_recon_x_b
-            + cfg.RECONSTRUCTION_KL_WEIGHT * self.loss_gen_recon_kl_b
-            + cfg.RECONSTRUCTION_X_CYC_WEIGHT * self.loss_gen_cyc_x_a
-            + cfg.RECONSTRUCTION_KL_CYC_WEIGHT * self.loss_gen_recon_kl_cyc_aba
-            + cfg.RECONSTRUCTION_X_CYC_WEIGHT * self.loss_gen_cyc_x_b
-            + cfg.RECONSTRUCTION_KL_CYC_WEIGHT * self.loss_gen_recon_kl_cyc_bab
+        loss_gen_total = (
+            cfg.GAN_WEIGHT * loss_gen_adv_a
+            + cfg.GAN_WEIGHT * loss_gen_adv_b
+            + cfg.RECONSTRUCTION_X_WEIGHT * loss_gen_recon_x_a
+            + cfg.RECONSTRUCTION_KL_WEIGHT * loss_gen_recon_kl_a
+            + cfg.RECONSTRUCTION_X_WEIGHT * loss_gen_recon_x_b
+            + cfg.RECONSTRUCTION_KL_WEIGHT * loss_gen_recon_kl_b
+            + cfg.RECONSTRUCTION_X_CYC_WEIGHT * loss_gen_cyc_x_a
+            + cfg.RECONSTRUCTION_KL_CYC_WEIGHT * loss_gen_recon_kl_cyc_aba
+            + cfg.RECONSTRUCTION_X_CYC_WEIGHT * loss_gen_cyc_x_b
+            + cfg.RECONSTRUCTION_KL_CYC_WEIGHT * loss_gen_recon_kl_cyc_bab
             # + hyperparameters["vgg_w"] * self.loss_gen_vgg_a
             # + hyperparameters["vgg_w"] * self.loss_gen_vgg_b
         )
-        self.loss_gen_total.backward()
+        loss_gen_total.backward()
         self.gen_opt.step()
 
     def sample(
