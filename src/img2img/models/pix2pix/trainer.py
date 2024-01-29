@@ -4,12 +4,11 @@ from pathlib import Path
 import torch
 from torch import nn
 from torch import optim
-from torch.utils.data import DataLoader
 from torch.utils.tensorboard import SummaryWriter
 from tqdm import tqdm
 
 from img2img.cfg import DatasetType
-from img2img.data import create_dataset
+from img2img.data import get_loader
 from img2img.models.pix2pix.generator import Generator
 from img2img.models.pix2pix.discriminator import Discriminator
 from img2img.models.pix2pix.utils import (
@@ -21,10 +20,13 @@ from img2img.utils import prepare_sub_directories
 
 
 class Pix2PixTrainer:
+    """Trainer class for pix2pix model."""
+
     def __init__(
         self,
         load_model: bool,
         learning_rate: float,
+        betas: tuple[float, float],
         train_batch_size: int,
         val_batch_size: int,
         device: str,
@@ -48,12 +50,12 @@ class Pix2PixTrainer:
         self.opt_disc = optim.Adam(
             self.disc.parameters(),
             lr=learning_rate,
-            betas=(0.5, 0.999),
+            betas=betas,
         )
         self.opt_gen = optim.Adam(
             self.gen.parameters(),
             lr=learning_rate,
-            betas=(0.5, 0.999),
+            betas=betas,
         )
         self.binary_cross_with_logits_loss = nn.BCEWithLogitsLoss()
         self.l1_loss = nn.L1Loss()
@@ -70,27 +72,34 @@ class Pix2PixTrainer:
                 self.opt_disc,
                 learning_rate,
             )
-        train_dataset = create_dataset(
-            root_dir=train_dataset_path, dataset_type=chosen_dataset
-        )
-        self.train_loader = DataLoader(
-            train_dataset,
+
+        self.train_loader = get_loader(
+            root_dir=train_dataset_path,
+            dataset_type=chosen_dataset,
             batch_size=train_batch_size,
             shuffle=True,
             num_workers=num_workers,
         )
 
-        val_dataset = create_dataset(
-            root_dir=val_dataset_path, dataset_type=chosen_dataset
-        )
-        self.val_loader = DataLoader(
-            val_dataset, batch_size=val_batch_size, shuffle=False
+        self.val_loader = get_loader(
+            root_dir=val_dataset_path,
+            dataset_type=chosen_dataset,
+            batch_size=val_batch_size,
+            shuffle=False,
+            num_workers=0,
         )
 
     def train(self, num_epochs: int, save_model: bool, checkpoint_period: int) -> None:
+        """Main training loop.
+
+        Args:
+            num_epochs (int): number of epochs.
+            save_model (bool): if True saves the model every checkpoint_period.
+            checkpoint_period (int): number of epochs between checkpoints.
+        """
         for epoch in range(num_epochs):
             print("Epoch:", epoch)
-            self.train_one_epoch(epoch)
+            self._train_one_epoch(epoch)
             if save_model and epoch % checkpoint_period == 0:
                 save_checkpoint(self.gen, self.opt_gen, filename=self.checkpoint_gen)
                 save_checkpoint(self.disc, self.opt_disc, filename=self.checkpoint_disc)
@@ -103,7 +112,7 @@ class Pix2PixTrainer:
             )
         self._WRITER.close()
 
-    def train_one_epoch(
+    def _train_one_epoch(
         self,
         epoch: int,
     ) -> None:

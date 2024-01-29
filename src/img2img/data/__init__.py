@@ -1,4 +1,4 @@
 """ Data module interface."""
-from .dataset import create_dataset
+from .dataset import get_loader
 
-__all__ = ["create_dataset"]
+__all__ = ["get_loader"]

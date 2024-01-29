@@ -11,6 +11,7 @@ from .enums import DatasetType, PaddingType, NormalizationType, ActivationType
 args = custom_arg_parser()
 DEVICE = "cuda" if cuda.is_available() else "cpu"
 LEARNING_RATE = args.rate
+BETA_OPTIM = (0.5, 0.999)
 BATCH_SIZE = args.batch_size
 NUM_WORKERS = args.num_workers
 IMAGE_SIZE = args.image_size
@@ -22,7 +23,7 @@ CHECKPOINT_PERIOD = 5
 NUM_EPOCHS = args.num_epochs
 LOAD_MODEL = args.load_model
 SAVE_MODEL = args.save_model
-CHOSEN_DATASET = DatasetType.NATURAL_VIEW_DATASET
+CHOSEN_DATASET = DatasetType.ANIME_DATASET
 TRAIN_DATASET_PATH = CHOSEN_DATASET.value / "train"
 VAL_DATASET_PATH = CHOSEN_DATASET.value / "val"
 OUT_PATH = Path("./out")
@@ -34,7 +35,6 @@ CHANNELS_MULTIPLIER = 64
 K = args.cluster_number
 
 # unit config
-BETA_OPTIM = (0.5, 0.999)
 WEIGHT_DECAY = 0.0001
 LR_POLICY = "step"
 STEP_SIZE = 100000

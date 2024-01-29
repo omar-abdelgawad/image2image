@@ -4,10 +4,10 @@ from pathlib import Path
 from typing import Any
 
 import numpy as np
-import torch
 import cv2
+import torch
 from PIL import Image
-from torch.utils.data import Dataset
+from torch.utils.data import Dataset, DataLoader
 
 from img2img import cfg
 
@@ -66,13 +66,10 @@ class NaturaViewDataset(Dataset[tuple[torch.Tensor, torch.Tensor]]):
         img_file_name = self.list_files[index]
         img_path = os.path.join(self.root_dir, img_file_name)
 
-        image = cv2.imread(img_path)
-        image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
-        gray = cv2.cvtColor(image, cv2.COLOR_RGB2GRAY)
-        # stitch images together with rgb on the left
-        image = np.concatenate((image, cv2.cvtColor(gray, cv2.COLOR_GRAY2RGB)), axis=1)
-        target_image = image[:, : image.shape[1] // 2, :]
-        input_image = image[:, image.shape[1] // 2 :, :]
+        target_image = cv2.imread(img_path)
+        target_image = cv2.cvtColor(target_image, cv2.COLOR_BGR2RGB)
+        input_image = cv2.cvtColor(target_image, cv2.COLOR_RGB2GRAY)
+        input_image = cv2.cvtColor(input_image, cv2.COLOR_GRAY2RGB)
 
         augmentations = cfg.both_transform(image=input_image, image0=target_image)
         input_image, target_image = augmentations["image"], augmentations["image0"]
@@ -175,6 +172,34 @@ def create_dataset(root_dir: Path | str, dataset_type: cfg.DatasetType) -> Datas
         return AFHQCatDataset(root_dir)
     else:
         raise ValueError("Dataset type not supported")
+
+
+def get_loader(
+    root_dir: Path | str,
+    dataset_type: cfg.DatasetType,
+    batch_size: int,
+    shuffle: bool,
+    num_workers: int,
+) -> DataLoader[Any]:
+    """Create a Dataloader from given root_dir and dataset_type.
+
+    Args:
+        root_dir (Path | str): Path for Dataset dir.
+        dataset_type (cfg.DatasetType): Type for dataset to create.
+
+    Raises:
+        ValueError: If dataset_type is not supported.
+
+    Returns:
+        Dataset: Pytorch Dataset object.
+    """
+    dataset = create_dataset(root_dir, dataset_type)
+    return DataLoader(
+        dataset,
+        batch_size=batch_size,
+        shuffle=shuffle,
+        num_workers=num_workers,
+    )
 
 
 def test():

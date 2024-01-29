@@ -78,7 +78,7 @@ def evaluate_val_set(
         x = remove_normalization(x)
         y_concat = torch.cat([y, y_fake], dim=3)
         print(f"Saving {idx} image")
-        save_image(y_concat, folder / f"val_{idx}.png")
+        save_image(y_concat, folder / f"val_{idx}.png", nrow=4, padding=0)
     gen.train()
 
 

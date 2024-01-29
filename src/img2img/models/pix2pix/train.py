@@ -9,6 +9,7 @@ def main() -> int:
     trainer = Pix2PixTrainer(
         load_model=cfg.LOAD_MODEL,
         learning_rate=cfg.LEARNING_RATE,
+        betas=cfg.BETA_OPTIM,
         train_batch_size=cfg.BATCH_SIZE,
         val_batch_size=cfg.VAL_BATCH_SIZE,
         device=cfg.DEVICE,

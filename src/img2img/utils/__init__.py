@@ -26,8 +26,8 @@ def prepare_sub_directories(path: str | Path) -> tuple[Path, Path]:
     # └── model_dataset_2
     #     ├── evaluation
     #     └── last_trained_weights
+
     path = Path(path)
-    path = cfg.OUT_PATH / path
     eval_path = path / "evaluation"
     weights_path = path / "last_trained_weights"
     os.makedirs(path, exist_ok=True)
