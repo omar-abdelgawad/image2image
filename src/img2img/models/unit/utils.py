@@ -22,7 +22,7 @@ def save_some_examples(
     trainer: UNIT_Trainer,
     val_loader: DataLoader[tuple[torch.Tensor, torch.Tensor]],
     epoch: int,
-    folder: Path,
+    dir_path: Path,
 ) -> None:
     """Saves a grid of generated images. Also saves ground truth if epoch is 0.
 
@@ -30,7 +30,7 @@ def save_some_examples(
         gen (nn.Module): Generator model.
         val_loader (DataLoader): Dataloader for train/val set.
         epoch (int): Current epoch.
-        folder (Path): Folder to save the images in.
+        dir_path (Path): dir to save the images in.
     """
     # TODO: refactor this function for single responsibility and improving readability
     x, y = next(iter(val_loader))
@@ -38,10 +38,12 @@ def save_some_examples(
     trainer.eval()
     with torch.inference_mode():
         image_outputs = trainer.sample(x, y)
-        image_outputs = [images.expand(-1, 3, -1, -1) for images in image_outputs]
-        image_tensor = torch.cat(image_outputs, dim=0)
+        expanded_image_outputs = [
+            images.expand(-1, 3, -1, -1) for images in image_outputs
+        ]
+        image_tensor = torch.cat(expanded_image_outputs, dim=0)
         image_grid = make_grid(image_tensor, normalize=True)
-        save_image(image_grid, folder / f"sample_{epoch}.png")
+        save_image(image_grid, dir_path / f"sample_{epoch}.png")
         # writer.add_image(f"test_image {epoch=}", make_grid(x_concat))
         # if epoch == 0:
         #     writer.add_graph(trainer, x)

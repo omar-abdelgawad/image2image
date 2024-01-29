@@ -40,23 +40,23 @@ def main() -> int:
         num_workers=cfg.NUM_WORKERS,
     )
     path = cfg.OUT_PATH / f"unit_{cfg.CHOSEN_DATASET.value.stem}"
-    prepare_sub_directories(path)
+    weights_dir, val_dir = prepare_sub_directories(path)
     # TODO: copy the config yaml file to the out directory
     # shutil.copy(opts.config, os.path.join(output_directory, 'config.yaml')) # copy config file to output folder
     # TODO: apply mixed precision (torch.cuda.amp.autocast)
     if cfg.LOAD_MODEL:
-        trainer.resume(cfg.CHECKPOINT_DIR)
+        trainer.resume(weights_dir)
     for epoch in range(cfg.NUM_EPOCHS):
         print(f"Epoch: {epoch}")
         save_some_examples(
-            trainer,
-            val_loader,
-            epoch,
-            folder=cfg.EVALUATION_PATH,
+            trainer=trainer,
+            val_loader=val_loader,
+            epoch=epoch,
+            dir_path=val_dir,
         )
         trainfn(trainer=trainer, train_loader=train_loader)
         if cfg.SAVE_MODEL and epoch % 5 == 0:
-            trainer.save(cfg.CHECKPOINT_DIR, epoch)
+            trainer.save(weights_dir, epoch)
     return 0
 
 
