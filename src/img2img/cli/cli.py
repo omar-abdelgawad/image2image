@@ -6,7 +6,7 @@ from typing import Sequence
 from .utils import is_positive_float, is_positive_int
 
 
-def custom_arg_parser(argv: Optional[Sequence[str]] = None) -> argparse.Namespace:
+def get_main_parser(argv: Optional[Sequence[str]] = None) -> argparse.Namespace:
     """A custom argument parser for the model
 
     Args:
@@ -20,6 +20,19 @@ def custom_arg_parser(argv: Optional[Sequence[str]] = None) -> argparse.Namespac
         formatter_class=argparse.ArgumentDefaultsHelpFormatter,
     )
 
+    add_shared_args(parser)
+    add_tunit_args(parser)
+    args = parser.parse_args(argv)
+    return args
+
+
+def add_shared_args(parser: argparse.ArgumentParser) -> None:
+    """Add shared arguments to the parser and returns it.
+
+    Args:
+        parser (argparse.ArgumentParser): parser to add arguments to.
+
+    """
     parser.add_argument(
         "-r",
         "--rate",
@@ -93,6 +106,13 @@ def custom_arg_parser(argv: Optional[Sequence[str]] = None) -> argparse.Namespac
         dest="val_batch_size",
     )
 
+
+def add_tunit_args(parser: argparse.ArgumentParser) -> None:
+    """Add tunit args to the parser.
+
+    Args:
+        parser (argparse.ArgumentParser): parser to add arguments to.
+    """
     parser.add_argument(
         "-k",
         "--cluster-number",
@@ -101,6 +121,3 @@ def custom_arg_parser(argv: Optional[Sequence[str]] = None) -> argparse.Namespac
         help="The number of clusters to use in the clustering step",
         dest="cluster_number",
     )
-
-    args = parser.parse_args(argv)
-    return args

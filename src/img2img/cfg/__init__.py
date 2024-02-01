@@ -3,12 +3,12 @@ from pathlib import Path
 
 from torch import cuda
 
-from img2img.cli import custom_arg_parser
+from img2img.cli import get_main_parser
 from .enums import DatasetType, PaddingType, NormalizationType, ActivationType
 
 # TODO: Add logger instead of all the print statements.
 
-args = custom_arg_parser()
+args = get_main_parser()
 DEVICE = "cuda" if cuda.is_available() else "cpu"
 LEARNING_RATE = args.rate
 BETA_OPTIM = (0.5, 0.999)
