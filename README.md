@@ -1,9 +1,9 @@
 [![license](https://img.shields.io/badge/license-MIT-blue)](https://opensource.org/license/mit/)
 [![Tests](https://github.com/omar-abdelgawad/image2image/actions/workflows/tests.yml/badge.svg)](https://github.com/omar-abdelgawad/image2image/actions)
-[![PythonVersion](https://img.shields.io/badge/python-3.8%20%7C%203.9%20%7C%203.10-blue)](https://img.shields.io/badge/python-3.8%20%7C%203.9%20%7C%203.10-blue)
+[![PythonVersion](https://img.shields.io/badge/python-3.8%20%7C%203.9%20%7C%203.10-blue)](https://www.python.org/downloads/release/python-380/)
 [![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
 
-# image2image
+# img2img
 Seminar project Unsupervised Image-to-Image translation using GANs
 
 

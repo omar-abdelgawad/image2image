@@ -11,7 +11,7 @@ from torchvision.utils import save_image
 from torchvision.utils import make_grid
 
 from img2img import cfg
-from img2img.models.unit.trainer import UNIT_Trainer
+from img2img.engine import Trainer
 
 # NOTE: The original implementation included vgg16 loss but we are not using it.
 
@@ -19,7 +19,7 @@ from img2img.models.unit.trainer import UNIT_Trainer
 # TODO: remove Magic numbers from this module
 # TODO: unsupervised gen should cycle from x to y and vice versa
 def save_some_examples(
-    trainer: UNIT_Trainer,
+    trainer: Trainer,
     val_loader: DataLoader[tuple[torch.Tensor, torch.Tensor]],
     epoch: int,
     dir_path: Path,
