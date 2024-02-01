@@ -75,17 +75,3 @@ class Discriminator(nn.Module):
         x = self.initial(x)
         x = self.model(x)
         return x
-
-
-def test() -> None:
-    """Test function for finding shape of output tensor."""
-    x = torch.randn((1, 3, 256, 256))
-    y = torch.randn((1, 3, 256, 256))
-    model = Discriminator()
-    preds = model(x, y)
-    print(preds)
-    print(preds.shape)
-
-
-if __name__ == "__main__":
-    test()
