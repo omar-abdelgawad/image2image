@@ -7,22 +7,13 @@
 Seminar project Unsupervised Image-to-Image translation using GANs
 
 
-## Table of Contents
-
-- [image2image](#image2image)
-  - [Table of Contents](#table-of-contents)
-  - [Installation/Usage for contributors](#installationusage-for-contributors)
-  - [Implementations](#implementations)
-    - [UNIT](#unit)
-    - [pix2pix](#pix2pix)
-
 ## Installation/Usage for contributors
 ```bash
  $ git clone https://github.com/omar-abdelgawad/image2image.git
  $ cd image2image/
  $ virtualenv venv
  $ source venv/bin/activate
- $ pip install -e .['testing']
+ $ pip install -e ".[dev]"
 ``` 
 ## Implementations
 
