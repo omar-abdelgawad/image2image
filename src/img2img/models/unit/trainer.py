@@ -189,9 +189,7 @@ class UNIT_Trainer(nn.Module):
         loss_gen_total.backward()
         self.gen_opt.step()
 
-    def sample(
-        self, x_a: torch.Tensor, x_b: torch.Tensor
-    ) -> tuple[
+    def sample(self, x_a: torch.Tensor, x_b: torch.Tensor) -> tuple[
         torch.Tensor,
         torch.Tensor,
         torch.Tensor,
@@ -204,6 +202,7 @@ class UNIT_Trainer(nn.Module):
         for i in range(x_a.size(0)):
             h_a, _ = self.gen_a.encode(x_a[i].unsqueeze(0))
             h_b, _ = self.gen_b.encode(x_b[i].unsqueeze(0))
+            print(h_a.shape, h_b.shape)
             x_a_recon.append(self.gen_a.decode(h_a))
             x_b_recon.append(self.gen_b.decode(h_b))
             x_ba.append(self.gen_a.decode(h_b))

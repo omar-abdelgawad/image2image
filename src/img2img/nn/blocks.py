@@ -1,4 +1,5 @@
 """Building Blocks for the generator and discriminator."""
+
 import torch
 from torch import nn
 
@@ -85,6 +86,7 @@ class ConvBlock(nn.Module):
             return nn.InstanceNorm2d(self.norm_dim)
         elif normalization_type == NormalizationType.LAYER:
             return nn.LayerNorm(self.norm_dim)
+        # TODO: add adain
         elif normalization_type == NormalizationType.NONE:
             return nn.Identity()
         else:

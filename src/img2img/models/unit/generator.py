@@ -1,4 +1,5 @@
 """Generator for the UNIT architecture."""
+
 import torch
 from torch import nn
 
@@ -215,7 +216,7 @@ class Decoder(nn.Module):
                     kernel_size=5,
                     stride=1,
                     padding=2,
-                    normalization_type=NormalizationType.LAYER,
+                    normalization_type=NormalizationType.INSTANCE,  # FIXME: original implementation uses layer norm
                     padding_type=pad_type,
                     activation_type=activ,
                 ),
@@ -246,6 +247,7 @@ class Decoder(nn.Module):
         Returns:
             torch.Tensor: Decoded images.
         """
+        # print(f"from decoder x.shape is {x.shape}")
         x = self.model(x)
         return x
 
@@ -255,10 +257,11 @@ def test():
     x_test = torch.randn(size=(1, 3, 256, 256))
     y_test = torch.randn(size=(32, 512, 256, 256))
     # D = Decoder(512, 3, 4).to("cuda")
-    gen = Generator(3, 3, 64)
+    gen = Generator(3, 64)
     res = gen(x_test)
     print(res[0].shape, res[1].shape)
 
 
 if __name__ == "__main__":
-    test()
+    """Nothing here"""
+    # test()

@@ -1,4 +1,5 @@
 """Train script for UNIT model."""
+
 from tqdm import tqdm
 
 
@@ -14,7 +15,7 @@ def trainfn(trainer, train_loader):
     loop = tqdm(train_loader, leave=True)
     for idx, (images_a, images_b) in enumerate(loop):
         images_a, images_b = images_a.to(cfg.DEVICE), images_b.to(cfg.DEVICE)
-        trainer.update_learning_rate()
+        # trainer.update_learning_rate()
 
         trainer.dis_update(images_a, images_b)
         trainer.gen_update(images_a, images_b)
@@ -48,13 +49,13 @@ def main() -> int:
         trainer.resume(weights_dir)
     for epoch in range(cfg.NUM_EPOCHS):
         print(f"Epoch: {epoch}")
+        trainfn(trainer=trainer, train_loader=train_loader)
         save_some_examples(
             trainer=trainer,
             val_loader=val_loader,
             epoch=epoch,
             dir_path=val_dir,
         )
-        trainfn(trainer=trainer, train_loader=train_loader)
         if cfg.SAVE_MODEL and epoch % 5 == 0:
             trainer.save(weights_dir, epoch)
     return 0
