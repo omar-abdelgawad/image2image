@@ -1,3 +1,9 @@
+"""Use
+`
+        flask run --debug
+`
+    to active the API server"""
+
 from app import create_app
 
 app = create_app()
