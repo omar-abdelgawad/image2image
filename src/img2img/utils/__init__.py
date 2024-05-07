@@ -1,4 +1,5 @@
-""" Utility functions for the project. """
+"""Utility functions for the project."""
+
 import os
 import math
 from pathlib import Path
@@ -7,7 +8,7 @@ from typing import Callable, Literal
 from torch import nn
 from torch.nn import init
 
-from img2img import cfg
+# from img2img import cfg
 
 
 def prepare_sub_directories(path: str | Path) -> tuple[Path, Path]:
@@ -37,7 +38,7 @@ def prepare_sub_directories(path: str | Path) -> tuple[Path, Path]:
 
 
 def weights_init(
-    init_type: str | Literal["gaussian", "xavier", "kaiming", "orthogonal", "default"]
+    init_type: str | Literal["gaussian", "xavier", "kaiming", "orthogonal", "default"],
 ) -> Callable[[nn.Module], None]:
     """Returns a function that Initializes weights for the model."""
 

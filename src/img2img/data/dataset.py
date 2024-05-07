@@ -1,4 +1,5 @@
 """Dataset Module. Contains Dataset classes that can be constructed using the path."""
+
 import os
 from pathlib import Path
 from typing import Any
