@@ -3,9 +3,7 @@ from PIL import Image
 
 from img2img.models.pix2pix.predictor import Pix2PixPredictor
 
-predictor = Pix2PixPredictor(
-    model_path="/home/omarabdelgawad/my_workspace/projects/github_repos/image2image/out/saved_models/anime_training/gen.pth.tar"
-)
+predictor = Pix2PixPredictor(model_path="./out/saved_models/anime_training/gen.pth.tar")
 
 
 def process_image(image_file):

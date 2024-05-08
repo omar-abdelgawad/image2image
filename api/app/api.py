@@ -12,7 +12,6 @@ api_blueprint = Blueprint("api", __name__)
 def process_image_route():
     # if "image" not in request.files:
     #     return jsonify({"error": "No image provided"}), 400
-
     img_byte_array = io.BytesIO()
 
     base64_image_data = request.json["image"]
