@@ -31,7 +31,6 @@ def prepare_sub_directories(path: str | Path) -> tuple[Path, Path]:
     path = Path(path)
     eval_path = path / "evaluation"
     weights_path = path / "last_trained_weights"
-    os.makedirs(path, exist_ok=True)
     os.makedirs(eval_path, exist_ok=True)
     os.makedirs(weights_path, exist_ok=True)
     return weights_path, eval_path

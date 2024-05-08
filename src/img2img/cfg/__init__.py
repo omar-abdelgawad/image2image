@@ -1,4 +1,5 @@
-""" Configuration module Interface. """
+"""Configuration module Interface."""
+
 from pathlib import Path
 
 from torch import cuda

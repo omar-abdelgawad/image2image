@@ -1,4 +1,5 @@
-""" Trainer class"""
+"""Trainer class"""
+
 from pathlib import Path
 
 import torch
