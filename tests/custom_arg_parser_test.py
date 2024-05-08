@@ -1,5 +1,5 @@
-"""Test module for custom_arg_parser function"""
-from pix2pix.cli import custom_arg_parser
+"""Test module for get_main_parser function"""
+from img2img.cli import get_main_parser
 
 
 # TODO: use pytest.mark.parametrize instead of multiple tests
@@ -18,7 +18,7 @@ from pix2pix.cli import custom_arg_parser
 # )
 def test_default_arguments():
     """Test default arguments"""
-    args = custom_arg_parser([])
+    args = get_main_parser([])
 
     assert args.rate == 2e-4
     assert args.batch_size == 16
