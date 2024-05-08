@@ -11,6 +11,9 @@ def process_image_route():
     if "image" not in request.files:
         return jsonify({"error": "No image provided"}), 400
     image_file = request.files["image"]
-    # image_file.save("save_images/saved.png")
     processed_image = process_image(image_file)
-    return processed_image
+    image_file.save("save_images/saved_test_image.png")
+    # get absolute path of the saved image
+    abs_path = __file__.replace("api.py", "save_images/saved_test_image.png")
+    # return processed_image
+    return abs_path
