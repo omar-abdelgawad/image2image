@@ -1,6 +1,8 @@
 from PIL import Image
 from io import BytesIO
+from img2img.models.pix2pix.predictor import Pix2PixPredictor
 
+predictor = Pix2PixPredictor(model_path= " ")
 
 def process_image(image_file):
     # Open the image
