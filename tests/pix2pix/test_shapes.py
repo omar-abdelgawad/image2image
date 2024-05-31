@@ -1,10 +1,10 @@
 """Tests for the shapes of the pix2pix models."""
-import torch
+
 import pytest
+import torch
 
 from img2img.models.pix2pix.discriminator import Discriminator
 from img2img.models.pix2pix.generator import Generator
-
 
 shapes = [(5, 3, 256, 256), (1, 3, 512, 512)]
 

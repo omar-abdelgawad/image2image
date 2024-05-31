@@ -1,21 +1,19 @@
 """Utility functions for the model."""
+
 from pathlib import Path
 
 import torch
-from torch import nn
-from torch import optim
-from torch.utils.data import DataLoader
 import torch.nn.functional as F
-from torch.utils.tensorboard import SummaryWriter
+from torch import nn, optim
+from torch.utils.data import DataLoader
 from torchvision.utils import save_image
-from torchvision.utils import make_grid
 
 from img2img import cfg
 
 
 class AdaptiveInstanceNorm2d(nn.Module):
     def __init__(self, num_features, eps=1e-5, momentum=0.1, affine=True):
-        super(AdaptiveInstanceNorm2d, self).__init__()
+        super().__init__()
         self.bn = nn.BatchNorm2d(num_features, eps, momentum, affine)
         self.a = nn.Parameter(torch.FloatTensor(1, 1, 1, 1))
         self.b = nn.Parameter(torch.FloatTensor(1, 1, 1, 1))
@@ -26,7 +24,7 @@ class AdaptiveInstanceNorm2d(nn.Module):
 
 class FRN(nn.Module):
     def __init__(self, num_features, eps=1e-6):
-        super(FRN, self).__init__()
+        super().__init__()
         self.tau = nn.Parameter(torch.zeros(1, num_features, 1, 1))
         self.gamma = nn.Parameter(torch.ones(1, num_features, 1, 1))
         self.beta = nn.Parameter(torch.zeros(1, num_features, 1, 1))

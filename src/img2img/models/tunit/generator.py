@@ -1,12 +1,10 @@
 """Generator model for T-UNIT."""
+
 import torch
 from torch import nn
 
 # from torch.nn import init
-
-
-from img2img.models.tunit.blocks import GenConvBlock
-from img2img.models.tunit.blocks import GenResBlock
+from img2img.models.tunit.blocks import GenConvBlock, GenResBlock
 
 # from tunit.blocks import LinearBlock
 

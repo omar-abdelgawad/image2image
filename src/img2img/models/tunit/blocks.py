@@ -1,10 +1,10 @@
 """Blocks for TUNIT"""
+
 import torch
 from torch import nn
 from torch.nn import functional as F
 
-from img2img.models.tunit.utils import AdaptiveInstanceNorm2d
-from img2img.models.tunit.utils import FRN
+from img2img.models.tunit.utils import FRN, AdaptiveInstanceNorm2d
 
 
 class GenConvBlock(nn.Module):
@@ -261,7 +261,7 @@ class DiscResBlock(nn.Module):
 
 class LinearBlock(nn.Module):
     def __init__(self, in_dim, out_dim, norm="none", act="relu", use_sn=False):
-        super(LinearBlock, self).__init__()
+        super().__init__()
         use_bias = True
         self.fc = nn.Linear(in_dim, out_dim, bias=use_bias)
         if use_sn:
@@ -276,7 +276,7 @@ class LinearBlock(nn.Module):
         elif norm == "none":
             self.norm = None
         else:
-            assert 0, "Unsupported normalization: {}".format(norm)
+            assert 0, f"Unsupported normalization: {norm}"
 
         # initialize activation
         if act == "relu":
@@ -288,7 +288,7 @@ class LinearBlock(nn.Module):
         elif act == "none":
             self.activation = None
         else:
-            assert 0, "Unsupported activation: {}".format(act)
+            assert 0, f"Unsupported activation: {act}"
 
     def forward(self, x):
         out = self.fc(x)

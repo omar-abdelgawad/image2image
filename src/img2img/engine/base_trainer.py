@@ -1,5 +1,4 @@
-from typing import Protocol
-from typing import Any
+from typing import Any, Protocol
 
 
 class Trainer(Protocol):

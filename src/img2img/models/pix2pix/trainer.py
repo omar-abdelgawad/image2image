@@ -3,18 +3,17 @@
 from pathlib import Path
 
 import torch
-from torch import nn
-from torch import optim
+from torch import nn, optim
 from torch.utils.tensorboard import SummaryWriter
 from tqdm import tqdm
 
 from img2img.cfg import DatasetType
 from img2img.data import get_loader
-from img2img.models.pix2pix.generator import Generator
 from img2img.models.pix2pix.discriminator import Discriminator
+from img2img.models.pix2pix.generator import Generator
 from img2img.models.pix2pix.utils import (
-    save_checkpoint,
     load_checkpoint,
+    save_checkpoint,
     save_some_examples,
 )
 from img2img.utils import prepare_sub_directories

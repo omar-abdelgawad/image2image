@@ -1,6 +1,0 @@
-torch
-torchaudio
-torchvision
-albumentations
-tqdm
-tensorboard

@@ -4,11 +4,11 @@ import os
 from pathlib import Path
 from typing import Any
 
-import numpy as np
 import cv2
+import numpy as np
 import torch
 from PIL import Image
-from torch.utils.data import Dataset, DataLoader
+from torch.utils.data import DataLoader, Dataset
 
 from img2img import cfg
 

@@ -1,13 +1,13 @@
 import os
+
 import torch
 from torch import nn
 
-
 from img2img import cfg
-from img2img.utils import weights_init, get_model_list
-from img2img.models.unit.generator import Generator
 from img2img.models.unit.discriminator import Discriminator
+from img2img.models.unit.generator import Generator
 from img2img.models.unit.utils import get_scheduler
+from img2img.utils import get_model_list, weights_init
 
 # FIXME: Turns out the paper's repo doesn't have weight sharing XD. Make sure to look at pytorch Gan's implementation.
 
@@ -189,7 +189,9 @@ class UNIT_Trainer(nn.Module):
         loss_gen_total.backward()
         self.gen_opt.step()
 
-    def sample(self, x_a: torch.Tensor, x_b: torch.Tensor) -> tuple[
+    def sample(
+        self, x_a: torch.Tensor, x_b: torch.Tensor
+    ) -> tuple[
         torch.Tensor,
         torch.Tensor,
         torch.Tensor,

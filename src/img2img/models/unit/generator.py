@@ -3,8 +3,8 @@
 import torch
 from torch import nn
 
-from img2img.nn import ResBlocks, ConvBlock
-from img2img.cfg import PaddingType, ActivationType, NormalizationType
+from img2img.cfg import ActivationType, NormalizationType, PaddingType
+from img2img.nn import ConvBlock, ResBlocks
 
 
 class Generator(nn.Module):
@@ -255,7 +255,6 @@ class Decoder(nn.Module):
 # TODO: generate a test for checking output shapes of this module
 def test():
     x_test = torch.randn(size=(1, 3, 256, 256))
-    y_test = torch.randn(size=(32, 512, 256, 256))
     # D = Decoder(512, 3, 4).to("cuda")
     gen = Generator(3, 64)
     res = gen(x_test)

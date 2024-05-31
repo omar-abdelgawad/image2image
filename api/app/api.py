@@ -1,9 +1,8 @@
-from flask import Blueprint, request, jsonify
-from flask_cors import CORS
-from PIL import Image
-import os
-import io
 import base64
+import io
+
+from flask import Blueprint, jsonify, request
+
 from .image_processing import process_image
 
 api_blueprint = Blueprint("api", __name__)

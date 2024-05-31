@@ -1,4 +1,5 @@
 """Test module for get_main_parser function"""
+
 from img2img.cli import get_main_parser
 
 
