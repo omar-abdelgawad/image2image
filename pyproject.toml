@@ -7,12 +7,12 @@ name = "img2img"
 dynamic = ["version"]
 dependencies = [
     "requests",
-    "torch",
-    "torchaudio",
-    "torchvision",
-    "albumentations",
+    "torch >= 2.3.0 , < 3",
+    "torchaudio >= 2.3.0, < 3",
+    "torchvision >= 0.18.0, < 1",
+    "albumentations >= 1.4.8, < 2",
     "tqdm",
-    "tensorboard",
+    "tensorboard >= 2.16.2, < 3",
     ]
 requires-python = ">=3.10"
 authors = [
