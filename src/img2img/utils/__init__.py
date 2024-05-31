@@ -1,9 +1,10 @@
 """Utility functions for the project."""
 
-import os
 import math
+import os
+from collections.abc import Callable
 from pathlib import Path
-from typing import Callable, Literal
+from typing import Literal
 
 from torch import nn
 from torch.nn import init

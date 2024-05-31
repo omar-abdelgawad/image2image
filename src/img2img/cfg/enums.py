@@ -1,4 +1,5 @@
-""" Global Enums/Types for the project. """
+"""Global Enums/Types for the project."""
+
 from enum import Enum
 from pathlib import Path
 

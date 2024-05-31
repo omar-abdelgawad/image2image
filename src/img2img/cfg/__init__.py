@@ -5,7 +5,8 @@ from pathlib import Path
 from torch import cuda
 
 from img2img.cli import get_main_parser
-from .enums import DatasetType, PaddingType, NormalizationType, ActivationType
+
+from .enums import ActivationType, DatasetType, NormalizationType, PaddingType
 
 # TODO: Add logger instead of all the print statements.
 

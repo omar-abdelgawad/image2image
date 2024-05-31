@@ -1,13 +1,12 @@
 """Utility functions for the model."""
+
 from pathlib import Path
 
 import torch
-from torch import nn
-from torch import optim
+from torch import nn, optim
 from torch.utils.data import DataLoader
 from torch.utils.tensorboard import SummaryWriter
-from torchvision.utils import save_image
-from torchvision.utils import make_grid
+from torchvision.utils import make_grid, save_image
 
 from img2img import cfg
 

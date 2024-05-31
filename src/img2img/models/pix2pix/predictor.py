@@ -1,10 +1,12 @@
+from pathlib import Path
+
+import numpy as np
 import torch
+from PIL import Image
+
 from img2img import cfg
 from img2img.models.pix2pix.generator import Generator
 from img2img.models.pix2pix.utils import remove_normalization
-from pathlib import Path
-import numpy as np
-from PIL import Image
 
 
 class Pix2PixPredictor:

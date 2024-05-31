@@ -1,37 +1,28 @@
 # pylint: skip-file
 
+
 import torch
-from torch import nn
-from torch import optim
 import torch.nn.functional as F
+from torch import nn
 from torch.utils.data import DataLoader
-from torch.utils.tensorboard import SummaryWriter
-from tqdm import tqdm
 from tqdm import trange
-from typing import Dict
 
 from img2img import cfg
-from img2img.data import create_dataset
-from img2img.models.tunit.utils import (
-    save_checkpoint,
-    load_checkpoint,
-    save_some_examples,
-)
-from img2img.models.tunit.generator import Generator
 from img2img.models.tunit.discriminator import Discriminator
+from img2img.models.tunit.generator import Generator
 from img2img.models.tunit.guiding_network import GuidingNetwork
 from img2img.models.tunit.utils import (
+    calc_adv_loss,
     calc_contrastive_loss,
     calc_iic_loss,
-    calc_adv_loss,
-    compute_grad_gp,
     calc_recon_loss,
+    compute_grad_gp,
 )
 
 # _WRITER = SummaryWriter("runs/expirement_1")
 
 
-class AverageMeter(object):
+class AverageMeter:
     """Computes and stores the average and current value"""
 
     def __init__(self):
@@ -129,7 +120,7 @@ def get_loader(args, dataset):
     val_loader = {
         "VAL": val_loader,
         "VALSET": val_dataset
-        if not args.dataset in ["afhq_cat", "afhq_dog", "afhq_wild"]
+        if args.dataset not in ["afhq_cat", "afhq_dog", "afhq_wild"]
         else dataset["val"]["FULL"],
         "TRAINSET": train_dataset["FULL"],
     }
@@ -227,7 +218,7 @@ def trainGAN_UNSUP(
     for i in t_train:
         try:
             imgs, _ = next(train_it)
-        except:
+        except Exception:
             train_it = iter(loader)
             imgs, _ = next(train_it)
 

@@ -4,8 +4,8 @@ import torch
 from torch import nn
 from torch.nn import functional as F
 
+from img2img.cfg import ActivationType, NormalizationType, PaddingType
 from img2img.nn import ConvBlock, ConvBlocks
-from img2img.cfg import NormalizationType, PaddingType, ActivationType
 
 
 # TODO: I believe this implementation is not exactly like the paper
@@ -98,7 +98,7 @@ class Discriminator(nn.Module):
                     + F.binary_cross_entropy(F.sigmoid(out1), all1)
                 )
             else:
-                assert 0, "Unsupported GAN type: {}".format(self.gan_type)
+                assert 0, f"Unsupported GAN type: {self.gan_type}"
         return loss
 
     def calc_gen_loss(self, input_fake):
@@ -112,7 +112,7 @@ class Discriminator(nn.Module):
                 all1 = torch.ones_like(out0.data).cuda()
                 loss += torch.mean(F.binary_cross_entropy(F.sigmoid(out0), all1))
             else:
-                assert 0, "Unsupported GAN type: {}".format(self.gan_type)
+                assert 0, f"Unsupported GAN type: {self.gan_type}"
         return loss
 
 

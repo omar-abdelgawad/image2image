@@ -2,8 +2,8 @@ import torch
 from torch.utils.data import DataLoader
 
 from pix2pix import cfg
-from pix2pix.generator import Generator
 from pix2pix.dataset import create_dataset
+from pix2pix.generator import Generator
 from pix2pix.utils import evaluate_val_set
 
 

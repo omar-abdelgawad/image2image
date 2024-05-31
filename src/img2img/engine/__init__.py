@@ -1,4 +1,4 @@
-""" Interface for training and evaluating models. """
+"""Interface for training and evaluating models."""
 
 from .base_trainer import Trainer
 

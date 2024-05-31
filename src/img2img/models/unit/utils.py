@@ -1,13 +1,10 @@
 from pathlib import Path
 
 # import yaml
-
 import torch
-from torch.utils.data import DataLoader
-
 from torch.optim import lr_scheduler
-from torchvision.utils import save_image
-from torchvision.utils import make_grid
+from torch.utils.data import DataLoader
+from torchvision.utils import make_grid, save_image
 
 from img2img import cfg
 from img2img.engine import Trainer

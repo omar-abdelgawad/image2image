@@ -1,12 +1,12 @@
 """CLI module for the model training and evaluation."""
+
 import argparse
-from typing import Optional
-from typing import Sequence
+from collections.abc import Sequence
 
 from .utils import is_positive_float, is_positive_int
 
 
-def get_main_parser(argv: Optional[Sequence[str]] = None) -> argparse.Namespace:
+def get_main_parser(argv: Sequence[str] | None = None) -> argparse.Namespace:
     """A custom argument parser for the model
 
     Args:

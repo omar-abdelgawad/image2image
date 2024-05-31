@@ -1,4 +1,5 @@
 """Generator model for Pix2Pix."""
+
 import torch
 from torch import nn
 

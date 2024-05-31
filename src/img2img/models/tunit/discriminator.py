@@ -1,11 +1,10 @@
 """Discriminator model for the T-UNIT GAN."""
+
 import torch
 from torch import nn
 
 # from torch.nn import init
-
 # import math
-
 from img2img.tunit.blocks import DiscResBlock
 
 

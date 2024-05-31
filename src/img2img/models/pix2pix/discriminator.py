@@ -1,9 +1,10 @@
 """Discriminator model for the pix2pix GAN."""
+
 import torch
 from torch import nn
 
-from img2img.nn.blocks import ConvBlock
 from img2img.cfg import ActivationType, NormalizationType, PaddingType
+from img2img.nn.blocks import ConvBlock
 
 
 class Discriminator(nn.Module):
