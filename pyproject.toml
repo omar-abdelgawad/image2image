@@ -74,3 +74,5 @@ extend-select = ["UP","I"] # maybe add PL later
 
 [tool.ruff.format]
 line-ending = "lf"
+docstring-code-format = true
+docstring-code-line-length = 88

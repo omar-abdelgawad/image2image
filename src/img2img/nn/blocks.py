@@ -7,7 +7,7 @@ from img2img.cfg import ActivationType, NormalizationType, PaddingType
 
 
 class ConvBlock(nn.Module):
-    """Convolutional block.
+    """Convolutional layer + normalization layer + activation layer.
 
     Args:
         in_channels (int): Number of input channels.
@@ -123,7 +123,8 @@ class ConvBlock(nn.Module):
 
 
 class ConvBlocks(nn.Module):
-    """Convolutional blocks.
+    """Stack ConvBlock on sequentially starting with in_channels=layer_multiplier until out_channels=max_layer_multiplier.
+    The channel size is doubled in each ConvBlock.
 
     Args:
         layer_multiplier (int): Number of channels multiplier.
@@ -149,13 +150,13 @@ class ConvBlocks(nn.Module):
         super().__init__()
 
         self.layers = []
-        self.layer_multiplier = layer_multiplier
+        layer_multiplier = layer_multiplier
 
-        while self.layer_multiplier != max_layer_multiplier:
+        while layer_multiplier < max_layer_multiplier:
             self.layers.append(
                 ConvBlock(
-                    self.layer_multiplier,
-                    self.layer_multiplier * 2,
+                    layer_multiplier,
+                    layer_multiplier * 2,
                     kernel_size=kernel_size,
                     stride=stride,
                     padding=padding,
@@ -164,7 +165,7 @@ class ConvBlocks(nn.Module):
                     activation_type=activation_type,
                 )
             )
-            self.layer_multiplier *= 2
+            layer_multiplier *= 2
 
         self.model = nn.Sequential(*self.layers)
 
@@ -197,8 +198,8 @@ class ResBlock(nn.Module):
         self,
         channels: int = 256,
         kernel_size=3,
-        stride=1,
-        padding=1,
+        stride: int = 1,
+        padding: int = 1,
         normalization_type=NormalizationType.INSTANCE,
         padding_type=PaddingType.ZERO,
         activation_type=ActivationType.RELU,
