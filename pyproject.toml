@@ -1,6 +1,49 @@
 [build-system]
-requires = ["setuptools>=43.0", "wheel"]
+requires = ["setuptools>=61.0", "wheel"]
 build-backend = "setuptools.build_meta"
+
+[project]
+name = "img2img"
+dynamic = ["version"]
+dependencies = [
+    "requests",
+    "torch",
+    "torchaudio",
+    "torchvision",
+    "albumentations",
+    "tqdm",
+    "tensorboard",
+    ]
+requires-python = ">=3.10"
+authors = [
+  {name = "Omar Abdelgawad", email = "omar.abdelgawad@ejust.edu.eg"},
+  {name = "Eyad Hussein", email = "eyad.hussein@ejust.edu.eg"},
+]
+description = "image to image translation using GANs"
+readme = "README.md"
+license = {file = "LICENSE"}
+keywords = ["image-to-image-translation", "GAN", "vision", "deep-learning"]
+classifiers = [
+  "Programming Language :: Python :: 3",
+  "Programming Language :: Python :: 3.10"
+]
+
+[project.optional-dependencies]
+dev = [
+    "mypy",
+    "ruff",
+    "pytest",
+    "pytest-cov",
+    "tox",
+    "flask",        # api dependency
+    "requests",     # api dependency
+]
+
+[tool.setuptools.package-data]
+img2img = ["py.typed"]
+
+[project.urls]
+Repository = "https://github.com/omar-abdelgawad/image2image"
 
 [tool.pytest.ini_options]
 addopts = "--cov=img2img" #include all packages under src directory
@@ -22,3 +65,12 @@ warn_unreachable = true
 warn_unused_configs = true
 no_implicit_reexport = false
 
+
+[tool.ruff]
+src = ["src", "tests"]
+
+[tool.ruff.lint]
+extend-select = ["UP","I"] # maybe add PL later
+
+[tool.ruff.format]
+line-ending = "lf"
