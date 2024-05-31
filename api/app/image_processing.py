@@ -4,7 +4,7 @@ from img2img.models.pix2pix.predictor import Pix2PixPredictor
 import numpy as np
 
 predictor = Pix2PixPredictor(
-    model_path="/home/eyad/watashi-ubuntu/academics/seminar/pbl/image2image/out/saved_models/anime_training/gen.pth.tar"
+    model_path="/home/omarabdelgawad/my_workspace/projects/github_repos/image2image/out/saved_models/anime_training/gen.pth.tar"
 )
 
 
