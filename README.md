@@ -4,7 +4,7 @@
 [![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
 
 # img2img
-Seminar project Unsupervised Image-to-Image translation using GANs
+Multiple implementations of research paper models for Project-Based-Learning course. The implementations are highly inspired from [pytorch-gan](https://github.com/eriklindernoren/PyTorch-GAN) and [aladdinpersson's Machine learning collection](https://github.com/aladdinpersson/Machine-Learning-Collection) repositories and it is import to give them credit for the original implementation. We try to copy the same implementation but with a different project layout inspired by [ultralytics](https://github.com/ultralytics/ultralytics/).
 
 ## Table of Contents
 
@@ -21,7 +21,7 @@ Seminar project Unsupervised Image-to-Image translation using GANs
  $ cd image2image/
  $ virtualenv venv
  $ source venv/bin/activate
- $ pip install -e ".[dev]"
+ $ pip install -e ".[dev,api]"
 ``` 
 ## Implementations
 ### Pix2Pix
@@ -42,10 +42,7 @@ We investigate conditional adversarial networks as a general-purpose solution to
 
 #### Run Example
 ```bash
-$ cd data/
-$ bash download_pix2pix_dataset.sh facades
-$ cd ../src/img2img/models/pix2pix
-$ python3 pix2pix.py --dataset_name facades
+$ python3 src/img2img/models/pix2pix/train.py --help
 ```
 
 <p align="center">
@@ -74,10 +71,7 @@ Image-to-image translation is a class of vision and graphics problems where the 
 
 #### Run Example
 ```bash
-$ cd data/
-$ bash download_cyclegan_dataset.sh monet2photo
-$ cd ../src/img2img/models/cyclegan
-$ python3 cyclegan.py --dataset_name monet2photo
+$ python3 src/img2img/models/cyclegan/train.py
 ```
 
 <p align="center">
@@ -101,9 +95,6 @@ Unsupervised image-to-image translation aims at learning a joint distribution of
 
 #### Run Example
 ```bash
-$ cd data/
-$ bash download_cyclegan_dataset.sh apple2orange
-$ cd ../src/img2img/models/tunit
 $ python3 unit.py --dataset_name apple2orange
 ```
 
@@ -118,9 +109,6 @@ Every recent image-to-image translation model inherently requires either image-l
 [[Paper]](https://arxiv.org/abs/2006.06500) [[Code]](src/img2img/models/tunit)
 
 ```bash
-$ cd data/
-$ bash download_cyclegan_dataset.sh apple2orange
-$ cd ../src/img2img/models/tunit
-$ python3 unit.py --dataset_name apple2orange
+TODO
 ```
 
