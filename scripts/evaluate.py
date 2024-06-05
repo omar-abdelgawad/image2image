@@ -2,9 +2,12 @@ import torch
 from torch.utils.data import DataLoader
 
 from pix2pix import cfg
-from pix2pix.dataset import create_dataset
 from pix2pix.generator import Generator
-from pix2pix.utils import evaluate_val_set
+from img2img.data.pix2pix import create_dataset
+from img2img.cfg import pix2pix as cfg
+from img2img.data.pix2pix import create_dataset
+from img2img.models.pix2pix.generator import Generator
+from img2img.utils.pix2pix import evaluate_val_set
 
 
 def main() -> int:

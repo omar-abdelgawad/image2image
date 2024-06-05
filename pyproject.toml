@@ -6,6 +6,7 @@ build-backend = "setuptools.build_meta"
 name = "img2img"
 dynamic = ["version"]
 dependencies = [
+    "enums",
     "requests",
     "torch >= 2.3.0 , < 3",
     "torchaudio >= 2.3.0, < 3",
@@ -18,6 +19,7 @@ requires-python = ">=3.10"
 authors = [
   {name = "Omar Abdelgawad", email = "omar.abdelgawad@ejust.edu.eg"},
   {name = "Eyad Hussein", email = "eyad.hussein@ejust.edu.eg"},
+  {name = "Ali Elsawy", email = "ali.elsawy@ejust.edu.eg"}
 ]
 description = "image to image translation using GANs"
 readme = "README.md"
@@ -25,7 +27,10 @@ license = {file = "LICENSE"}
 keywords = ["image-to-image-translation", "GAN", "vision", "deep-learning"]
 classifiers = [
   "Programming Language :: Python :: 3",
-  "Programming Language :: Python :: 3.10"
+  "Programming Language :: Python :: 3.10",
+  "Operating System :: OS Independent",
+  "License :: OSI Approved :: MIT License",
+  "Topic :: Scientific/Research :: Artificial Intelligence"
 ]
 
 [project.optional-dependencies]
@@ -35,8 +40,10 @@ dev = [
     "pytest",
     "pytest-cov",
     "tox",
-    "flask",        # api dependency
-    "requests",     # api dependency
+]
+api = [
+    "flask",
+    "requests",
 ]
 
 [tool.setuptools.package-data]

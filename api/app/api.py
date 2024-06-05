@@ -8,8 +8,8 @@ from .image_processing import process_image
 api_blueprint = Blueprint("api", __name__)
 
 
-@api_blueprint.route("/coloring", methods=["POST"])
-def process_image_route():
+@api_blueprint.route("/<style>/coloring", methods=["POST"])
+def process_image_route(style):
     # if "image" not in request.files:
     #     return jsonify({"error": "No image provided"}), 400
 
@@ -18,10 +18,9 @@ def process_image_route():
     base64_image_data = request.json["image"]
     image_data = base64.b64decode(base64_image_data)
 
-    processed_image = process_image(io.BytesIO(image_data))
+    processed_image = process_image(io.BytesIO(image_data), style)
 
     # Convert the processed image to bytes
-
     processed_image.save(img_byte_array, format="JPEG")
     img_byte_array.seek(0)
 

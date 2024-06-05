@@ -4,9 +4,9 @@ import numpy as np
 import torch
 from PIL import Image
 
-from img2img import cfg
+from img2img.cfg import pix2pix as cfg
 from img2img.models.pix2pix.generator import Generator
-from img2img.models.pix2pix.utils import remove_normalization
+from img2img.utils.pix2pix import remove_normalization
 
 
 class Pix2PixPredictor:

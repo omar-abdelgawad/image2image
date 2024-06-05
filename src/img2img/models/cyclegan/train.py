@@ -1,10 +1,10 @@
 import torch
-from img2img.models.cyclegan.dataset import HorseZebraDataset
-from img2img.models.cyclegan.utils import save_checkpoint, load_checkpoint
+from img2img.data.cyclegan import HorseZebraDataset
+from img2img.utils.cyclegan import save_checkpoint, load_checkpoint
 from torch.utils.data import DataLoader
 import torch.nn as nn
 import torch.optim as optim
-from img2img.models.cyclegan import config
+from img2img.cfg import cyclegan as cfg
 from tqdm import tqdm
 from torchvision.utils import save_image
 from img2img.models.cyclegan.discriminator import Discriminator
@@ -12,15 +12,15 @@ from img2img.models.cyclegan.generator import Generator
 
 
 def train_fn(
-    disc_H, disc_Z, gen_Z, gen_H, loader, opt_disc, opt_gen, l1, mse, d_scaler, g_scaler
+        disc_H, disc_Z, gen_Z, gen_H, loader, opt_disc, opt_gen, l1, mse, d_scaler, g_scaler
 ):
     H_reals = 0
     H_fakes = 0
     loop = tqdm(loader, leave=True)
 
     for idx, (zebra, horse) in enumerate(loop):
-        zebra = zebra.to(config.DEVICE)
-        horse = horse.to(config.DEVICE)
+        zebra = zebra.to(cfg.DEVICE)
+        horse = horse.to(cfg.DEVICE)
 
         # Train Discriminators H and Z
         with torch.cuda.amp.autocast():
@@ -70,10 +70,10 @@ def train_fn(
 
             # add all togethor
             G_loss = (
-                loss_G_Z
-                + loss_G_H
-                + cycle_zebra_loss * config.LAMBDA_CYCLE
-                + cycle_horse_loss * config.LAMBDA_CYCLE
+                    loss_G_Z
+                    + loss_G_H
+                    + cycle_zebra_loss * cfg.LAMBDA_CYCLE
+                    + cycle_horse_loss * cfg.LAMBDA_CYCLE
                 # + identity_horse_loss * config.LAMBDA_IDENTITY
                 # + identity_zebra_loss * config.LAMBDA_IDENTITY
             )
@@ -98,60 +98,60 @@ def train_fn(
 
 
 def main():
-    disc_H = Discriminator(in_channels=3).to(config.DEVICE)
-    disc_Z = Discriminator(in_channels=3).to(config.DEVICE)
-    gen_Z = Generator(img_channels=3, num_residuals=9).to(config.DEVICE)
-    gen_H = Generator(img_channels=3, num_residuals=9).to(config.DEVICE)
+    disc_H = Discriminator(in_channels=3).to(cfg.DEVICE)
+    disc_Z = Discriminator(in_channels=3).to(cfg.DEVICE)
+    gen_Z = Generator(img_channels=3, num_residuals=9).to(cfg.DEVICE)
+    gen_H = Generator(img_channels=3, num_residuals=9).to(cfg.DEVICE)
     opt_disc = optim.Adam(
         list(disc_H.parameters()) + list(disc_Z.parameters()),
-        lr=config.LEARNING_RATE,
+        lr=cfg.LEARNING_RATE,
         betas=(0.5, 0.999),
     )
 
     opt_gen = optim.Adam(
         list(gen_Z.parameters()) + list(gen_H.parameters()),
-        lr=config.LEARNING_RATE,
+        lr=cfg.LEARNING_RATE,
         betas=(0.5, 0.999),
     )
 
     L1 = nn.L1Loss()
     mse = nn.MSELoss()
 
-    if config.LOAD_MODEL:
+    if cfg.LOAD_MODEL:
         load_checkpoint(
-            config.CHECKPOINT_GEN_H,
+            cfg.CHECKPOINT_GEN_H,
             gen_H,
             opt_gen,
-            config.LEARNING_RATE,
+            cfg.LEARNING_RATE,
         )
         load_checkpoint(
-            config.CHECKPOINT_GEN_Z,
+            cfg.CHECKPOINT_GEN_Z,
             gen_Z,
             opt_gen,
-            config.LEARNING_RATE,
+            cfg.LEARNING_RATE,
         )
         load_checkpoint(
-            config.CHECKPOINT_CRITIC_H,
+            cfg.CHECKPOINT_CRITIC_H,
             disc_H,
             opt_disc,
-            config.LEARNING_RATE,
+            cfg.LEARNING_RATE,
         )
         load_checkpoint(
-            config.CHECKPOINT_CRITIC_Z,
+            cfg.CHECKPOINT_CRITIC_Z,
             disc_Z,
             opt_disc,
-            config.LEARNING_RATE,
+            cfg.LEARNING_RATE,
         )
 
     dataset = HorseZebraDataset(
-        root_horse=config.TRAIN_DIR + "/A",
-        root_zebra=config.TRAIN_DIR + "/B",
-        transform=config.transforms,
+        root_horse=cfg.TRAIN_DIR + "/A",
+        root_zebra=cfg.TRAIN_DIR + "/B",
+        transform=cfg.transforms,
     )
     val_dataset = HorseZebraDataset(
-        root_horse=config.VAL_DIR + "/A",
-        root_zebra=config.VAL_DIR + "/B",
-        transform=config.transforms,
+        root_horse=cfg.VAL_DIR + "/A",
+        root_zebra=cfg.VAL_DIR + "/B",
+        transform=cfg.transforms,
     )
     val_loader = DataLoader(
         val_dataset,
@@ -161,15 +161,15 @@ def main():
     )
     loader = DataLoader(
         dataset,
-        batch_size=config.BATCH_SIZE,
+        batch_size=cfg.BATCH_SIZE,
         shuffle=True,
-        num_workers=config.NUM_WORKERS,
+        num_workers=cfg.NUM_WORKERS,
         pin_memory=True,
     )
     g_scaler = torch.cuda.amp.GradScaler()
     d_scaler = torch.cuda.amp.GradScaler()
 
-    for epoch in range(config.NUM_EPOCHS):
+    for epoch in range(cfg.NUM_EPOCHS):
         print(f"Epoch {epoch}")
         train_fn(
             disc_H,
@@ -185,11 +185,11 @@ def main():
             g_scaler,
         )
 
-        if config.SAVE_MODEL:
-            save_checkpoint(gen_H, opt_gen, filename=config.CHECKPOINT_GEN_H)
-            save_checkpoint(gen_Z, opt_gen, filename=config.CHECKPOINT_GEN_Z)
-            save_checkpoint(disc_H, opt_disc, filename=config.CHECKPOINT_CRITIC_H)
-            save_checkpoint(disc_Z, opt_disc, filename=config.CHECKPOINT_CRITIC_Z)
+        if cfg.SAVE_MODEL:
+            save_checkpoint(gen_H, opt_gen, filename=cfg.CHECKPOINT_GEN_H)
+            save_checkpoint(gen_Z, opt_gen, filename=cfg.CHECKPOINT_GEN_Z)
+            save_checkpoint(disc_H, opt_disc, filename=cfg.CHECKPOINT_CRITIC_H)
+            save_checkpoint(disc_Z, opt_disc, filename=cfg.CHECKPOINT_CRITIC_Z)
 
 
 if __name__ == "__main__":

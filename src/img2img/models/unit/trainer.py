@@ -3,11 +3,12 @@ import os
 import torch
 from torch import nn
 
-from img2img import cfg
+from img2img.cfg import unit as cfg
 from img2img.models.unit.discriminator import Discriminator
 from img2img.models.unit.generator import Generator
-from img2img.models.unit.utils import get_scheduler
+from img2img.utils.unit import get_scheduler
 from img2img.utils import get_model_list, weights_init
+
 
 # FIXME: Turns out the paper's repo doesn't have weight sharing XD. Make sure to look at pytorch Gan's implementation.
 
@@ -86,7 +87,7 @@ class UNIT_Trainer(nn.Module):
         self.dis_b.apply(weights_init("gaussian"))
 
     def forward(
-        self, x_a: torch.Tensor, x_b: torch.Tensor
+            self, x_a: torch.Tensor, x_b: torch.Tensor
     ) -> tuple[torch.Tensor, torch.Tensor]:
         """Forward pass
 
@@ -173,16 +174,16 @@ class UNIT_Trainer(nn.Module):
         # )
         # total loss
         loss_gen_total = (
-            cfg.GAN_WEIGHT * loss_gen_adv_a
-            + cfg.GAN_WEIGHT * loss_gen_adv_b
-            + cfg.RECONSTRUCTION_X_WEIGHT * loss_gen_recon_x_a
-            + cfg.RECONSTRUCTION_KL_WEIGHT * loss_gen_recon_kl_a
-            + cfg.RECONSTRUCTION_X_WEIGHT * loss_gen_recon_x_b
-            + cfg.RECONSTRUCTION_KL_WEIGHT * loss_gen_recon_kl_b
-            + cfg.RECONSTRUCTION_X_CYC_WEIGHT * loss_gen_cyc_x_a
-            + cfg.RECONSTRUCTION_KL_CYC_WEIGHT * loss_gen_recon_kl_cyc_aba
-            + cfg.RECONSTRUCTION_X_CYC_WEIGHT * loss_gen_cyc_x_b
-            + cfg.RECONSTRUCTION_KL_CYC_WEIGHT * loss_gen_recon_kl_cyc_bab
+                cfg.GAN_WEIGHT * loss_gen_adv_a
+                + cfg.GAN_WEIGHT * loss_gen_adv_b
+                + cfg.RECONSTRUCTION_X_WEIGHT * loss_gen_recon_x_a
+                + cfg.RECONSTRUCTION_KL_WEIGHT * loss_gen_recon_kl_a
+                + cfg.RECONSTRUCTION_X_WEIGHT * loss_gen_recon_x_b
+                + cfg.RECONSTRUCTION_KL_WEIGHT * loss_gen_recon_kl_b
+                + cfg.RECONSTRUCTION_X_CYC_WEIGHT * loss_gen_cyc_x_a
+                + cfg.RECONSTRUCTION_KL_CYC_WEIGHT * loss_gen_recon_kl_cyc_aba
+                + cfg.RECONSTRUCTION_X_CYC_WEIGHT * loss_gen_cyc_x_b
+                + cfg.RECONSTRUCTION_KL_CYC_WEIGHT * loss_gen_recon_kl_cyc_bab
             # + hyperparameters["vgg_w"] * self.loss_gen_vgg_a
             # + hyperparameters["vgg_w"] * self.loss_gen_vgg_b
         )
@@ -190,7 +191,7 @@ class UNIT_Trainer(nn.Module):
         self.gen_opt.step()
 
     def sample(
-        self, x_a: torch.Tensor, x_b: torch.Tensor
+            self, x_a: torch.Tensor, x_b: torch.Tensor
     ) -> tuple[
         torch.Tensor,
         torch.Tensor,
@@ -229,7 +230,7 @@ class UNIT_Trainer(nn.Module):
         self.loss_dis_a = self.dis_a.calc_dis_loss(x_ba.detach(), x_a)
         self.loss_dis_b = self.dis_b.calc_dis_loss(x_ab.detach(), x_b)
         self.loss_dis_total = (
-            cfg.GAN_WEIGHT * self.loss_dis_a + cfg.GAN_WEIGHT * self.loss_dis_b
+                cfg.GAN_WEIGHT * self.loss_dis_a + cfg.GAN_WEIGHT * self.loss_dis_b
         )
         self.loss_dis_total.backward()
         self.dis_opt.step()

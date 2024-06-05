@@ -3,12 +3,25 @@ from PIL import Image
 
 from img2img.models.pix2pix.predictor import Pix2PixPredictor
 
-predictor = Pix2PixPredictor(
-    model_path="/home/omarabdelgawad/my_workspace/projects/github_repos/image2image/out/saved_models/anime_training/gen.pth.tar"
-)
+# from img2img.models.cyclegan.predictor import CycleGANPredictor
+
+# Initialize predictors
+anime_predictor = Pix2PixPredictor(model_path="./out/saved_models/anime_training/gen.pth.tar")
+# monet_predictor = CycleGANPredictor(model_path="./out/saved_models/monet_training/gen.pth.tar")
+# yukiyoe_predictor = CycleGANPredictor(model_path="./out/saved_models/yukiyoe_training/gen.pth.tar")
+# vangogh_predictor = CycleGANPredictor(model_path="./out/saved_models/vangogh_training/gen.pth.tar")
 
 
-def process_image(image_file):
+predictors = {
+    "anime": anime_predictor,
+
+    # "monet": monet_predictor,
+    # "yukiyoe": yukiyoe_predictor,
+    # "vangogh": vangogh_predictor,
+}
+
+
+def process_image(image_file, style):
     # Open the image
     image = Image.open(image_file)
 
@@ -18,8 +31,8 @@ def process_image(image_file):
     # Ensure the array shape is correct
     assert processed_image.shape[2] == 3
 
-    # Process the image using the Pix2Pix model
-    processed_image = predictor(processed_image)
+    # Process the image using the appropriate model
+    processed_image = predictors[style].predict(processed_image)
 
     # Convert the processed image array back to PIL Image
     processed_image = Image.fromarray(processed_image)

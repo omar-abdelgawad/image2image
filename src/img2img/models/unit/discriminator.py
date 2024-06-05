@@ -25,15 +25,15 @@ class Discriminator(nn.Module):
     """
 
     def __init__(
-        self,
-        in_channels: int = 3,
-        out_channels: int = 1,
-        layer_multiplier: int = 64,
-        max_layer_multiplier: int = 1024,
-        gan_type: str = "lsgan",
-        normalization_type: NormalizationType = NormalizationType.NONE,
-        padding_type: PaddingType = PaddingType.REFLECT,
-        activation_type: ActivationType = ActivationType.LEAKY_RELU,
+            self,
+            in_channels: int = 3,
+            out_channels: int = 1,
+            layer_multiplier: int = 64,
+            max_layer_multiplier: int = 1024,
+            gan_type: str = "lsgan",
+            normalization_type: NormalizationType = NormalizationType.NONE,
+            padding_type: PaddingType = PaddingType.REFLECT,
+            activation_type: ActivationType = ActivationType.LEAKY_RELU,
     ) -> None:
         super().__init__()
 

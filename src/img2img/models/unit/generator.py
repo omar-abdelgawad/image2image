@@ -17,14 +17,14 @@ class Generator(nn.Module):
     """
 
     def __init__(
-        self,
-        in_channels: int = 3,
-        dim: int = 64,
-        n_downsample: int = 2,
-        n_res: int = 4,
-        activ: ActivationType = ActivationType.RELU,
-        pad_type: PaddingType = PaddingType.REFLECT,
-        norm: NormalizationType = NormalizationType.INSTANCE,
+            self,
+            in_channels: int = 3,
+            dim: int = 64,
+            n_downsample: int = 2,
+            n_res: int = 4,
+            activ: ActivationType = ActivationType.RELU,
+            pad_type: PaddingType = PaddingType.REFLECT,
+            norm: NormalizationType = NormalizationType.INSTANCE,
     ):
         super().__init__()
 
@@ -107,14 +107,14 @@ class Encoder(nn.Module):
     """
 
     def __init__(
-        self,
-        in_channels: int = 3,
-        dim: int = 64,
-        n_downsample: int = 2,
-        n_res: int = 4,
-        norm: NormalizationType = NormalizationType.INSTANCE,
-        activ: ActivationType = ActivationType.RELU,
-        pad_type: PaddingType = PaddingType.REFLECT,
+            self,
+            in_channels: int = 3,
+            dim: int = 64,
+            n_downsample: int = 2,
+            n_res: int = 4,
+            norm: NormalizationType = NormalizationType.INSTANCE,
+            activ: ActivationType = ActivationType.RELU,
+            pad_type: PaddingType = PaddingType.REFLECT,
     ):
         super().__init__()
 
@@ -184,14 +184,14 @@ class Decoder(nn.Module):
     """
 
     def __init__(
-        self,
-        in_channels: int = 256,
-        out_channels: int = 3,
-        n_upsample: int = 2,
-        n_res: int = 4,
-        res_norm: NormalizationType = NormalizationType.INSTANCE,
-        activ: ActivationType = ActivationType.RELU,
-        pad_type: PaddingType = PaddingType.REFLECT,
+            self,
+            in_channels: int = 256,
+            out_channels: int = 3,
+            n_upsample: int = 2,
+            n_res: int = 4,
+            res_norm: NormalizationType = NormalizationType.INSTANCE,
+            activ: ActivationType = ActivationType.RELU,
+            pad_type: PaddingType = PaddingType.REFLECT,
     ):
         super().__init__()
 
