@@ -1,7 +1,6 @@
 import torch
 from torch.utils.data import DataLoader
 
-from pix2pix import cfg
 from img2img.cfg import pix2pix as cfg
 from img2img.data.pix2pix import create_dataset
 from img2img.models.pix2pix.generator import Generator
