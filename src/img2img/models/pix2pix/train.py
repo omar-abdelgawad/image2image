@@ -1,6 +1,6 @@
 """Main script for training the model. Can train from scratch or resume from a checkpoint."""
 
-from img2img import cfg
+from img2img.cfg import pix2pix as cfg
 from img2img.models.pix2pix.trainer import Pix2PixTrainer
 
 

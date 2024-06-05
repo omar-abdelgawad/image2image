@@ -3,7 +3,7 @@
 import torch
 from torch import nn
 
-from img2img.cfg import ActivationType, NormalizationType, PaddingType
+from img2img.cfg.pix2pix import ActivationType, NormalizationType, PaddingType
 from img2img.nn.blocks import ConvBlock
 
 
@@ -17,7 +17,7 @@ class Discriminator(nn.Module):
 
     # channels are 3 because they are always going to be rgb
     def __init__(
-        self, in_channels: int = 3, features=(64, 128, 256, 512)
+            self, in_channels: int = 3, features=(64, 128, 256, 512)
     ) -> None:  # 256x256->30*30
         super().__init__()
 

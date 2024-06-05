@@ -1,8 +1,8 @@
 from pathlib import Path
 
-from img2img.models.cyclegan.utils import load_checkpoint
+from img2img.utils.cyclegan import load_checkpoint
 from img2img.models.cyclegan.generator import Generator
-from img2img.models.cyclegan import config
+from img2img.cfg import cyclegan as cfg
 import numpy as np
 import torch
 from PIL import Image
@@ -10,7 +10,7 @@ from PIL import Image
 
 class CycleGanPredictor:
     def __init__(self, model_path: str | Path):
-        self.device = config.DEVICE
+        self.device = cfg.DEVICE
         self.model = Generator(img_channels=3, num_residuals=9).to(self.device)
         self.model.load_state_dict(
             torch.load(model_path, map_location=self.device)["state_dict"]
@@ -18,7 +18,7 @@ class CycleGanPredictor:
         self.model.eval()
 
     def __call__(self, x: np.ndarray) -> np.ndarray:
-        augmentations = config.prediction_transform(image=x)
+        augmentations = cfg.prediction_transform(image=x)
         input_image = augmentations["image"].to(self.device)
         print(input_image.shape)
         with torch.inference_mode():

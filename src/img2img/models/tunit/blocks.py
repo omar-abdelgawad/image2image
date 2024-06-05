@@ -4,7 +4,7 @@ import torch
 from torch import nn
 from torch.nn import functional as F
 
-from img2img.models.tunit.utils import FRN, AdaptiveInstanceNorm2d
+from img2img.utils.tunit import FRN, AdaptiveInstanceNorm2d
 
 
 class GenConvBlock(nn.Module):
@@ -24,17 +24,17 @@ class GenConvBlock(nn.Module):
     """
 
     def __init__(
-        self,
-        in_channels: int,
-        out_channels: int,
-        kernel_size: int = 3,
-        stride: int = 1,
-        padding: int = 0,
-        padd_type: str = "zero",
-        ins: bool = True,
-        up: bool = False,
-        use_bias: bool = True,
-        use_sn: bool = False,
+            self,
+            in_channels: int,
+            out_channels: int,
+            kernel_size: int = 3,
+            stride: int = 1,
+            padding: int = 0,
+            padd_type: str = "zero",
+            ins: bool = True,
+            up: bool = False,
+            use_bias: bool = True,
+            use_sn: bool = False,
     ) -> None:
         super().__init__()
 
@@ -102,13 +102,13 @@ class GuidingNetworkConvBlock(nn.Module):
     """
 
     def __init__(
-        self,
-        in_channels: int,
-        out_channels: int,
-        kernel_size: int = 3,
-        stride: int = 1,
-        padding: int = 0,
-        pool: bool = True,
+            self,
+            in_channels: int,
+            out_channels: int,
+            kernel_size: int = 3,
+            stride: int = 1,
+            padding: int = 0,
+            pool: bool = True,
     ):
         super().__init__()
 
@@ -143,13 +143,13 @@ class GuidingNetworkConvBlock(nn.Module):
 
 class DiscConvBlock(nn.Module):
     def __init__(
-        self,
-        in_channels,
-        out_channels,
-        kernel_size=3,
-        stride=1,
-        padding=1,
-        pool=True,
+            self,
+            in_channels,
+            out_channels,
+            kernel_size=3,
+            stride=1,
+            padding=1,
+            pool=True,
     ):
         super().__init__()
 
@@ -187,15 +187,15 @@ class DiscConvBlock(nn.Module):
 
 class GenResBlock(nn.Module):
     def __init__(
-        self,
-        in_channels,
-        out_channels,
-        kernel_size=3,
-        stride=1,
-        padding=1,
-        ins=True,
-        padd_type="zero",
-        use_sn=False,
+            self,
+            in_channels,
+            out_channels,
+            kernel_size=3,
+            stride=1,
+            padding=1,
+            ins=True,
+            padd_type="zero",
+            use_sn=False,
     ):
         super().__init__()
 
@@ -233,13 +233,13 @@ class GenResBlock(nn.Module):
 
 class DiscResBlock(nn.Module):
     def __init__(
-        self,
-        in_channels,
-        out_channels,
-        kernel_size=3,
-        stride=1,
-        padding=1,
-        pool=True,
+            self,
+            in_channels,
+            out_channels,
+            kernel_size=3,
+            stride=1,
+            padding=1,
+            pool=True,
     ):
         super().__init__()
 

@@ -7,11 +7,11 @@ from torch import nn, optim
 from torch.utils.tensorboard import SummaryWriter
 from tqdm import tqdm
 
-from img2img.cfg import DatasetType
+from img2img.cfg.pix2pix import DatasetType
 from img2img.data import get_loader
 from img2img.models.pix2pix.discriminator import Discriminator
 from img2img.models.pix2pix.generator import Generator
-from img2img.models.pix2pix.utils import (
+from img2img.utils.pix2pix import (
     load_checkpoint,
     save_checkpoint,
     save_some_examples,
@@ -23,19 +23,19 @@ class Pix2PixTrainer:
     """Trainer class for pix2pix model."""
 
     def __init__(
-        self,
-        load_model: bool,
-        learning_rate: float,
-        betas: tuple[float, float],
-        train_batch_size: int,
-        val_batch_size: int,
-        device: str,
-        path: str | Path,
-        num_workers: int,
-        train_dataset_path: str | Path,
-        val_dataset_path: str | Path,
-        chosen_dataset: DatasetType,
-        l1_lambda: float,
+            self,
+            load_model: bool,
+            learning_rate: float,
+            betas: tuple[float, float],
+            train_batch_size: int,
+            val_batch_size: int,
+            device: str,
+            path: str | Path,
+            num_workers: int,
+            train_dataset_path: str | Path,
+            val_dataset_path: str | Path,
+            chosen_dataset: DatasetType,
+            l1_lambda: float,
     ) -> None:
         self.device = device
         self.l1_lambda = l1_lambda
@@ -113,8 +113,8 @@ class Pix2PixTrainer:
         self._WRITER.close()
 
     def _train_one_epoch(
-        self,
-        epoch: int,
+            self,
+            epoch: int,
     ) -> None:
         """Process one epoch of training."""
         loop = tqdm(self.train_loader, leave=True)

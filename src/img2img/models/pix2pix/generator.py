@@ -18,12 +18,12 @@ class Block(nn.Module):
     """
 
     def __init__(
-        self,
-        in_channels: int,
-        out_channels: int,
-        down: bool = True,
-        act: str = "relu",
-        use_dropout: bool = False,
+            self,
+            in_channels: int,
+            out_channels: int,
+            down: bool = True,
+            act: str = "relu",
+            use_dropout: bool = False,
     ) -> None:
         super().__init__()
         self.conv = nn.Sequential(

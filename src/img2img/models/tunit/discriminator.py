@@ -5,7 +5,7 @@ from torch import nn
 
 # from torch.nn import init
 # import math
-from img2img.tunit.blocks import DiscResBlock
+from img2img.models.tunit.blocks import DiscResBlock
 
 
 class Discriminator(nn.Module):
@@ -17,10 +17,10 @@ class Discriminator(nn.Module):
     """
 
     def __init__(
-        self,
-        in_channels: int = 3,
-        channels_multiplier: int = 64,
-        out_channels: int = 10,
+            self,
+            in_channels: int = 3,
+            channels_multiplier: int = 64,
+            out_channels: int = 10,
     ) -> None:
         super().__init__()
 

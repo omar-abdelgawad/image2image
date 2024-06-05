@@ -2,10 +2,10 @@
 
 from tqdm import tqdm
 
-from img2img import cfg
+from img2img.cfg import unit as cfg
 from img2img.data import get_loader
 from img2img.models.unit.trainer import UNIT_Trainer
-from img2img.models.unit.utils import save_some_examples
+from img2img.utils.unit import save_some_examples
 from img2img.utils import prepare_sub_directories
 
 

@@ -11,7 +11,7 @@ from img2img import cfg
 from img2img.models.tunit.discriminator import Discriminator
 from img2img.models.tunit.generator import Generator
 from img2img.models.tunit.guiding_network import GuidingNetwork
-from img2img.models.tunit.utils import (
+from img2img.utils.tunit import (
     calc_adv_loss,
     calc_contrastive_loss,
     calc_iic_loss,
@@ -205,10 +205,10 @@ def trainGAN_UNSUP(
     G_EMA().train()
 
     train_loader, val_loader, train_sampler = get_loader(
-        args, {"train": train_dataset, "val": val_dataset}
+    #    args, {"train": train_dataset, "val": val_dataset}
     )
-    queue_loader = train_loader["UNSUP"] if 0.0 < args.p_semi < 1.0 else train_loader
-    queue = initialize_queue(C_EMA, 0, queue_loader, feat_size=args.sty_dim)
+    # queue_loader = train_loader["UNSUP"] if 0.0 < args.p_semi < 1.0 else train_loader
+    # queue = initialize_queue(C_EMA, 0, queue_loader, feat_size=args.sty_dim)
 
     # summary writer
     train_it = iter(loader)
@@ -248,8 +248,8 @@ def trainGAN_UNSUP(
         k_disc = F.softmax(k_disc, 1)
 
         iic_loss = calc_iic_loss(q_disc, k_disc)
-        moco_loss = calc_contrastive_loss(args, q_cont, k_cont, queue)
-        c_loss = moco_loss + 5.0 * iic_loss
+        # moco_loss = calc_contrastive_loss(args, q_cont, k_cont, queue)
+        # c_loss = moco_loss + 5.0 * iic_loss
 
         if epoch >= 65:
             c_loss = 0.1 * c_loss
@@ -318,13 +318,13 @@ def trainGAN_UNSUP(
 
             s_fake = C.moco(x_fake)
 
-            g_sty_contrastive = calc_contrastive_loss(args, s_fake, s_ref_ema, queue)
+            # g_sty_contrastive = calc_contrastive_loss(args, s_fake, s_ref_ema, queue)
 
-            g_loss = 1.0 * g_adv + 0.1 * g_imgrec + 0.01 * g_sty_contrastive
+            # g_loss = 1.0 * g_adv + 0.1 * g_imgrec + 0.01 * g_sty_contrastive
 
             g_opt.zero_grad()
             c_opt.zero_grad()
-            g_loss.backward()
+            # g_loss.backward()
 
             c_opt.step()
             g_opt.step()

@@ -17,5 +17,7 @@ Seminar project Unsupervised Image-to-Image translation using GANs
 ``` 
 ## Implementations
 
-### UNIT
 ### pix2pix
+### CycleGAN
+### UNIT
+### TUNIT
