@@ -34,7 +34,7 @@ class AnimeDataset(Dataset[tuple[torch.Tensor, torch.Tensor]]):
         img_path = os.path.join(self.root_dir, img_file_name)
         image = np.array(Image.open(img_path))
         target_image = image[:, : image.shape[1] // 2, :]
-        input_image = image[:, image.shape[1] // 2:, :]
+        input_image = image[:, image.shape[1] // 2 :, :]
 
         augmentations = cfg.both_transform(image=input_image, image0=target_image)
         input_image, target_image = augmentations["image"], augmentations["image0"]
@@ -106,7 +106,7 @@ class Edges2Shoes(Dataset[tuple[torch.Tensor, torch.Tensor]]):
         img_path = os.path.join(self.root_dir, img_file_name)
         image = np.array(Image.open(img_path).convert("RGB"))
         input_image = image[:, : image.shape[1] // 2, :]
-        target_image = image[:, image.shape[1] // 2:, :]
+        target_image = image[:, image.shape[1] // 2 :, :]
 
         augmentations = cfg.both_transform(image=input_image, image0=target_image)
         input_image, target_image = augmentations["image"], augmentations["image0"]
@@ -139,7 +139,7 @@ class AFHQCatDataset(Dataset[tuple[torch.Tensor, torch.Tensor]]):
         img_path = os.path.join(self.root_dir, img_file_name)
         image = np.array(Image.open(img_path))
         target_image = image[:, : image.shape[1] // 2, :]
-        input_image = image[:, image.shape[1] // 2:, :]
+        input_image = image[:, image.shape[1] // 2 :, :]
 
         augmentations = cfg.both_transform(image=input_image, image0=target_image)
         input_image, target_image = augmentations["image"], augmentations["image0"]
@@ -177,12 +177,11 @@ def create_dataset(root_dir: Path | str, dataset_type: cfg.DatasetType) -> Datas
 
 
 def get_loader(
-        root_dir: Path | str,
-        dataset_type: cfg.DatasetType,
-        batch_size: int,
-        shuffle: bool,
-        num_workers: int,
-
+    root_dir: Path | str,
+    dataset_type: cfg.DatasetType,
+    batch_size: int,
+    shuffle: bool,
+    num_workers: int,
 ) -> DataLoader[Any]:
     """Create a Dataloader from given root_dir and dataset_type.
 

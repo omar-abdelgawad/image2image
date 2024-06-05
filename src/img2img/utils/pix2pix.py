@@ -1,4 +1,5 @@
 """Utility functions for the model."""
+
 from . import *
 from pathlib import Path
 
@@ -10,7 +11,7 @@ from torch.utils.tensorboard import SummaryWriter
 from torchvision.utils import save_image
 from torchvision.utils import make_grid
 
-from pix2pix import cfg
+# from pix2pix import cfg
 from img2img.cfg import pix2pix as cfg
 
 
@@ -21,11 +22,11 @@ def remove_normalization(x: torch.Tensor) -> torch.Tensor:
 
 # TODO: remove Magic numbers from this module
 def save_some_examples(
-        gen: nn.Module,
-        val_loader: DataLoader[tuple[torch.Tensor, torch.Tensor]],
-        epoch: int,
-        folder: Path,
-        writer: SummaryWriter,
+    gen: nn.Module,
+    val_loader: DataLoader[tuple[torch.Tensor, torch.Tensor]],
+    epoch: int,
+    folder: Path,
+    writer: SummaryWriter,
 ) -> None:
     """Saves a grid of generated images. Also saves ground truth if epoch is 0.
 
@@ -57,9 +58,9 @@ def save_some_examples(
 
 @torch.inference_mode()
 def evaluate_val_set(
-        gen: nn.Module,
-        val_loader: DataLoader[tuple[torch.Tensor, torch.Tensor]],
-        folder: Path,
+    gen: nn.Module,
+    val_loader: DataLoader[tuple[torch.Tensor, torch.Tensor]],
+    folder: Path,
 ) -> None:
     """Runs inference on all images in the val_loader and saves them in the folder.
 
@@ -81,7 +82,7 @@ def evaluate_val_set(
 
 
 def save_checkpoint(
-        model: nn.Module, optimizer: optim.Optimizer, filename: Path
+    model: nn.Module, optimizer: optim.Optimizer, filename: Path
 ) -> None:
     """Saves checkpoint for the model and optimizer in the folder filename.
 
@@ -99,7 +100,7 @@ def save_checkpoint(
 
 
 def load_checkpoint(
-        checkpoint_file: Path, model: nn.Module, optimizer: optim.Optimizer, lr: float
+    checkpoint_file: Path, model: nn.Module, optimizer: optim.Optimizer, lr: float
 ) -> None:
     """Loads checkpoint for the model and optimizer from the checkpoint_file.
     With the new learning rate.

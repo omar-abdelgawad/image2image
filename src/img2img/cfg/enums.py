@@ -7,13 +7,19 @@ from pathlib import Path
 class DatasetType(Enum):
     """Enum for the dataset type."""
 
-    ANIME_DATASET = Path("/media/omarabdelgawad/New Volume/Datasets/Anime_Dataset")
-    NATURAL_VIEW_DATASET = Path("/media/omarabdelgawad/New Volume/Datasets/Natural_View")
-    EDGES2SHOES = Path("/media/omarabdelgawad/New Volume/Datasets/Edges2Shoes")
+    ANIME_DATASET = Path(
+        "/media/omarabdelgawad/New Volume/Datasets/image_coloring/anime_dataset"
+    )
+    NATURAL_VIEW_DATASET = Path(
+        "/media/omarabdelgawad/New Volume/Datasets/image_coloring/natural_view"
+    )
+    EDGES2SHOES = Path(
+        "/media/omarabdelgawad/New Volume/Datasets/image_coloring/edges2shoes"
+    )
     AFHQ_CATS_DATASET = Path("/media/omarabdelgawad/New Volume/Datasets/AFHQ_Cats")
     VANGOGH2PHOTO = Path("/media/omarabdelgawad/New Volume/Datasets/vangogh2photo")
-    yukiyoe = Path("/media/omarabdelgawad/New Volume/Datasets/yukiyoe")
-    monet = Path("/media/omarabdelgawad/New Volume/Datasets/monet")
+    YUKIYOE = Path("/media/omarabdelgawad/New Volume/Datasets/ukiyoe2photo")
+    MONET = Path("/media/omarabdelgawad/New Volume/Datasets/monet2photo")
 
 
 class PaddingType(Enum):
