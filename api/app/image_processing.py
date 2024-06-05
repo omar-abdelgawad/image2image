@@ -32,7 +32,7 @@ def process_image(image_file, style):
     assert processed_image.shape[2] == 3
 
     # Process the image using the appropriate model
-    processed_image = predictors[style].predict(processed_image)
+    processed_image = predictors[style](processed_image)
 
     # Convert the processed image array back to PIL Image
     processed_image = Image.fromarray(processed_image)
