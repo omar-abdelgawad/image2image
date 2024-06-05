@@ -10,6 +10,7 @@ app = create_app()
 
 
 def main() -> int:
+    print("Starting server...")
     app.run(debug=True)
     return 0
 

@@ -1,6 +1,5 @@
-import base64
 import io
-
+import base64
 from flask import Blueprint, jsonify, request
 
 from .image_processing import process_image
@@ -8,7 +7,7 @@ from .image_processing import process_image
 api_blueprint = Blueprint("api", __name__)
 
 
-@api_blueprint.route("/<style>/coloring", methods=["POST"])
+@api_blueprint.route("/<style>", methods=["POST"])
 def process_image_route(style):
     # if "image" not in request.files:
     #     return jsonify({"error": "No image provided"}), 400
@@ -21,6 +20,7 @@ def process_image_route(style):
     processed_image = process_image(io.BytesIO(image_data), style)
 
     # Convert the processed image to bytes
+
     processed_image.save(img_byte_array, format="JPEG")
     img_byte_array.seek(0)
 
