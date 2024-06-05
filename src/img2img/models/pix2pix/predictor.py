@@ -19,6 +19,7 @@ class Pix2PixPredictor:
         self.model.eval()
 
     def __call__(self, x: np.ndarray) -> np.ndarray:
+        # TODO: fix augmentations (should only perform normalization)
         augmentations = cfg.both_transform(image=x)
         input_image = augmentations["image"]
         out_input_image: torch.Tensor = cfg.transform_only_input(image=input_image)[

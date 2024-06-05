@@ -1,9 +1,10 @@
 import random, torch, os, numpy as np
 import torch.nn as nn
-import config
+from img2img.models.cyclegan import config
 import copy
 
-def save_checkpoint(model, optimizer, filename="my_checkpoint.pth.tar"):
+
+def save_checkpoint(model, optimizer, filename):
     print("=> Saving checkpoint")
     checkpoint = {
         "state_dict": model.state_dict(),

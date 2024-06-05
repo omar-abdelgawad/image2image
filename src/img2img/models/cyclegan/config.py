@@ -3,15 +3,15 @@ import albumentations as A
 from albumentations.pytorch import ToTensorV2
 
 DEVICE = "cuda" if torch.cuda.is_available() else "cpu"
-TRAIN_DIR = "data/train"
-VAL_DIR = "data/val"
-BATCH_SIZE = 1
+TRAIN_DIR = "/media/omarabdelgawad/New Volume/Datasets/vangogh2photo/train"
+VAL_DIR = "/media/omarabdelgawad/New Volume/Datasets/vangogh2photo/val"
+BATCH_SIZE = 2
 LEARNING_RATE = 2e-4
 LAMBDA_IDENTITY = 0.0
 LAMBDA_CYCLE = 10
 NUM_WORKERS = 4
 NUM_EPOCHS = 200
-LOAD_MODEL = True
+LOAD_MODEL = False
 SAVE_MODEL = True
 CHECKPOINT_GEN_H = "genh.pth.tar"
 CHECKPOINT_GEN_Z = "genz.pth.tar"
@@ -26,4 +26,12 @@ transforms = A.Compose(
         ToTensorV2(),
     ],
     additional_targets={"image0": "image"},
+)
+
+prediction_transform = A.Compose(
+    [
+        A.Resize(width=256, height=256),
+        A.Normalize(mean=[0.5, 0.5, 0.5], std=[0.5, 0.5, 0.5], max_pixel_value=255),
+        ToTensorV2(),
+    ],
 )

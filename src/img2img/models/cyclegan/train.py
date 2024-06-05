@@ -1,15 +1,14 @@
 import torch
-from dataset import HorseZebraDataset
-import sys
-from utils import save_checkpoint, load_checkpoint
+from img2img.models.cyclegan.dataset import HorseZebraDataset
+from img2img.models.cyclegan.utils import save_checkpoint, load_checkpoint
 from torch.utils.data import DataLoader
 import torch.nn as nn
 import torch.optim as optim
-import config
+from img2img.models.cyclegan import config
 from tqdm import tqdm
 from torchvision.utils import save_image
-from discriminator import Discriminator
-from generator import Generator
+from img2img.models.cyclegan.discriminator import Discriminator
+from img2img.models.cyclegan.generator import Generator
 
 
 def train_fn(
@@ -64,10 +63,10 @@ def train_fn(
             cycle_horse_loss = l1(horse, cycle_horse)
 
             # identity loss (remove these for efficiency if you set lambda_identity=0)
-            identity_zebra = gen_Z(zebra)
-            identity_horse = gen_H(horse)
-            identity_zebra_loss = l1(zebra, identity_zebra)
-            identity_horse_loss = l1(horse, identity_horse)
+            # identity_zebra = gen_Z(zebra)
+            # identity_horse = gen_H(horse)
+            # identity_zebra_loss = l1(zebra, identity_zebra)
+            # identity_horse_loss = l1(horse, identity_horse)
 
             # add all togethor
             G_loss = (
@@ -75,8 +74,8 @@ def train_fn(
                 + loss_G_H
                 + cycle_zebra_loss * config.LAMBDA_CYCLE
                 + cycle_horse_loss * config.LAMBDA_CYCLE
-                + identity_horse_loss * config.LAMBDA_IDENTITY
-                + identity_zebra_loss * config.LAMBDA_IDENTITY
+                # + identity_horse_loss * config.LAMBDA_IDENTITY
+                # + identity_zebra_loss * config.LAMBDA_IDENTITY
             )
 
         opt_gen.zero_grad()
@@ -85,8 +84,15 @@ def train_fn(
         g_scaler.update()
 
         if idx % 200 == 0:
-            save_image(fake_horse * 0.5 + 0.5, f"saved_images/horse_{idx}.png")
-            save_image(fake_zebra * 0.5 + 0.5, f"saved_images/zebra_{idx}.png")
+            fake_horse = fake_horse * 0.5 + 0.5
+            fake_zebra = fake_zebra * 0.5 + 0.5
+            horse = horse * 0.5 + 0.5
+            zebra = zebra * 0.5 + 0.5
+            # concatentate the horses
+            fake_horse_grid = torch.cat([zebra, fake_horse], 0)
+            fake_zebra_grid = torch.cat([horse, fake_zebra], 0)
+            save_image(fake_horse_grid, f"saved_images/horse_{idx}.png")
+            save_image(fake_zebra_grid, f"saved_images/zebra_{idx}.png")
 
         loop.set_postfix(H_real=H_reals / (idx + 1), H_fake=H_fakes / (idx + 1))
 
@@ -138,13 +144,13 @@ def main():
         )
 
     dataset = HorseZebraDataset(
-        root_horse=config.TRAIN_DIR + "/horses",
-        root_zebra=config.TRAIN_DIR + "/zebras",
+        root_horse=config.TRAIN_DIR + "/A",
+        root_zebra=config.TRAIN_DIR + "/B",
         transform=config.transforms,
     )
     val_dataset = HorseZebraDataset(
-        root_horse="cyclegan_test/horse1",
-        root_zebra="cyclegan_test/zebra1",
+        root_horse=config.VAL_DIR + "/A",
+        root_zebra=config.VAL_DIR + "/B",
         transform=config.transforms,
     )
     val_loader = DataLoader(
@@ -164,6 +170,7 @@ def main():
     d_scaler = torch.cuda.amp.GradScaler()
 
     for epoch in range(config.NUM_EPOCHS):
+        print(f"Epoch {epoch}")
         train_fn(
             disc_H,
             disc_Z,
