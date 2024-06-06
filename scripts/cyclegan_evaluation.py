@@ -22,6 +22,8 @@ def main() -> int:
         if i > 15:
             break
         img_grids = []
+        # TODO: why is this a torch tensor?
+        print(type(real_natural_view))
         batch_size = real_natural_view.size(0)
 
         for j in range(batch_size):
